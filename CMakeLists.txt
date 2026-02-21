@@ -21,6 +21,7 @@ else()
     GIT_REPOSITORY https://github.com/steinbergmedia/vst3sdk.git
     GIT_TAG master
     GIT_SHALLOW TRUE
+    GIT_SUBMODULES_RECURSE TRUE
   )
   FetchContent_MakeAvailable(vst3sdk)
 endif()

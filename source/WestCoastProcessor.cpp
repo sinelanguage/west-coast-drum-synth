@@ -409,14 +409,14 @@ void WestCoastProcessor::pushParamChange (Vst::IParameterChanges* outputChanges,
 
 double WestCoastProcessor::getParam (Vst::ParamID id) const
 {
-  if (id < 0 || id >= kParameterStateSize)
+  if (id >= static_cast<Vst::ParamID> (kParameterStateSize))
     return 0.0;
   return params_[id];
 }
 
 void WestCoastProcessor::setParam (Vst::ParamID id, double normalizedValue)
 {
-  if (id < 0 || id >= kParameterStateSize)
+  if (id >= static_cast<Vst::ParamID> (kParameterStateSize))
     return;
   params_[id] = clamp01 (normalizedValue);
 }
