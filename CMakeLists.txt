@@ -34,6 +34,7 @@ smtg_add_vst3plugin(WestCoastDrumSynth
     source/dsp/DrumVoice.cpp
     source/sequencer/StepSequencer.h
     source/sequencer/StepSequencer.cpp
+    source/presets.h
     source/processor.h
     source/processor.cpp
     source/controller.h

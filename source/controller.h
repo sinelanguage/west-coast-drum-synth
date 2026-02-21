@@ -43,6 +43,7 @@ private:
     void addVoiceParameters(int voiceIdx, const char* voiceName);
     void addSequencerParameters();
     void initFactoryPresets();
+    void loadPreset(int presetIndex);
 };
 
 } // namespace WestCoastDrumSynth

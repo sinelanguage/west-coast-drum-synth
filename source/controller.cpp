@@ -1,5 +1,6 @@
 #include "controller.h"
 #include "wcids.h"
+#include "presets.h"
 #include "base/source/fstreamer.h"
 #include "pluginterfaces/base/ibstream.h"
 #include "pluginterfaces/base/ustring.h"
@@ -141,19 +142,43 @@ void WCDrumController::initFactoryPresets() {
         STR16("Preset"), 99999, nullptr,
         Steinberg::Vst::ParameterInfo::kIsProgramChange | Steinberg::Vst::ParameterInfo::kIsList);
 
-    presetParam->appendString(STR16("Init"));
-    presetParam->appendString(STR16("West Coast Classic"));
-    presetParam->appendString(STR16("Buchla Beats"));
-    presetParam->appendString(STR16("Easel Groove"));
-    presetParam->appendString(STR16("Complex Waveform Kit"));
-    presetParam->appendString(STR16("LPG Percussion"));
-    presetParam->appendString(STR16("Metallic Modular"));
-    presetParam->appendString(STR16("Organic Machines"));
-    presetParam->appendString(STR16("Wavefolded Minimal"));
-    presetParam->appendString(STR16("FM Textures"));
-    presetParam->appendString(STR16("Voltage Controlled"));
+    for (int i = 0; i < kNumFactoryPresets; ++i) {
+        String128 presetName;
+        Steinberg::UString(presetName, 128).fromAscii(kFactoryPresets[i].name);
+        presetParam->appendString(presetName);
+    }
 
     parameters.addParameter(presetParam);
+}
+
+void WCDrumController::loadPreset(int presetIndex) {
+    if (presetIndex < 0 || presetIndex >= kNumFactoryPresets) return;
+
+    const auto& preset = kFactoryPresets[presetIndex];
+
+    for (int v = 0; v < kNumDrumVoices; ++v) {
+        const auto& vd = preset.voices[v];
+        const float* vals = &vd.level;
+
+        for (int p = 0; p < 16; ++p) {
+            Steinberg::Vst::ParamID pid = voiceParam(v, p);
+            setParamNormalized(pid, vals[p]);
+
+            if (componentHandler)
+                componentHandler->performEdit(pid, vals[p]);
+        }
+    }
+
+    for (int v = 0; v < kNumDrumVoices; ++v) {
+        for (int s = 0; s < kNumSteps; ++s) {
+            Steinberg::Vst::ParamID stepId = seqStep(v, s);
+            double stepVal = preset.pattern.steps[v][s] ? 1.0 : 0.0;
+            setParamNormalized(stepId, stepVal);
+
+            if (componentHandler)
+                componentHandler->performEdit(stepId, stepVal);
+        }
+    }
 }
 
 Steinberg::tresult PLUGIN_API WCDrumController::setComponentState(Steinberg::IBStream* state) {
@@ -206,12 +231,30 @@ Steinberg::IPlugView* PLUGIN_API WCDrumController::createView(Steinberg::FIDStri
 
 Steinberg::tresult PLUGIN_API WCDrumController::setParamNormalized(
     Steinberg::Vst::ParamID tag, Steinberg::Vst::ParamValue value) {
-    return EditControllerEx1::setParamNormalized(tag, value);
+
+    Steinberg::tresult result = EditControllerEx1::setParamNormalized(tag, value);
+
+    // When preset parameter changes, load the preset
+    if (tag == 99999) {
+        int presetIndex = static_cast<int>(value * (kNumFactoryPresets - 1) + 0.5);
+        loadPreset(presetIndex);
+    }
+
+    return result;
 }
 
 Steinberg::tresult PLUGIN_API WCDrumController::getParamStringByValue(
     Steinberg::Vst::ParamID tag, Steinberg::Vst::ParamValue valueNormalized,
     Steinberg::Vst::String128 string) {
+
+    if (tag == kParamTempo) {
+        float bpm = 40.0f + static_cast<float>(valueNormalized) * 260.0f;
+        char buf[32];
+        snprintf(buf, sizeof(buf), "%.1f", bpm);
+        Steinberg::UString(string, 128).fromAscii(buf);
+        return Steinberg::kResultTrue;
+    }
+
     return EditControllerEx1::getParamStringByValue(tag, valueNormalized, string);
 }
 
