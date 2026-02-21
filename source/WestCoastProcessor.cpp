@@ -238,7 +238,7 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
 
   auto render = [&] (auto** outChannels)
   {
-    using SampleType = std::remove_pointer_t<decltype (outChannels[0])>;
+    using SampleType = std::remove_pointer_t<std::decay_t<decltype (outChannels[0])>>;
 
     auto* left = outChannels[0];
     auto* right = (data.outputs[0].numChannels > 1) ? outChannels[1] : outChannels[0];

@@ -4,7 +4,6 @@
 #include "presets/FactoryPresets.h"
 
 #include "base/source/fstreamer.h"
-#include "base/source/ustring.h"
 #include "pluginterfaces/base/ibstream.h"
 #include "pluginterfaces/base/ustring.h"
 #include "public.sdk/source/vst/vstparameters.h"
@@ -19,13 +18,16 @@ namespace {
 
 constexpr uint32 kStateVersion = 1;
 
+UString128 toString128 (const char* ascii)
+{
+  return UString128 (ascii ? ascii : "");
+}
+
 Vst::RangeParameter* makeRangeParam (const char* title, Vst::ParamID id, const char* unit, double minPlain,
                                      double maxPlain, double defaultPlain)
 {
-  String128 title16 {};
-  String128 unit16 {};
-  UString128 (title16).fromAscii (title);
-  UString128 (unit16).fromAscii (unit);
+  auto title16 = toString128 (title);
+  auto unit16 = toString128 (unit);
   return new Vst::RangeParameter (title16, id, unit16, minPlain, maxPlain, defaultPlain);
 }
 
@@ -52,8 +54,7 @@ tresult PLUGIN_API WestCoastController::initialize (FUnknown* context)
   auto* presetParam = new Vst::StringListParameter (STR16 ("Preset"), kParamPresetSelect);
   for (const auto& preset : getFactoryPresets ())
   {
-    String128 presetName {};
-    UString128 (presetName).fromAscii (preset.name.data ());
+    auto presetName = toString128 (preset.name.data ());
     presetParam->appendString (presetName);
   }
   parameters.addParameter (presetParam);
