@@ -19,59 +19,7 @@ namespace WestCoastDrumSynth {
 
 using namespace VSTGUI;
 
-// Photorealistic metal knob inspired by Arturia hardware
-class WCMetalKnob : public CKnob {
-public:
-    WCMetalKnob(const CRect& size, IControlListener* listener,
-                int32_t tag, float defaultValue = 0.5f);
-
-    void draw(CDrawContext* context) override;
-
-    CLASS_METHODS(WCMetalKnob, CKnob)
-
-private:
-    void drawMetalBody(CDrawContext* ctx, const CRect& r);
-    void drawIndicator(CDrawContext* ctx, const CRect& r);
-    void drawShadow(CDrawContext* ctx, const CRect& r);
-    void drawHighlight(CDrawContext* ctx, const CRect& r);
-
-    float defaultValue_;
-};
-
-// Illuminated step button for sequencer
-class WCStepButton : public COnOffButton {
-public:
-    WCStepButton(const CRect& size, IControlListener* listener,
-                 int32_t tag, bool isActive = false);
-
-    void draw(CDrawContext* context) override;
-    void setStepActive(bool active) { stepActive_ = active; }
-    void setCurrentStep(bool isCurrent) { isCurrentStep_ = isCurrent; }
-
-    CLASS_METHODS(WCStepButton, COnOffButton)
-
-private:
-    bool stepActive_ = false;
-    bool isCurrentStep_ = false;
-};
-
-// Voice selector button with LED indicator
-class WCVoiceButton : public COnOffButton {
-public:
-    WCVoiceButton(const CRect& size, IControlListener* listener,
-                  int32_t tag, const char* label);
-
-    void draw(CDrawContext* context) override;
-    void setSelected(bool sel) { selected_ = sel; }
-
-    CLASS_METHODS(WCVoiceButton, COnOffButton)
-
-private:
-    std::string label_;
-    bool selected_ = false;
-};
-
-// Main view container assembling the full interface
+// Main view container with photorealistic Arturia-style rendering
 class WCDrumView : public CViewContainer {
 public:
     WCDrumView(const CRect& size);
@@ -86,8 +34,8 @@ private:
     void drawSectionPanel(CDrawContext* ctx, const CRect& r, const char* title);
     void drawLogo(CDrawContext* ctx, const CRect& r);
     void drawScrewHead(CDrawContext* ctx, CCoord x, CCoord y, CCoord radius);
+    void drawVentSlots(CDrawContext* ctx, const CRect& r);
 };
-
 
 } // namespace WestCoastDrumSynth
 } // namespace SineLanguage

@@ -18,35 +18,45 @@ void LowPassGate::reset() {
 }
 
 float LowPassGate::process(float input) {
-    // Vactrol-style envelope: fast attack, slow logarithmic release
-    float decayTime = 0.01f + decay_ * 2.0f;
+    // Vactrol model: LED/photoresistor with nonlinear response
+    // The vactrol has a fast attack (~0.5ms) and slow, frequency-dependent release
+    float decayTime = 0.01f + decay_ * decay_ * 3.0f;
     float releaseCoeff = std::exp(-1.0f / (sampleRate_ * decayTime));
 
-    vacTarget_ *= releaseCoeff;
-    // Vactrol slew: the response lags behind the target
-    float slewUp = 1.0f - std::exp(-1.0f / (sampleRate_ * 0.001f));
-    float slewDown = 1.0f - std::exp(-1.0f / (sampleRate_ * 0.02f));
+    // Nonlinear vactrol decay - slows down as level decreases
+    float levelScaled = vacTarget_ * vacTarget_;
+    float adaptiveRelease = releaseCoeff + (1.0f - releaseCoeff) * (1.0f - levelScaled) * 0.3f;
+    vacTarget_ *= adaptiveRelease;
+
+    // Vactrol slew rate asymmetry: fast up, slow down with variable curve
+    float attackTime = 0.0005f;
+    float releaseSlew = 0.015f + decay_ * 0.05f;
+    float slewUp = 1.0f - std::exp(-1.0f / (sampleRate_ * attackTime));
+    float slewDown = 1.0f - std::exp(-1.0f / (sampleRate_ * releaseSlew));
     float slew = (vacTarget_ > vacLevel_) ? slewUp : slewDown;
     vacLevel_ += (vacTarget_ - vacLevel_) * slew;
 
     float level = std::max(0.0f, std::min(1.0f, vacLevel_));
 
-    // Cutoff frequency modulated by vactrol level
-    float minFreq = 60.0f;
-    float maxFreq = 18000.0f;
+    // Combined VCA + VCF behavior (the signature of a Low Pass Gate)
+    // Cutoff tracks the vactrol level with a squared response
+    float minFreq = 40.0f;
+    float maxFreq = 16000.0f;
     float cutoff = minFreq + level * level * (maxFreq - minFreq);
     float w = 2.0f * 3.14159265f * cutoff / sampleRate_;
-    float g = std::tan(w * 0.5f);
-    float k = 2.0f - 2.0f * resonance_ * 0.95f;
+    float g = std::tan(std::min(w * 0.5f, 1.5f));
+    float k = 2.0f - 2.0f * resonance_ * 0.9f;
+    k = std::max(0.1f, k);
 
-    // State-variable filter (2-pole)
+    // State-variable filter
     float hp = (input - lp2_ - k * bp_) / (1.0f + k * g + g * g);
-    bp_ = bp_ + g * hp;
-    lp2_ = lp2_ + g * bp_;
+    float newBp = bp_ + g * hp;
+    float newLp = lp2_ + g * newBp;
+    bp_ = newBp;
+    lp2_ = newLp;
 
-    // Mix between filtered and dry based on amount
-    float filtered = lp2_;
-    float output = filtered * level;
+    // VCA portion controlled by vactrol
+    float output = lp2_ * level;
 
     return output;
 }

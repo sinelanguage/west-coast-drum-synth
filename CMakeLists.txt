@@ -43,6 +43,11 @@ smtg_add_vst3plugin(WestCoastDrumSynth
     source/ui/WCDrumView.cpp
 )
 
+smtg_target_add_plugin_resources(WestCoastDrumSynth
+    RESOURCES
+        resource/wcdrumsynth.uidesc
+)
+
 target_link_libraries(WestCoastDrumSynth
     PRIVATE
         sdk
