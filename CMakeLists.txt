@@ -7,10 +7,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 add_compile_definitions(DEVELOPMENT=1)
 
-# VSTGUI pulls Objective-C++ sources on macOS. Explicitly enable ObjC/ObjC++
-# so CMake defines the required CMAKE_OBJCXX_* internals for generators.
-if(APPLE)
+# VSTGUI pulls Objective-C++ sources on Apple platforms. Use language probing
+# so the configure remains portable and still defines CMAKE_OBJCXX_* rules
+# whenever ObjC/ObjC++ toolchains are available.
+include(CheckLanguage)
+check_language(OBJC)
+if(CMAKE_OBJC_COMPILER)
   enable_language(OBJC)
+endif()
+
+check_language(OBJCXX)
+if(CMAKE_OBJCXX_COMPILER)
   enable_language(OBJCXX)
 endif()
 
