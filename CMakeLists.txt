@@ -1,11 +1,25 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(WestCoastDrumSynth VERSION 0.1.0 LANGUAGES CXX)
+project(WestCoastDrumSynth VERSION 0.1.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 add_compile_definitions(DEVELOPMENT=1)
+
+# VSTGUI pulls Objective-C++ sources on Apple platforms. Use language probing
+# so the configure remains portable and still defines CMAKE_OBJCXX_* rules
+# whenever ObjC/ObjC++ toolchains are available.
+include(CheckLanguage)
+check_language(OBJC)
+if(CMAKE_OBJC_COMPILER)
+  enable_language(OBJC)
+endif()
+
+check_language(OBJCXX)
+if(CMAKE_OBJCXX_COMPILER)
+  enable_language(OBJCXX)
+endif()
 
 set(SMTG_CREATE_PLUGIN_LINK OFF CACHE BOOL "Disable plugin links in build tree" FORCE)
 set(SMTG_ENABLE_VSTGUI_SUPPORT ON CACHE BOOL "Enable VSTGUI editor support" FORCE)
