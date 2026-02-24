@@ -6,6 +6,32 @@
 
 West Coast Drum Synth is a C++20 VST3 audio plugin built with CMake and the Steinberg VST3 SDK (fetched via CMake FetchContent). There are no web services, databases, or Docker dependencies. See `README.md` for synthesis architecture details.
 
+### Git workflow (important)
+
+Use this flow so Cloud/agent branches and `main` stay predictable:
+
+1. Start from the latest main:
+   ```bash
+   git fetch origin main
+   git checkout main
+   git pull origin main
+   ```
+2. Create a task branch:
+   ```bash
+   git checkout -b cursor/<task-name>
+   ```
+3. Make changes, then push:
+   ```bash
+   git push -u origin cursor/<task-name>
+   ```
+4. Merge through PR into `main` (preferred), then sync local:
+   ```bash
+   git checkout main
+   git pull origin main
+   ```
+
+If `main` and a cursor branch diverge accidentally, reconcile by merging the cursor branch into `main`, then fast-forward the cursor branch to the resulting `main` commit so both refs point to the same tip.
+
 ### Build
 
 ```bash
