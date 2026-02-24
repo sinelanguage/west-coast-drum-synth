@@ -16,7 +16,17 @@ namespace Steinberg::WestCoastDrumSynth {
 
 namespace {
 
-constexpr uint32 kStateVersion = 1;
+constexpr uint32 kStateVersion = 2;
+constexpr uint32 kLegacyStateVersion = 1;
+constexpr int32 kLegacyLaneCount = 4;
+
+constexpr std::array<std::array<double, kLaneExtraParamCount>, kLaneCount> kLaneExtraDefaults {{
+  {{0.84, 0.30, 0.70, 0.38, 0.22, 0.18}}, // Kick
+  {{0.42, 0.44, 0.46, 0.66, 0.38, 0.80}}, // Snare
+  {{0.20, 0.22, 0.32, 0.90, 0.16, 0.68}}, // Hat
+  {{0.48, 0.34, 0.40, 0.58, 0.32, 0.46}}, // Perc A
+  {{0.56, 0.30, 0.46, 0.66, 0.28, 0.54}}, // Perc B
+}};
 
 inline double clamp01 (double x)
 {
@@ -53,7 +63,13 @@ inline int32 laneForMidiPitch (int16 pitch)
       return 2; // Hat
     case 48:
     case 50:
-      return 3; // Perc
+    case 52:
+      return 3; // Perc A
+    case 47:
+    case 49:
+    case 51:
+    case 53:
+      return 4; // Perc B
     default:
       return -1;
   }
@@ -108,13 +124,61 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
   uint32 version = 0;
   if (!streamer.readInt32u (version))
     return kResultFalse;
-  if (version != kStateVersion)
-    return kResultFalse;
 
   int32 savedPreset = 0;
   if (!streamer.readInt32 (savedPreset))
     return kResultFalse;
   loadedPreset_ = std::clamp (savedPreset, 0, kFactoryPresetCount - 1);
+
+  if (version == kLegacyStateVersion)
+  {
+    for (int32 param = 0; param < kParamGlobalCount; ++param)
+    {
+      double normalized = 0.0;
+      if (!streamer.readDouble (normalized))
+        return kResultFalse;
+      setParam (static_cast<Vst::ParamID> (param), normalized);
+    }
+
+    for (int32 lane = 0; lane < kLegacyLaneCount; ++lane)
+    {
+      for (int32 param = 0; param < kLaneParamCount; ++param)
+      {
+        double normalized = 0.0;
+        if (!streamer.readDouble (normalized))
+          return kResultFalse;
+        setParam (laneParamID (lane, static_cast<LaneParamOffset> (param)), normalized);
+      }
+    }
+
+    // Legacy sessions had one percussion lane. Seed Perc B from Perc A.
+    for (int32 param = 0; param < kLaneParamCount; ++param)
+    {
+      const auto offset = static_cast<LaneParamOffset> (param);
+      double value = getParam (laneParamID (3, offset));
+      if (offset == kLanePan)
+        value = clamp01 (value + 0.08);
+      setParam (laneParamID (4, offset), value);
+    }
+
+    for (int32 lane = 0; lane < kLaneCount; ++lane)
+    {
+      for (int32 param = 0; param < kLaneExtraParamCount; ++param)
+      {
+        setParam (laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (param)),
+                  kLaneExtraDefaults[lane][param]);
+      }
+    }
+
+    const auto& preset = getFactoryPresets ()[loadedPreset_];
+    sequencer_.setPattern (preset.pattern);
+    updateLaneFramesFromParameters ();
+    presetPending_ = false;
+    return kResultOk;
+  }
+
+  if (version != kStateVersion)
+    return kResultFalse;
 
   for (const auto id : allParameterIds ())
   {
@@ -305,23 +369,37 @@ void WestCoastProcessor::loadPresetByIndex (int32 presetIndex, Vst::IParameterCh
 
   for (int32 lane = 0; lane < kLaneCount; ++lane)
   {
-    setParam (laneParamID (lane, kLaneTune), preset.lanes[lane].tune);
-    setParam (laneParamID (lane, kLaneDecay), preset.lanes[lane].decay);
-    setParam (laneParamID (lane, kLaneFold), preset.lanes[lane].fold);
-    setParam (laneParamID (lane, kLaneFm), preset.lanes[lane].fm);
-    setParam (laneParamID (lane, kLaneNoise), preset.lanes[lane].noise);
-    setParam (laneParamID (lane, kLaneDrive), preset.lanes[lane].drive);
-    setParam (laneParamID (lane, kLaneLevel), preset.lanes[lane].level);
-    setParam (laneParamID (lane, kLanePan), preset.lanes[lane].pan);
+    const auto& lanePreset = preset.lanes[lane];
 
-    pushParamChange (outputChanges, laneParamID (lane, kLaneTune), preset.lanes[lane].tune);
-    pushParamChange (outputChanges, laneParamID (lane, kLaneDecay), preset.lanes[lane].decay);
-    pushParamChange (outputChanges, laneParamID (lane, kLaneFold), preset.lanes[lane].fold);
-    pushParamChange (outputChanges, laneParamID (lane, kLaneFm), preset.lanes[lane].fm);
-    pushParamChange (outputChanges, laneParamID (lane, kLaneNoise), preset.lanes[lane].noise);
-    pushParamChange (outputChanges, laneParamID (lane, kLaneDrive), preset.lanes[lane].drive);
-    pushParamChange (outputChanges, laneParamID (lane, kLaneLevel), preset.lanes[lane].level);
-    pushParamChange (outputChanges, laneParamID (lane, kLanePan), preset.lanes[lane].pan);
+    setParam (laneParamID (lane, kLaneTune), lanePreset.tune);
+    setParam (laneParamID (lane, kLaneDecay), lanePreset.decay);
+    setParam (laneParamID (lane, kLaneFold), lanePreset.fold);
+    setParam (laneParamID (lane, kLaneFm), lanePreset.fm);
+    setParam (laneParamID (lane, kLaneNoise), lanePreset.noise);
+    setParam (laneParamID (lane, kLaneDrive), lanePreset.drive);
+    setParam (laneParamID (lane, kLaneLevel), lanePreset.level);
+    setParam (laneParamID (lane, kLanePan), lanePreset.pan);
+    setParam (laneExtraParamID (lane, kLanePitchEnvAmount), lanePreset.pitchEnvAmount);
+    setParam (laneExtraParamID (lane, kLanePitchEnvDecay), lanePreset.pitchEnvDecay);
+    setParam (laneExtraParamID (lane, kLaneTransientAttack), lanePreset.transientAttack);
+    setParam (laneExtraParamID (lane, kLaneNoiseTone), lanePreset.noiseTone);
+    setParam (laneExtraParamID (lane, kLaneNoiseDecay), lanePreset.noiseDecay);
+    setParam (laneExtraParamID (lane, kLaneSnap), lanePreset.snap);
+
+    pushParamChange (outputChanges, laneParamID (lane, kLaneTune), lanePreset.tune);
+    pushParamChange (outputChanges, laneParamID (lane, kLaneDecay), lanePreset.decay);
+    pushParamChange (outputChanges, laneParamID (lane, kLaneFold), lanePreset.fold);
+    pushParamChange (outputChanges, laneParamID (lane, kLaneFm), lanePreset.fm);
+    pushParamChange (outputChanges, laneParamID (lane, kLaneNoise), lanePreset.noise);
+    pushParamChange (outputChanges, laneParamID (lane, kLaneDrive), lanePreset.drive);
+    pushParamChange (outputChanges, laneParamID (lane, kLaneLevel), lanePreset.level);
+    pushParamChange (outputChanges, laneParamID (lane, kLanePan), lanePreset.pan);
+    pushParamChange (outputChanges, laneExtraParamID (lane, kLanePitchEnvAmount), lanePreset.pitchEnvAmount);
+    pushParamChange (outputChanges, laneExtraParamID (lane, kLanePitchEnvDecay), lanePreset.pitchEnvDecay);
+    pushParamChange (outputChanges, laneExtraParamID (lane, kLaneTransientAttack), lanePreset.transientAttack);
+    pushParamChange (outputChanges, laneExtraParamID (lane, kLaneNoiseTone), lanePreset.noiseTone);
+    pushParamChange (outputChanges, laneExtraParamID (lane, kLaneNoiseDecay), lanePreset.noiseDecay);
+    pushParamChange (outputChanges, laneExtraParamID (lane, kLaneSnap), lanePreset.snap);
   }
 
   sequencer_.setPattern (preset.pattern);
@@ -369,11 +447,18 @@ void WestCoastProcessor::processParameterChanges (Vst::IParameterChanges* change
 
 void WestCoastProcessor::updateLaneFramesFromParameters ()
 {
-  static constexpr std::array<double, kLaneCount> kBaseFrequencies {52.0, 185.0, 3800.0, 420.0};
+  static constexpr std::array<double, kLaneCount> kBaseFrequencies {52.0, 185.0, 3800.0, 420.0, 620.0};
+  static constexpr std::array<LaneCharacter, kLaneCount> kLaneCharacters {
+    LaneCharacter::Kick, LaneCharacter::Snare, LaneCharacter::Hat, LaneCharacter::PercA, LaneCharacter::PercB};
+  static constexpr std::array<double, kLaneCount> kPitchEnvScale {1.0, 0.58, 0.24, 0.64, 0.70};
+  static constexpr std::array<double, kLaneCount> kTransientScale {1.0, 0.72, 0.46, 0.62, 0.70};
+  static constexpr std::array<double, kLaneCount> kNoiseScale {0.48, 1.0, 1.16, 0.78, 0.88};
+  static constexpr std::array<double, kLaneCount> kSnapScale {0.24, 1.0, 0.86, 0.58, 0.64};
 
   for (int32 lane = 0; lane < kLaneCount; ++lane)
   {
     LaneFrame frame {};
+    frame.character = kLaneCharacters[lane];
 
     const double tune = getParam (laneParamID (lane, kLaneTune));
     const double semitones = (tune * 2.0 - 1.0) * 24.0;
@@ -385,7 +470,19 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
 
     frame.foldAmount = getParam (laneParamID (lane, kLaneFold));
     frame.fmAmount = getParam (laneParamID (lane, kLaneFm));
-    frame.noiseAmount = getParam (laneParamID (lane, kLaneNoise));
+    frame.noiseAmount = getParam (laneParamID (lane, kLaneNoise)) * kNoiseScale[lane];
+    frame.pitchEnvAmount = std::clamp (getParam (laneExtraParamID (lane, kLanePitchEnvAmount)) *
+                                         kPitchEnvScale[lane],
+                                       0.0, 1.0);
+    const double pitchDecay = getParam (laneExtraParamID (lane, kLanePitchEnvDecay));
+    frame.pitchEnvDecaySeconds = 0.006 + (pitchDecay * pitchDecay * 0.55);
+    frame.transientAmount = std::clamp (getParam (laneExtraParamID (lane, kLaneTransientAttack)) *
+                                          kTransientScale[lane],
+                                        0.0, 1.0);
+    frame.noiseTone = (getParam (laneExtraParamID (lane, kLaneNoiseTone)) * 2.0) - 1.0;
+    const double noiseDecay = getParam (laneExtraParamID (lane, kLaneNoiseDecay));
+    frame.noiseDecaySeconds = 0.008 + (noiseDecay * noiseDecay * 1.3);
+    frame.snapAmount = std::clamp (getParam (laneExtraParamID (lane, kLaneSnap)) * kSnapScale[lane], 0.0, 1.0);
     frame.driveAmount = getParam (laneParamID (lane, kLaneDrive));
     frame.level = std::pow (getParam (laneParamID (lane, kLaneLevel)), 1.15);
     frame.pan = (getParam (laneParamID (lane, kLanePan)) * 2.0) - 1.0;

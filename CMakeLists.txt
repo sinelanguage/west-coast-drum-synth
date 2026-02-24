@@ -2,6 +2,26 @@ cmake_minimum_required(VERSION 3.22)
 
 project(WestCoastDrumSynth VERSION 0.1.0 LANGUAGES C CXX)
 
+# macOS build controls:
+# - default to native Apple Silicon (arm64) when CMAKE_OSX_ARCHITECTURES is unset
+# - allow universal binaries via WCSD_MAC_UNIVERSAL=ON
+option(WCSD_MAC_UNIVERSAL "Build macOS universal binary (arm64;x86_64)" OFF)
+set(WCSD_MAC_ARCHITECTURES "arm64" CACHE STRING "macOS architectures when not universal")
+
+if(APPLE)
+  if(NOT DEFINED CMAKE_OSX_ARCHITECTURES OR CMAKE_OSX_ARCHITECTURES STREQUAL "")
+    if(WCSD_MAC_UNIVERSAL)
+      set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "macOS target architectures" FORCE)
+    else()
+      set(CMAKE_OSX_ARCHITECTURES "${WCSD_MAC_ARCHITECTURES}" CACHE STRING "macOS target architectures" FORCE)
+    endif()
+  endif()
+
+  if(NOT DEFINED CMAKE_OSX_DEPLOYMENT_TARGET OR CMAKE_OSX_DEPLOYMENT_TARGET STREQUAL "")
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Minimum macOS version" FORCE)
+  endif()
+endif()
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
