@@ -16,6 +16,12 @@ struct NormalizedLanePreset {
   double drive {0.15};
   double level {0.75};
   double pan {0.5};
+  double pitchEnvAmount {0.4};
+  double pitchEnvDecay {0.3};
+  double transientAttack {0.3};
+  double noiseTone {0.5};
+  double noiseDecay {0.3};
+  double snap {0.3};
 };
 
 struct FactoryPreset {
