@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vstgui-ui-description version="1">
+    <fonts>
+    </fonts>
+    <colors>
+        <color name="panel.bg" rgba="#34343AFF"/>
+        <color name="panel.dark" rgba="#1E1E23FF"/>
+        <color name="accent.gold" rgba="#C8A050FF"/>
+        <color name="accent.orange" rgba="#FF8C14FF"/>
+        <color name="text.dim" rgba="#969699CC"/>
+        <color name="text.bright" rgba="#FFFFFFCC"/>
+        <color name="step.on" rgba="#DC7814F0"/>
+        <color name="step.off" rgba="#2A2A2FFF"/>
+        <color name="knob.track" rgba="#FF8C1466"/>
+    </colors>
+    <gradients>
+        <gradient name="knob-body">
+            <color-stop rgba="#C8C8CCFF" start="0"/>
+            <color-stop rgba="#828286FF" start="1"/>
+        </gradient>
+        <gradient name="knob-ring">
+            <color-stop rgba="#505055FF" start="0"/>
+            <color-stop rgba="#232328FF" start="1"/>
+        </gradient>
+        <gradient name="button-up">
+            <color-stop rgba="#404046FF" start="0"/>
+            <color-stop rgba="#303035FF" start="1"/>
+        </gradient>
+        <gradient name="button-down">
+            <color-stop rgba="#DC7814FF" start="0"/>
+            <color-stop rgba="#A05A10FF" start="1"/>
+        </gradient>
+        <gradient name="step-off">
+            <color-stop rgba="#38383DFF" start="0"/>
+            <color-stop rgba="#2A2A2FFF" start="1"/>
+        </gradient>
+        <gradient name="step-on">
+            <color-stop rgba="#FF9020FF" start="0"/>
+            <color-stop rgba="#CC6A10FF" start="1"/>
+        </gradient>
+        <gradient name="play-off">
+            <color-stop rgba="#404046FF" start="0"/>
+            <color-stop rgba="#303035FF" start="1"/>
+        </gradient>
+        <gradient name="play-on">
+            <color-stop rgba="#40CC40FF" start="0"/>
+            <color-stop rgba="#209020FF" start="1"/>
+        </gradient>
+    </gradients>
+
+    <template name="view" minSize="920, 580" maxSize="920, 580" size="920, 580"
+        background-color="#28282DFF" background-color-draw-style="filled"
+        class="CViewContainer">
+
+        <!-- ============================================================ -->
+        <!-- HEADER AREA -->
+        <!-- ============================================================ -->
+        <view class="CTextLabel" origin="24, 10" size="450, 26"
+            text-alignment="left" font="~ NormalFontBig" font-color="#DCC070FF"
+            title="WEST COAST DRUM SYNTH" transparent="true"/>
+        <view class="CTextLabel" origin="24, 33" size="560, 13"
+            text-alignment="left" font="~ NormalFontVerySmall" font-color="#8C8C91CC"
+            title="SINE LANGUAGE   |   BUCHLA-INSPIRED PERCUSSION SYNTHESIS   |   6 VOICES   |   16 STEPS"
+            transparent="true"/>
+        <!-- Gold accent line -->
+        <view class="CView" origin="24, 49" size="872, 1"
+            background-color="#C8A05040" background-color-draw-style="filled"/>
+
+        <!-- ============================================================ -->
+        <!-- SYNTH SECTION PANEL -->
+        <!-- ============================================================ -->
+        <view class="CViewContainer" origin="16, 55" size="888, 262"
+            background-color="#1C1C21FF" background-color-draw-style="filled"
+            round-rect-radius="6">
+
+            <!-- Section Title -->
+            <view class="CTextLabel" origin="14, 5" size="500, 15"
+                text-alignment="left" font="~ NormalFontSmaller" font-color="#C8A050CC"
+                title="COMPLEX OSCILLATOR  /  WAVEFOLDER  /  LOW PASS GATE" transparent="true"/>
+
+            <!-- ======= VOICE SELECT BUTTONS ======= -->
+            <view class="CTextButton" origin="10, 28" size="64, 22"
+                title="KICK" font="~ NormalFontVerySmall" font-color="#FFFFFFCC"
+                gradient="button-up" gradient-highlighted="button-down"
+                round-radius="3" frame-color="#50505500" frame-color-highlighted="#FF8C1488"
+                text-color="#CCCCCCFF" text-color-highlighted="#FFFFFFFF"/>
+            <view class="CTextButton" origin="10, 54" size="64, 22"
+                title="SNARE" font="~ NormalFontVerySmall" font-color="#FFFFFFCC"
+                gradient="button-up" gradient-highlighted="button-down"
+                round-radius="3" frame-color="#50505500" frame-color-highlighted="#FF8C1488"/>
+            <view class="CTextButton" origin="10, 80" size="64, 22"
+                title="C.HAT" font="~ NormalFontVerySmall" font-color="#FFFFFFCC"
+                gradient="button-up" gradient-highlighted="button-down"
+                round-radius="3" frame-color="#50505500" frame-color-highlighted="#FF8C1488"/>
+            <view class="CTextButton" origin="10, 106" size="64, 22"
+                title="O.HAT" font="~ NormalFontVerySmall" font-color="#FFFFFFCC"
+                gradient="button-up" gradient-highlighted="button-down"
+                round-radius="3" frame-color="#50505500" frame-color-highlighted="#FF8C1488"/>
+            <view class="CTextButton" origin="10, 132" size="64, 22"
+                title="TOM" font="~ NormalFontVerySmall" font-color="#FFFFFFCC"
+                gradient="button-up" gradient-highlighted="button-down"
+                round-radius="3" frame-color="#50505500" frame-color-highlighted="#FF8C1488"/>
+            <view class="CTextButton" origin="10, 158" size="64, 22"
+                title="PERC" font="~ NormalFontVerySmall" font-color="#FFFFFFCC"
+                gradient="button-up" gradient-highlighted="button-down"
+                round-radius="3" frame-color="#50505500" frame-color-highlighted="#FF8C1488"/>
+
+            <!-- Vertical separator -->
+            <view class="CView" origin="80, 24" size="1, 230"
+                background-color="#3A3A3F88" background-color-draw-style="filled"/>
+
+            <!-- ======= KNOB LABELS ROW 1 ======= -->
+            <view class="CTextLabel" origin="88, 24" size="56, 11" title="PITCH"
+                font="~ NormalFontVerySmall" font-color="#969699AA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="150, 24" size="56, 11" title="DECAY"
+                font="~ NormalFontVerySmall" font-color="#969699AA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="212, 24" size="56, 11" title="FM AMT"
+                font="~ NormalFontVerySmall" font-color="#969699AA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="274, 24" size="56, 11" title="FM RATIO"
+                font="~ NormalFontVerySmall" font-color="#969699AA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="336, 24" size="56, 11" title="FOLD"
+                font="~ NormalFontVerySmall" font-color="#969699AA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="398, 24" size="56, 11" title="SYMM"
+                font="~ NormalFontVerySmall" font-color="#969699AA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="460, 24" size="56, 11" title="LPG"
+                font="~ NormalFontVerySmall" font-color="#969699AA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="522, 24" size="56, 11" title="LPG DEC"
+                font="~ NormalFontVerySmall" font-color="#969699AA" text-alignment="center" transparent="true"/>
+
+            <!-- ======= KNOBS ROW 1: Pitch, Decay, FM Amount, FM Ratio, Fold, Symmetry, LPG, LPG Decay ======= -->
+            <view class="CKnob" origin="94, 37" size="44, 44"
+                control-tag="101" default-value="0.5"
+                min-value="0" max-value="1"
+                angle-start="35" angle-range="290"
+                corona-color="#FF8C14CC" corona-inset="3"
+                handle-color="#FF8C14FF" handle-line-width="2"
+                circle-drawing="true" corona-drawing="true"
+                corona-outline="true" corona-from-center="false"
+                corona-dash-dot="false"
+                background-offset="0, 0"
+                zoom-factor="1.5"
+                value-inset="4"/>
+            <view class="CKnob" origin="156, 37" size="44, 44"
+                control-tag="102" default-value="0.3"
+                min-value="0" max-value="1"
+                angle-start="35" angle-range="290"
+                corona-color="#FF8C14CC" corona-inset="3"
+                handle-color="#FF8C14FF" handle-line-width="2"
+                circle-drawing="true" corona-drawing="true"
+                corona-outline="true" corona-from-center="false"
+                value-inset="4" zoom-factor="1.5"/>
+            <view class="CKnob" origin="218, 37" size="44, 44"
+                control-tag="103" default-value="0.0"
+                min-value="0" max-value="1"
+                angle-start="35" angle-range="290"
+                corona-color="#FF8C14CC" corona-inset="3"
+                handle-color="#FF8C14FF" handle-line-width="2"
+                circle-drawing="true" corona-drawing="true"
+                corona-outline="true" corona-from-center="false"
+                value-inset="4" zoom-factor="1.5"/>
+            <view class="CKnob" origin="280, 37" size="44, 44"
+                control-tag="104" default-value="0.5"
+                min-value="0" max-value="1"
+                angle-start="35" angle-range="290"
+                corona-color="#FF8C14CC" corona-inset="3"
+                handle-color="#FF8C14FF" handle-line-width="2"
+                circle-drawing="true" corona-drawing="true"
+                corona-outline="true" corona-from-center="false"
+                value-inset="4" zoom-factor="1.5"/>
+            <view class="CKnob" origin="342, 37" size="44, 44"
+                control-tag="105" default-value="0.0"
+                min-value="0" max-value="1"
+                angle-start="35" angle-range="290"
+                corona-color="#FF8C14CC" corona-inset="3"
+                handle-color="#FF8C14FF" handle-line-width="2"
+                circle-drawing="true" corona-drawing="true"
+                corona-outline="true" corona-from-center="false"
+                value-inset="4" zoom-factor="1.5"/>
+            <view class="CKnob" origin="404, 37" size="44, 44"
+                control-tag="106" default-value="0.5"
+                min-value="0" max-value="1"
+                angle-start="35" angle-range="290"
+                corona-color="#FF8C14CC" corona-inset="3"
+                handle-color="#FF8C14FF" handle-line-width="2"
+                circle-drawing="true" corona-drawing="true"
+                corona-outline="true" corona-from-center="false"
+                value-inset="4" zoom-factor="1.5"/>
+            <view class="CKnob" origin="466, 37" size="44, 44"
+                control-tag="107" default-value="1.0"
+                min-value="0" max-value="1"
+                angle-start="35" angle-range="290"
+                corona-color="#FF8C14CC" corona-inset="3"
+                handle-color="#FF8C14FF" handle-line-width="2"
+                circle-drawing="true" corona-drawing="true"
+                corona-outline="true" corona-from-center="false"
+                value-inset="4" zoom-factor="1.5"/>
+            <view class="CKnob" origin="528, 37" size="44, 44"
+                control-tag="108" default-value="0.3"
+                min-value="0" max-value="1"
+                angle-start="35" angle-range="290"
+                corona-color="#FF8C14CC" corona-inset="3"
+                handle-color="#FF8C14FF" handle-line-width="2"
+                circle-drawing="true" corona-drawing="true"
+                corona-outline="true" corona-from-center="false"
+                value-inset="4" zoom-factor="1.5"/>
+
+            <!-- ======= KNOB LABELS ROW 2 ======= -->
+            <view class="CTextLabel" origin="88, 92" size="56, 11" title="RESO"
+                font="~ NormalFontVerySmall" font-color="#969699AA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="150, 92" size="56, 11" title="NOISE"
+                font="~ NormalFontVerySmall" font-color="#969699AA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="212, 92" size="56, 11" title="P.ENV"
+                font="~ NormalFontVerySmall" font-color="#969699AA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="274, 92" size="56, 11" title="P.DEC"
+                font="~ NormalFontVerySmall" font-color="#969699AA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="336, 92" size="56, 11" title="DRIVE"
+                font="~ NormalFontVerySmall" font-color="#969699AA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="398, 92" size="56, 11" title="PAN"
+                font="~ NormalFontVerySmall" font-color="#969699AA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="460, 92" size="56, 11" title="SHAPE"
+                font="~ NormalFontVerySmall" font-color="#969699AA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="522, 92" size="56, 11" title="LEVEL"
+                font="~ NormalFontVerySmall" font-color="#969699AA" text-alignment="center" transparent="true"/>
+
+            <!-- ======= KNOBS ROW 2: Reso, Noise, PEnv, PDec, Drive, Pan, Shape, Level ======= -->
+            <view class="CKnob" origin="94, 105" size="44, 44"
+                control-tag="109" default-value="0.0"
+                min-value="0" max-value="1"
+                angle-start="35" angle-range="290"
+                corona-color="#FF8C14CC" corona-inset="3"
+                handle-color="#FF8C14FF" handle-line-width="2"
+                circle-drawing="true" corona-drawing="true"
+                corona-outline="true" corona-from-center="false"
+                value-inset="4" zoom-factor="1.5"/>
+            <view class="CKnob" origin="156, 105" size="44, 44"
+                control-tag="110" default-value="0.0"
+                min-value="0" max-value="1"
+                angle-start="35" angle-range="290"
+                corona-color="#FF8C14CC" corona-inset="3"
+                handle-color="#FF8C14FF" handle-line-width="2"
+                circle-drawing="true" corona-drawing="true"
+                corona-outline="true" corona-from-center="false"
+                value-inset="4" zoom-factor="1.5"/>
+            <view class="CKnob" origin="218, 105" size="44, 44"
+                control-tag="111" default-value="0.3"
+                min-value="0" max-value="1"
+                angle-start="35" angle-range="290"
+                corona-color="#FF8C14CC" corona-inset="3"
+                handle-color="#FF8C14FF" handle-line-width="2"
+                circle-drawing="true" corona-drawing="true"
+                corona-outline="true" corona-from-center="false"
+                value-inset="4" zoom-factor="1.5"/>
+            <view class="CKnob" origin="280, 105" size="44, 44"
+                control-tag="112" default-value="0.2"
+                min-value="0" max-value="1"
+                angle-start="35" angle-range="290"
+                corona-color="#FF8C14CC" corona-inset="3"
+                handle-color="#FF8C14FF" handle-line-width="2"
+                circle-drawing="true" corona-drawing="true"
+                corona-outline="true" corona-from-center="false"
+                value-inset="4" zoom-factor="1.5"/>
+            <view class="CKnob" origin="342, 105" size="44, 44"
+                control-tag="113" default-value="0.0"
+                min-value="0" max-value="1"
+                angle-start="35" angle-range="290"
+                corona-color="#FF8C14CC" corona-inset="3"
+                handle-color="#FF8C14FF" handle-line-width="2"
+                circle-drawing="true" corona-drawing="true"
+                corona-outline="true" corona-from-center="false"
+                value-inset="4" zoom-factor="1.5"/>
+            <view class="CKnob" origin="404, 105" size="44, 44"
+                control-tag="114" default-value="0.5"
+                min-value="0" max-value="1"
+                angle-start="35" angle-range="290"
+                corona-color="#FF8C14CC" corona-inset="3"
+                handle-color="#FF8C14FF" handle-line-width="2"
+                circle-drawing="true" corona-drawing="true"
+                corona-outline="true" corona-from-center="false"
+                value-inset="4" zoom-factor="1.5"/>
+            <view class="CKnob" origin="466, 105" size="44, 44"
+                control-tag="115" default-value="0.0"
+                min-value="0" max-value="1"
+                angle-start="35" angle-range="290"
+                corona-color="#FF8C14CC" corona-inset="3"
+                handle-color="#FF8C14FF" handle-line-width="2"
+                circle-drawing="true" corona-drawing="true"
+                corona-outline="true" corona-from-center="false"
+                value-inset="4" zoom-factor="1.5"/>
+            <view class="CKnob" origin="528, 105" size="44, 44"
+                control-tag="100" default-value="0.8"
+                min-value="0" max-value="1"
+                angle-start="35" angle-range="290"
+                corona-color="#FF8C14CC" corona-inset="3"
+                handle-color="#FF8C14FF" handle-line-width="2"
+                circle-drawing="true" corona-drawing="true"
+                corona-outline="true" corona-from-center="false"
+                value-inset="4" zoom-factor="1.5"/>
+
+            <!-- ======= Vertical separator before info panel ======= -->
+            <view class="CView" origin="585, 24" size="1, 230"
+                background-color="#3A3A3F88" background-color-draw-style="filled"/>
+
+            <!-- ======= INFO / DISPLAY PANEL ======= -->
+            <view class="CViewContainer" origin="596, 24" size="280, 108"
+                background-color="#111115FF" background-color-draw-style="filled"
+                round-rect-radius="4">
+                <view class="CTextLabel" origin="8, 6" size="264, 13"
+                    title="SYNTHESIS ENGINE" font="~ NormalFontVerySmall" font-color="#C8A050AA"
+                    text-alignment="left" transparent="true"/>
+                <!-- Display content -->
+                <view class="CTextLabel" origin="8, 24" size="264, 11"
+                    title="Wavefolding + FM + Low Pass Gate" font="~ NormalFontVerySmall" font-color="#70B0E0CC"
+                    text-alignment="left" transparent="true"/>
+                <view class="CTextLabel" origin="8, 40" size="264, 11"
+                    title="Vactrol-modeled VCA/VCF response" font="~ NormalFontVerySmall" font-color="#70B0E0AA"
+                    text-alignment="left" transparent="true"/>
+                <view class="CTextLabel" origin="8, 56" size="264, 11"
+                    title="Exponential pitch envelopes" font="~ NormalFontVerySmall" font-color="#70B0E0AA"
+                    text-alignment="left" transparent="true"/>
+                <view class="CTextLabel" origin="8, 72" size="264, 11"
+                    title="Inharmonic metallic noise generator" font="~ NormalFontVerySmall" font-color="#70B0E0AA"
+                    text-alignment="left" transparent="true"/>
+                <view class="CTextLabel" origin="8, 88" size="264, 11"
+                    title="Buchla-style complex oscillator" font="~ NormalFontVerySmall" font-color="#70B0E0AA"
+                    text-alignment="left" transparent="true"/>
+            </view>
+
+            <!-- ======= PRESET SELECTOR ======= -->
+            <view class="CViewContainer" origin="596, 140" size="280, 55"
+                background-color="#111115FF" background-color-draw-style="filled"
+                round-rect-radius="4">
+                <view class="CTextLabel" origin="8, 6" size="264, 13"
+                    title="PRESET" font="~ NormalFontVerySmall" font-color="#C8A050AA"
+                    text-alignment="left" transparent="true"/>
+                <view class="COptionMenu" origin="8, 24" size="264, 22"
+                    control-tag="99999" default-value="0"
+                    font="~ NormalFontSmall" font-color="#FFFFFFCC"
+                    back-color="#22222AFF" frame-color="#505055FF"
+                    round-rect-radius="3"/>
+            </view>
+
+            <!-- ======= VOICE INFO LABELS ======= -->
+            <view class="CViewContainer" origin="596, 200" size="280, 55"
+                background-color="#111115FF" background-color-draw-style="filled"
+                round-rect-radius="4">
+                <view class="CTextLabel" origin="8, 6" size="264, 13"
+                    title="VOICE MAP (MIDI C2-F2)" font="~ NormalFontVerySmall" font-color="#C8A050AA"
+                    text-alignment="left" transparent="true"/>
+                <view class="CTextLabel" origin="8, 22" size="264, 11"
+                    title="C2=Kick  D2=Snare  E2=CHat  F2=OHat" font="~ NormalFontVerySmall" font-color="#88888DCC"
+                    text-alignment="left" transparent="true"/>
+                <view class="CTextLabel" origin="8, 36" size="264, 11"
+                    title="G2=Tom   A2=Perc" font="~ NormalFontVerySmall" font-color="#88888DCC"
+                    text-alignment="left" transparent="true"/>
+            </view>
+
+        </view>
+
+        <!-- ============================================================ -->
+        <!-- SEQUENCER SECTION -->
+        <!-- ============================================================ -->
+        <view class="CViewContainer" origin="16, 325" size="888, 244"
+            background-color="#1C1C21FF" background-color-draw-style="filled"
+            round-rect-radius="6">
+
+            <view class="CTextLabel" origin="14, 5" size="300, 15"
+                text-alignment="left" font="~ NormalFontSmaller" font-color="#C8A050CC"
+                title="SEQUENCER" transparent="true"/>
+
+            <!-- Step Numbers -->
+            <view class="CTextLabel" origin="14, 22" size="38, 10" title="1" font="~ NormalFontVerySmall" font-color="#78787DAA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="54, 22" size="38, 10" title="2" font="~ NormalFontVerySmall" font-color="#78787DAA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="94, 22" size="38, 10" title="3" font="~ NormalFontVerySmall" font-color="#78787DAA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="134, 22" size="38, 10" title="4" font="~ NormalFontVerySmall" font-color="#78787DAA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="174, 22" size="38, 10" title="5" font="~ NormalFontVerySmall" font-color="#78787DAA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="214, 22" size="38, 10" title="6" font="~ NormalFontVerySmall" font-color="#78787DAA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="254, 22" size="38, 10" title="7" font="~ NormalFontVerySmall" font-color="#78787DAA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="294, 22" size="38, 10" title="8" font="~ NormalFontVerySmall" font-color="#78787DAA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="334, 22" size="38, 10" title="9" font="~ NormalFontVerySmall" font-color="#78787DAA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="374, 22" size="38, 10" title="10" font="~ NormalFontVerySmall" font-color="#78787DAA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="414, 22" size="38, 10" title="11" font="~ NormalFontVerySmall" font-color="#78787DAA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="454, 22" size="38, 10" title="12" font="~ NormalFontVerySmall" font-color="#78787DAA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="494, 22" size="38, 10" title="13" font="~ NormalFontVerySmall" font-color="#78787DAA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="534, 22" size="38, 10" title="14" font="~ NormalFontVerySmall" font-color="#78787DAA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="574, 22" size="38, 10" title="15" font="~ NormalFontVerySmall" font-color="#78787DAA" text-alignment="center" transparent="true"/>
+            <view class="CTextLabel" origin="614, 22" size="38, 10" title="16" font="~ NormalFontVerySmall" font-color="#78787DAA" text-alignment="center" transparent="true"/>
+
+            <!-- Voice row labels -->
+            <view class="CTextLabel" origin="660, 34" size="48, 14" title="KICK" font="~ NormalFontVerySmall" font-color="#C89860CC" text-alignment="right" transparent="true"/>
+            <view class="CTextLabel" origin="660, 68" size="48, 14" title="SNARE" font="~ NormalFontVerySmall" font-color="#C89860CC" text-alignment="right" transparent="true"/>
+            <view class="CTextLabel" origin="660, 102" size="48, 14" title="C.HAT" font="~ NormalFontVerySmall" font-color="#C89860CC" text-alignment="right" transparent="true"/>
+            <view class="CTextLabel" origin="660, 136" size="48, 14" title="O.HAT" font="~ NormalFontVerySmall" font-color="#C89860CC" text-alignment="right" transparent="true"/>
+            <view class="CTextLabel" origin="660, 170" size="48, 14" title="TOM" font="~ NormalFontVerySmall" font-color="#C89860CC" text-alignment="right" transparent="true"/>
+            <view class="CTextLabel" origin="660, 204" size="48, 14" title="PERC" font="~ NormalFontVerySmall" font-color="#C89860CC" text-alignment="right" transparent="true"/>
+
+            <!-- ======= STEP GRID ======= -->
+            <!-- Kick (voice 0) steps -->
+            <view class="CTextButton" origin="16, 34" size="34, 20" control-tag="1000" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA" kick-style="true"/>
+            <view class="CTextButton" origin="56, 34" size="34, 20" control-tag="1001" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA" kick-style="true"/>
+            <view class="CTextButton" origin="96, 34" size="34, 20" control-tag="1002" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="136, 34" size="34, 20" control-tag="1003" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="176, 34" size="34, 20" control-tag="1004" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="216, 34" size="34, 20" control-tag="1005" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="256, 34" size="34, 20" control-tag="1006" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="296, 34" size="34, 20" control-tag="1007" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="336, 34" size="34, 20" control-tag="1008" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="376, 34" size="34, 20" control-tag="1009" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="416, 34" size="34, 20" control-tag="1010" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="456, 34" size="34, 20" control-tag="1011" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="496, 34" size="34, 20" control-tag="1012" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="536, 34" size="34, 20" control-tag="1013" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="576, 34" size="34, 20" control-tag="1014" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="616, 34" size="34, 20" control-tag="1015" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+
+            <!-- Snare (voice 1) steps -->
+            <view class="CTextButton" origin="16, 68" size="34, 20" control-tag="1016" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="56, 68" size="34, 20" control-tag="1017" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="96, 68" size="34, 20" control-tag="1018" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="136, 68" size="34, 20" control-tag="1019" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="176, 68" size="34, 20" control-tag="1020" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="216, 68" size="34, 20" control-tag="1021" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="256, 68" size="34, 20" control-tag="1022" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="296, 68" size="34, 20" control-tag="1023" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="336, 68" size="34, 20" control-tag="1024" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="376, 68" size="34, 20" control-tag="1025" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="416, 68" size="34, 20" control-tag="1026" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="456, 68" size="34, 20" control-tag="1027" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="496, 68" size="34, 20" control-tag="1028" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="536, 68" size="34, 20" control-tag="1029" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="576, 68" size="34, 20" control-tag="1030" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="616, 68" size="34, 20" control-tag="1031" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+
+            <!-- Closed Hat (voice 2) steps -->
+            <view class="CTextButton" origin="16, 102" size="34, 20" control-tag="1032" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="56, 102" size="34, 20" control-tag="1033" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="96, 102" size="34, 20" control-tag="1034" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="136, 102" size="34, 20" control-tag="1035" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="176, 102" size="34, 20" control-tag="1036" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="216, 102" size="34, 20" control-tag="1037" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="256, 102" size="34, 20" control-tag="1038" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="296, 102" size="34, 20" control-tag="1039" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="336, 102" size="34, 20" control-tag="1040" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="376, 102" size="34, 20" control-tag="1041" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="416, 102" size="34, 20" control-tag="1042" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="456, 102" size="34, 20" control-tag="1043" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="496, 102" size="34, 20" control-tag="1044" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="536, 102" size="34, 20" control-tag="1045" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="576, 102" size="34, 20" control-tag="1046" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="616, 102" size="34, 20" control-tag="1047" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+
+            <!-- Open Hat (voice 3) steps -->
+            <view class="CTextButton" origin="16, 136" size="34, 20" control-tag="1048" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="56, 136" size="34, 20" control-tag="1049" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="96, 136" size="34, 20" control-tag="1050" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="136, 136" size="34, 20" control-tag="1051" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="176, 136" size="34, 20" control-tag="1052" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="216, 136" size="34, 20" control-tag="1053" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="256, 136" size="34, 20" control-tag="1054" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="296, 136" size="34, 20" control-tag="1055" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="336, 136" size="34, 20" control-tag="1056" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="376, 136" size="34, 20" control-tag="1057" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="416, 136" size="34, 20" control-tag="1058" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="456, 136" size="34, 20" control-tag="1059" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="496, 136" size="34, 20" control-tag="1060" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="536, 136" size="34, 20" control-tag="1061" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="576, 136" size="34, 20" control-tag="1062" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="616, 136" size="34, 20" control-tag="1063" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+
+            <!-- Tom (voice 4) steps -->
+            <view class="CTextButton" origin="16, 170" size="34, 20" control-tag="1064" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="56, 170" size="34, 20" control-tag="1065" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="96, 170" size="34, 20" control-tag="1066" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="136, 170" size="34, 20" control-tag="1067" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="176, 170" size="34, 20" control-tag="1068" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="216, 170" size="34, 20" control-tag="1069" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="256, 170" size="34, 20" control-tag="1070" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="296, 170" size="34, 20" control-tag="1071" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="336, 170" size="34, 20" control-tag="1072" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="376, 170" size="34, 20" control-tag="1073" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="416, 170" size="34, 20" control-tag="1074" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="456, 170" size="34, 20" control-tag="1075" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="496, 170" size="34, 20" control-tag="1076" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="536, 170" size="34, 20" control-tag="1077" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="576, 170" size="34, 20" control-tag="1078" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="616, 170" size="34, 20" control-tag="1079" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+
+            <!-- Perc (voice 5) steps -->
+            <view class="CTextButton" origin="16, 204" size="34, 20" control-tag="1080" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="56, 204" size="34, 20" control-tag="1081" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="96, 204" size="34, 20" control-tag="1082" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="136, 204" size="34, 20" control-tag="1083" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="176, 204" size="34, 20" control-tag="1084" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="216, 204" size="34, 20" control-tag="1085" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="256, 204" size="34, 20" control-tag="1086" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="296, 204" size="34, 20" control-tag="1087" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="336, 204" size="34, 20" control-tag="1088" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="376, 204" size="34, 20" control-tag="1089" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="416, 204" size="34, 20" control-tag="1090" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="456, 204" size="34, 20" control-tag="1091" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="496, 204" size="34, 20" control-tag="1092" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="536, 204" size="34, 20" control-tag="1093" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="576, 204" size="34, 20" control-tag="1094" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+            <view class="CTextButton" origin="616, 204" size="34, 20" control-tag="1095" gradient="step-off" gradient-highlighted="step-on" round-radius="3" title="" frame-color="#40404500" frame-color-highlighted="#FFAA40AA"/>
+
+            <!-- ======= Separator before transport ======= -->
+            <view class="CView" origin="656, 22" size="1, 215"
+                background-color="#3A3A3F88" background-color-draw-style="filled"/>
+
+            <!-- ======= TRANSPORT SECTION ======= -->
+            <view class="CViewContainer" origin="714, 18" size="166, 220"
+                background-color="#00000000" transparent="true">
+
+                <view class="CTextLabel" origin="0, 0" size="166, 13"
+                    title="TRANSPORT" font="~ NormalFontVerySmall" font-color="#C8A050AA"
+                    text-alignment="center" transparent="true"/>
+
+                <!-- Play/Stop -->
+                <view class="CTextButton" origin="38, 18" size="90, 30"
+                    control-tag="3"
+                    title="PLAY" font="~ NormalFontSmall" font-color="#FFFFFFCC"
+                    text-color="#FFFFFFCC" text-color-highlighted="#FFFFFFFF"
+                    gradient="play-off" gradient-highlighted="play-on"
+                    round-radius="4" frame-color="#40404566" frame-color-highlighted="#40CC40AA"
+                    kick-style="false"/>
+
+                <!-- Tempo section -->
+                <view class="CTextLabel" origin="0, 58" size="76, 11"
+                    title="TEMPO" font="~ NormalFontVerySmall" font-color="#969699CC"
+                    text-alignment="center" transparent="true"/>
+                <view class="CKnob" origin="16, 72" size="44, 44"
+                    control-tag="0" default-value="0.307"
+                    min-value="0" max-value="1"
+                    angle-start="35" angle-range="290"
+                    corona-color="#70B0E0CC" corona-inset="3"
+                    handle-color="#70B0E0FF" handle-line-width="2"
+                    circle-drawing="true" corona-drawing="true"
+                    corona-outline="true" corona-from-center="false"
+                    value-inset="4" zoom-factor="1.5"/>
+
+                <!-- Swing section -->
+                <view class="CTextLabel" origin="86, 58" size="76, 11"
+                    title="SWING" font="~ NormalFontVerySmall" font-color="#969699CC"
+                    text-alignment="center" transparent="true"/>
+                <view class="CKnob" origin="104, 72" size="44, 44"
+                    control-tag="1" default-value="0.0"
+                    min-value="0" max-value="1"
+                    angle-start="35" angle-range="290"
+                    corona-color="#70B0E0CC" corona-inset="3"
+                    handle-color="#70B0E0FF" handle-line-width="2"
+                    circle-drawing="true" corona-drawing="true"
+                    corona-outline="true" corona-from-center="false"
+                    value-inset="4" zoom-factor="1.5"/>
+
+                <!-- Master Volume -->
+                <view class="CTextLabel" origin="0, 130" size="166, 11"
+                    title="MASTER VOLUME" font="~ NormalFontVerySmall" font-color="#969699CC"
+                    text-alignment="center" transparent="true"/>
+                <view class="CKnob" origin="58, 144" size="50, 50"
+                    control-tag="2" default-value="0.8"
+                    min-value="0" max-value="1"
+                    angle-start="35" angle-range="290"
+                    corona-color="#FF8C14CC" corona-inset="4"
+                    handle-color="#FF8C14FF" handle-line-width="2.5"
+                    circle-drawing="true" corona-drawing="true"
+                    corona-outline="true" corona-from-center="false"
+                    value-inset="5" zoom-factor="1.5"/>
+
+            </view>
+
+        </view>
+
+    </template>
+
+</vstgui-ui-description>
