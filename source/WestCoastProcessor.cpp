@@ -16,7 +16,8 @@ namespace Steinberg::WestCoastDrumSynth {
 
 namespace {
 
-constexpr uint32 kStateVersion = 2;
+constexpr uint32 kStateVersion = 3;
+constexpr uint32 kStateVersion2 = 2;
 constexpr uint32 kLegacyStateVersion = 1;
 constexpr int32 kLegacyLaneCount = 4;
 
@@ -26,6 +27,14 @@ constexpr std::array<std::array<double, kLaneExtraParamCount>, kLaneCount> kLane
   {{0.20, 0.22, 0.38, 0.90, 0.20, 0.72}}, // Hat
   {{0.48, 0.34, 0.50, 0.58, 0.40, 0.52}}, // Perc A
   {{0.56, 0.30, 0.56, 0.66, 0.38, 0.60}}, // Perc B
+}};
+
+constexpr std::array<std::array<double, kLaneShapingParamCount>, kLaneCount> kLaneShapingDefaults {{
+  {{0.28, 0.30, 0.12, 0.40}}, // Kick
+  {{0.35, 0.55, 0.58, 0.72}}, // Snare
+  {{0.20, 0.70, 0.50, 0.55}}, // Hat
+  {{0.32, 0.42, 0.38, 0.50}}, // Perc A
+  {{0.30, 0.48, 0.40, 0.55}}, // Perc B
 }};
 
 inline double clamp01 (double x)
@@ -151,7 +160,6 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
       }
     }
 
-    // Legacy sessions had one percussion lane. Seed Perc B from Perc A.
     for (int32 param = 0; param < kLaneParamCount; ++param)
     {
       const auto offset = static_cast<LaneParamOffset> (param);
@@ -164,10 +172,52 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
     for (int32 lane = 0; lane < kLaneCount; ++lane)
     {
       for (int32 param = 0; param < kLaneExtraParamCount; ++param)
-      {
         setParam (laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (param)),
                   kLaneExtraDefaults[lane][param]);
-      }
+      for (int32 param = 0; param < kLaneShapingParamCount; ++param)
+        setParam (laneShapingParamID (lane, static_cast<LaneShapingParamOffset> (param)),
+                  kLaneShapingDefaults[lane][param]);
+    }
+
+    const auto& preset = getFactoryPresets ()[loadedPreset_];
+    sequencer_.setPattern (preset.pattern);
+    updateLaneFramesFromParameters ();
+    presetPending_ = false;
+    return kResultOk;
+  }
+
+  if (version == kStateVersion2)
+  {
+    constexpr int32 v2ParamCount =
+      kParamGlobalCount + (kLaneCount * kLaneParamCount) + (kLaneCount * kLaneExtraParamCount);
+    constexpr auto v2Ids = [] ()
+    {
+      std::array<Vst::ParamID, v2ParamCount> ids {};
+      int32 index = 0;
+      for (int32 i = 0; i < kParamGlobalCount; ++i)
+        ids[index++] = static_cast<Vst::ParamID> (i);
+      for (int32 lane = 0; lane < kLaneCount; ++lane)
+        for (int32 p = 0; p < kLaneParamCount; ++p)
+          ids[index++] = laneParamID (lane, static_cast<LaneParamOffset> (p));
+      for (int32 lane = 0; lane < kLaneCount; ++lane)
+        for (int32 p = 0; p < kLaneExtraParamCount; ++p)
+          ids[index++] = laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (p));
+      return ids;
+    }();
+
+    for (const auto id : v2Ids)
+    {
+      double normalized = 0.0;
+      if (!streamer.readDouble (normalized))
+        return kResultFalse;
+      setParam (id, normalized);
+    }
+
+    for (int32 lane = 0; lane < kLaneCount; ++lane)
+    {
+      for (int32 param = 0; param < kLaneShapingParamCount; ++param)
+        setParam (laneShapingParamID (lane, static_cast<LaneShapingParamOffset> (param)),
+                  kLaneShapingDefaults[lane][param]);
     }
 
     const auto& preset = getFactoryPresets ()[loadedPreset_];
@@ -385,6 +435,10 @@ void WestCoastProcessor::loadPresetByIndex (int32 presetIndex, Vst::IParameterCh
     setParam (laneExtraParamID (lane, kLaneNoiseTone), lanePreset.noiseTone);
     setParam (laneExtraParamID (lane, kLaneNoiseDecay), lanePreset.noiseDecay);
     setParam (laneExtraParamID (lane, kLaneSnap), lanePreset.snap);
+    setParam (laneShapingParamID (lane, kLaneTransientDecay), lanePreset.transientDecay);
+    setParam (laneShapingParamID (lane, kLaneTransientMix), lanePreset.transientMix);
+    setParam (laneShapingParamID (lane, kLaneNoiseFilterReso), lanePreset.noiseFilterReso);
+    setParam (laneShapingParamID (lane, kLaneNoiseEnvAmount), lanePreset.noiseEnvAmount);
 
     pushParamChange (outputChanges, laneParamID (lane, kLaneTune), lanePreset.tune);
     pushParamChange (outputChanges, laneParamID (lane, kLaneDecay), lanePreset.decay);
@@ -400,6 +454,10 @@ void WestCoastProcessor::loadPresetByIndex (int32 presetIndex, Vst::IParameterCh
     pushParamChange (outputChanges, laneExtraParamID (lane, kLaneNoiseTone), lanePreset.noiseTone);
     pushParamChange (outputChanges, laneExtraParamID (lane, kLaneNoiseDecay), lanePreset.noiseDecay);
     pushParamChange (outputChanges, laneExtraParamID (lane, kLaneSnap), lanePreset.snap);
+    pushParamChange (outputChanges, laneShapingParamID (lane, kLaneTransientDecay), lanePreset.transientDecay);
+    pushParamChange (outputChanges, laneShapingParamID (lane, kLaneTransientMix), lanePreset.transientMix);
+    pushParamChange (outputChanges, laneShapingParamID (lane, kLaneNoiseFilterReso), lanePreset.noiseFilterReso);
+    pushParamChange (outputChanges, laneShapingParamID (lane, kLaneNoiseEnvAmount), lanePreset.noiseEnvAmount);
   }
 
   sequencer_.setPattern (preset.pattern);
@@ -484,6 +542,13 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
     const double noiseDecay = getParam (laneExtraParamID (lane, kLaneNoiseDecay));
     frame.noiseDecaySeconds = (0.008 + (noiseDecay * noiseDecay * 1.3)) * kNoiseDecayScale[lane];
     frame.snapAmount = std::clamp (getParam (laneExtraParamID (lane, kLaneSnap)) * kSnapScale[lane], 0.0, 1.0);
+
+    const double transientDecayNorm = getParam (laneShapingParamID (lane, kLaneTransientDecay));
+    frame.transientDecaySeconds = 0.001 + (transientDecayNorm * transientDecayNorm * 0.049);
+    frame.transientMix = getParam (laneShapingParamID (lane, kLaneTransientMix));
+    frame.noiseFilterReso = getParam (laneShapingParamID (lane, kLaneNoiseFilterReso));
+    frame.noiseEnvAmount = getParam (laneShapingParamID (lane, kLaneNoiseEnvAmount));
+
     frame.driveAmount = getParam (laneParamID (lane, kLaneDrive));
     frame.level = std::pow (getParam (laneParamID (lane, kLaneLevel)), 1.15);
     frame.pan = (getParam (laneParamID (lane, kLanePan)) * 2.0) - 1.0;
