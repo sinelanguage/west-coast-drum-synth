@@ -15,6 +15,12 @@ on:
 permissions:
   contents: read
 
+env:
+  CFLAGS: ""
+  CXXFLAGS: ""
+  OBJCFLAGS: ""
+  OBJCXXFLAGS: ""
+
 jobs:
   build-macos-arm64:
     name: macOS ARM64 VST3
