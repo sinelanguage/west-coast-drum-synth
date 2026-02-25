@@ -377,7 +377,11 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
 IPlugView* PLUGIN_API WestCoastController::createView (FIDString name)
 {
   if (FIDStringsEqual (name, Vst::ViewType::kEditor))
-    return new VSTGUI::VST3Editor (this, "Editor", "WestCoastEditor.uidesc");
+  {
+    auto* editor = new VSTGUI::VST3Editor (this, "Editor", "WestCoastEditor.uidesc");
+    editor->setAllowedZoomFactors ({0.75, 0.85, 1.0, 1.15, 1.25, 1.5, 2.0});
+    return editor;
+  }
   return nullptr;
 }
 
