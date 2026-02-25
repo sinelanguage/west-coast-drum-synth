@@ -18,15 +18,9 @@ namespace Steinberg::WestCoastDrumSynth {
 namespace {
 
 constexpr uint32 kStateVersion = 4;
-<<<<<<< cursor/plugin-ui-and-audio-0a5c
 constexpr uint32 kV3StateVersion = 3;
 constexpr uint32 kPreviousStateVersion = 2;
 constexpr uint32 kLegacyStateVersion = 1;
-=======
-constexpr uint32 kPreviousStateVersion = 3;
-constexpr uint32 kLegacyStateVersion = 2;
-constexpr uint32 kVeryLegacyStateVersion = 1;
->>>>>>> main
 constexpr int32 kLegacyLaneCount = 4;
 constexpr int32 kPreviousGlobalParamCount = 6;
 
@@ -121,11 +115,7 @@ tresult PLUGIN_API WestCoastController::initialize (FUnknown* context)
     std::make_pair (0.0, 100.0), std::make_pair (0.0, 100.0), std::make_pair (0.0, 100.0),
     std::make_pair (0.0, 100.0), std::make_pair (-100.0, 100.0),
   };
-<<<<<<< cursor/plugin-ui-and-audio-0a5c
   const std::array<double, kLaneParamCount> laneDefaults {0.0, 0.50, 40.0, 35.0, 40.0, 18.0, 75.0, 0.0};
-=======
-  const std::array<double, kLaneParamCount> laneDefaults {0.0, 0.50, 40.0, 35.0, 28.0, 18.0, 72.0, 0.0};
->>>>>>> main
 
   for (int32 lane = 0; lane < kLaneCount; ++lane)
   {
@@ -263,7 +253,6 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
     }
   };
 
-<<<<<<< cursor/plugin-ui-and-audio-0a5c
   const auto applyFilterDefaults = [this] () {
     for (int32 lane = 0; lane < kLaneCount; ++lane)
     {
@@ -276,9 +265,6 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
   };
 
   if (version == kLegacyStateVersion)
-=======
-  if (version == kVeryLegacyStateVersion)
->>>>>>> main
   {
     for (int32 param = 0; param < kPreviousGlobalParamCount; ++param)
     {
@@ -314,14 +300,8 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
         setParamNormalized (laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (parameterOffset)),
                             kLaneExtraDefaults[lane][parameterOffset]);
     }
-<<<<<<< cursor/plugin-ui-and-audio-0a5c
     applyMacroDefaults ();
     applyFilterDefaults ();
-=======
-    setParamNormalized (kParamOscFilterCutoff, 0.20);
-    setParamNormalized (kParamOscFilterResonance, 0.34);
-    setParamNormalized (kParamOscFilterEnv, 0.46);
->>>>>>> main
     return kResultOk;
   }
 
@@ -386,9 +366,7 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
         return kResultFalse;
       setParamNormalized (id, value);
     }
-<<<<<<< cursor/plugin-ui-and-audio-0a5c
     applyFilterDefaults ();
-=======
     applyMacroDefaults ();
     setParamNormalized (kParamOscFilterCutoff, 0.20);
     setParamNormalized (kParamOscFilterResonance, 0.34);
@@ -429,7 +407,6 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
     setParamNormalized (kParamOscFilterCutoff, 0.20);
     setParamNormalized (kParamOscFilterResonance, 0.34);
     setParamNormalized (kParamOscFilterEnv, 0.46);
->>>>>>> main
     return kResultOk;
   }
 
@@ -451,15 +428,10 @@ IPlugView* PLUGIN_API WestCoastController::createView (FIDString name)
 {
   if (FIDStringsEqual (name, Vst::ViewType::kEditor))
   {
-<<<<<<< cursor/plugin-ui-and-audio-0a5c
-    auto* editor = new VSTGUI::VST3Editor (this, "Editor", "WestCoastEditor.uidesc");
-    editor->setAllowedZoomFactors ({0.75, 0.85, 1.0, 1.15, 1.25, 1.5, 2.0});
-=======
     auto* editor = new VSTGUI::AspectRatioVST3Editor (this, "Editor", "WestCoastEditor.uidesc");
     editor->setMinZoomFactor (0.70);
     editor->setEditorSizeConstrains (VSTGUI::CPoint (1113., 672.), VSTGUI::CPoint (3180., 1920.));
     editor->setAllowedZoomFactors ({0.75, 0.85, 1.0, 1.15, 1.3, 1.5, 1.75, 2.0});
->>>>>>> main
     return editor;
   }
   return nullptr;
