@@ -26,12 +26,18 @@ struct NormalizedLanePreset {
   double transientMix {0.40};
   double noiseFilterReso {0.35};
   double noiseEnvAmount {0.50};
+  double oscFilterCutoff {0.65};
+  double oscFilterRes {0.08};
+  double oscFilterEnv {0.35};
+  double transFilterCutoff {0.70};
+  double transFilterRes {0.05};
+  double transFilterEnv {0.40};
 };
 
 struct FactoryPreset {
   std::string_view name;
   double master {0.8};
-  double internalTempo {0.5}; // Normalized 0..1, mapped to 60..180 BPM.
+  double internalTempo {0.5};
   double swing {0.12};
   std::array<NormalizedLanePreset, kLaneCount> lanes {};
   PatternGrid pattern {};
