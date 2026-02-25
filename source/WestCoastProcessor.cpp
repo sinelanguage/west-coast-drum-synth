@@ -17,7 +17,7 @@ namespace Steinberg::WestCoastDrumSynth {
 namespace {
 
 constexpr uint32 kStateVersion = 3;
-constexpr uint32 kStateVersion2 = 2;
+constexpr uint32 kPreviousStateVersion = 2;
 constexpr uint32 kLegacyStateVersion = 1;
 constexpr int32 kLegacyLaneCount = 4;
 
@@ -29,12 +29,12 @@ constexpr std::array<std::array<double, kLaneExtraParamCount>, kLaneCount> kLane
   {{0.56, 0.30, 0.56, 0.66, 0.38, 0.60}}, // Perc B
 }};
 
-constexpr std::array<std::array<double, kLaneShapingParamCount>, kLaneCount> kLaneShapingDefaults {{
-  {{0.28, 0.30, 0.12, 0.40}}, // Kick
-  {{0.35, 0.55, 0.58, 0.72}}, // Snare
-  {{0.20, 0.70, 0.50, 0.55}}, // Hat
-  {{0.32, 0.42, 0.38, 0.50}}, // Perc A
-  {{0.30, 0.48, 0.40, 0.55}}, // Perc B
+constexpr std::array<std::array<double, kLaneMacroParamCount>, kLaneCount> kLaneMacroDefaults {{
+  {{0.28, 0.44, 0.34, 0.56}}, // Kick
+  {{0.38, 0.56, 0.50, 0.72}}, // Snare
+  {{0.20, 0.36, 0.66, 0.86}}, // Hat
+  {{0.34, 0.46, 0.42, 0.58}}, // Perc A
+  {{0.30, 0.48, 0.46, 0.62}}, // Perc B
 }};
 
 inline double clamp01 (double x)
@@ -139,6 +139,17 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
     return kResultFalse;
   loadedPreset_ = std::clamp (savedPreset, 0, kFactoryPresetCount - 1);
 
+  const auto applyMacroDefaults = [this] () {
+    for (int32 lane = 0; lane < kLaneCount; ++lane)
+    {
+      for (int32 parameterOffset = 0; parameterOffset < kLaneMacroParamCount; ++parameterOffset)
+      {
+        setParam (laneMacroParamID (lane, static_cast<LaneMacroParamOffset> (parameterOffset)),
+                  kLaneMacroDefaults[lane][parameterOffset]);
+      }
+    }
+  };
+
   if (version == kLegacyStateVersion)
   {
     for (int32 param = 0; param < kParamGlobalCount; ++param)
@@ -219,7 +230,48 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
         setParam (laneShapingParamID (lane, static_cast<LaneShapingParamOffset> (param)),
                   kLaneShapingDefaults[lane][param]);
     }
+    applyMacroDefaults ();
 
+    const auto& preset = getFactoryPresets ()[loadedPreset_];
+    sequencer_.setPattern (preset.pattern);
+    updateLaneFramesFromParameters ();
+    presetPending_ = false;
+    return kResultOk;
+  }
+
+  if (version == kPreviousStateVersion)
+  {
+    for (int32 param = 0; param < kParamGlobalCount; ++param)
+    {
+      double normalized = 0.0;
+      if (!streamer.readDouble (normalized))
+        return kResultFalse;
+      setParam (static_cast<Vst::ParamID> (param), normalized);
+    }
+
+    for (int32 lane = 0; lane < kLaneCount; ++lane)
+    {
+      for (int32 param = 0; param < kLaneParamCount; ++param)
+      {
+        double normalized = 0.0;
+        if (!streamer.readDouble (normalized))
+          return kResultFalse;
+        setParam (laneParamID (lane, static_cast<LaneParamOffset> (param)), normalized);
+      }
+    }
+
+    for (int32 lane = 0; lane < kLaneCount; ++lane)
+    {
+      for (int32 param = 0; param < kLaneExtraParamCount; ++param)
+      {
+        double normalized = 0.0;
+        if (!streamer.readDouble (normalized))
+          return kResultFalse;
+        setParam (laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (param)), normalized);
+      }
+    }
+
+    applyMacroDefaults ();
     const auto& preset = getFactoryPresets ()[loadedPreset_];
     sequencer_.setPattern (preset.pattern);
     updateLaneFramesFromParameters ();
@@ -420,6 +472,10 @@ void WestCoastProcessor::loadPresetByIndex (int32 presetIndex, Vst::IParameterCh
   for (int32 lane = 0; lane < kLaneCount; ++lane)
   {
     const auto& lanePreset = preset.lanes[lane];
+    const double transientDecayMacro = std::clamp (0.18 + (lanePreset.decay * 0.62), 0.0, 1.0);
+    const double transientMixMacro = std::clamp (0.24 + (lanePreset.transientAttack * 0.70), 0.0, 1.0);
+    const double noiseResMacro = std::clamp (0.20 + (lanePreset.snap * 0.68), 0.0, 1.0);
+    const double noiseEnvMacro = std::clamp (0.28 + (lanePreset.noiseDecay * 0.56), 0.0, 1.0);
 
     setParam (laneParamID (lane, kLaneTune), lanePreset.tune);
     setParam (laneParamID (lane, kLaneDecay), lanePreset.decay);
@@ -435,10 +491,10 @@ void WestCoastProcessor::loadPresetByIndex (int32 presetIndex, Vst::IParameterCh
     setParam (laneExtraParamID (lane, kLaneNoiseTone), lanePreset.noiseTone);
     setParam (laneExtraParamID (lane, kLaneNoiseDecay), lanePreset.noiseDecay);
     setParam (laneExtraParamID (lane, kLaneSnap), lanePreset.snap);
-    setParam (laneShapingParamID (lane, kLaneTransientDecay), lanePreset.transientDecay);
-    setParam (laneShapingParamID (lane, kLaneTransientMix), lanePreset.transientMix);
-    setParam (laneShapingParamID (lane, kLaneNoiseFilterReso), lanePreset.noiseFilterReso);
-    setParam (laneShapingParamID (lane, kLaneNoiseEnvAmount), lanePreset.noiseEnvAmount);
+    setParam (laneMacroParamID (lane, kLaneTransientDecay), transientDecayMacro);
+    setParam (laneMacroParamID (lane, kLaneTransientMix), transientMixMacro);
+    setParam (laneMacroParamID (lane, kLaneNoiseResonance), noiseResMacro);
+    setParam (laneMacroParamID (lane, kLaneNoiseEnvAmount), noiseEnvMacro);
 
     pushParamChange (outputChanges, laneParamID (lane, kLaneTune), lanePreset.tune);
     pushParamChange (outputChanges, laneParamID (lane, kLaneDecay), lanePreset.decay);
@@ -454,10 +510,10 @@ void WestCoastProcessor::loadPresetByIndex (int32 presetIndex, Vst::IParameterCh
     pushParamChange (outputChanges, laneExtraParamID (lane, kLaneNoiseTone), lanePreset.noiseTone);
     pushParamChange (outputChanges, laneExtraParamID (lane, kLaneNoiseDecay), lanePreset.noiseDecay);
     pushParamChange (outputChanges, laneExtraParamID (lane, kLaneSnap), lanePreset.snap);
-    pushParamChange (outputChanges, laneShapingParamID (lane, kLaneTransientDecay), lanePreset.transientDecay);
-    pushParamChange (outputChanges, laneShapingParamID (lane, kLaneTransientMix), lanePreset.transientMix);
-    pushParamChange (outputChanges, laneShapingParamID (lane, kLaneNoiseFilterReso), lanePreset.noiseFilterReso);
-    pushParamChange (outputChanges, laneShapingParamID (lane, kLaneNoiseEnvAmount), lanePreset.noiseEnvAmount);
+    pushParamChange (outputChanges, laneMacroParamID (lane, kLaneTransientDecay), transientDecayMacro);
+    pushParamChange (outputChanges, laneMacroParamID (lane, kLaneTransientMix), transientMixMacro);
+    pushParamChange (outputChanges, laneMacroParamID (lane, kLaneNoiseResonance), noiseResMacro);
+    pushParamChange (outputChanges, laneMacroParamID (lane, kLaneNoiseEnvAmount), noiseEnvMacro);
   }
 
   sequencer_.setPattern (preset.pattern);
@@ -510,8 +566,12 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
     LaneCharacter::Kick, LaneCharacter::Snare, LaneCharacter::Hat, LaneCharacter::PercA, LaneCharacter::PercB};
   static constexpr std::array<double, kLaneCount> kPitchEnvScale {1.0, 0.58, 0.24, 0.64, 0.70};
   static constexpr std::array<double, kLaneCount> kTransientScale {1.0, 0.96, 0.62, 0.86, 0.92};
+  static constexpr std::array<double, kLaneCount> kTransientDecayScale {1.0, 1.22, 0.62, 0.94, 1.02};
+  static constexpr std::array<double, kLaneCount> kTransientMixScale {1.0, 1.10, 0.82, 0.96, 1.0};
   static constexpr std::array<double, kLaneCount> kNoiseScale {0.74, 1.85, 1.28, 1.14, 1.24};
   static constexpr std::array<double, kLaneCount> kNoiseDecayScale {0.75, 1.70, 0.90, 1.18, 1.26};
+  static constexpr std::array<double, kLaneCount> kNoiseResScale {0.86, 1.00, 1.18, 0.94, 1.02};
+  static constexpr std::array<double, kLaneCount> kNoiseEnvScale {0.82, 1.00, 1.26, 0.94, 1.06};
   static constexpr std::array<double, kLaneCount> kSnapScale {0.24, 1.0, 0.86, 0.58, 0.64};
 
   for (int32 lane = 0; lane < kLaneCount; ++lane)
@@ -538,9 +598,21 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
     frame.transientAmount = std::clamp (std::pow (getParam (laneExtraParamID (lane, kLaneTransientAttack)), 0.72) *
                                           kTransientScale[lane],
                                         0.0, 1.0);
+    const double transientDecay = getParam (laneMacroParamID (lane, kLaneTransientDecay));
+    frame.transientDecaySeconds =
+      std::clamp ((0.002 + (transientDecay * transientDecay * 0.40)) * kTransientDecayScale[lane], 0.0015, 0.5);
+    const double transientMix = getParam (laneMacroParamID (lane, kLaneTransientMix));
+    frame.transientMix =
+      std::clamp (std::pow (transientMix, 0.82) * 1.25 * kTransientMixScale[lane], 0.0, 1.4);
     frame.noiseTone = (getParam (laneExtraParamID (lane, kLaneNoiseTone)) * 2.0) - 1.0;
     const double noiseDecay = getParam (laneExtraParamID (lane, kLaneNoiseDecay));
     frame.noiseDecaySeconds = (0.008 + (noiseDecay * noiseDecay * 1.3)) * kNoiseDecayScale[lane];
+    frame.noiseResonance =
+      std::clamp ((0.08 + (getParam (laneMacroParamID (lane, kLaneNoiseResonance)) * 0.86)) * kNoiseResScale[lane],
+                  0.0, 0.98);
+    frame.noiseEnvAmount =
+      std::clamp ((0.20 + (getParam (laneMacroParamID (lane, kLaneNoiseEnvAmount)) * 1.20)) * kNoiseEnvScale[lane],
+                  0.0, 1.5);
     frame.snapAmount = std::clamp (getParam (laneExtraParamID (lane, kLaneSnap)) * kSnapScale[lane], 0.0, 1.0);
 
     const double transientDecayNorm = getParam (laneShapingParamID (lane, kLaneTransientDecay));

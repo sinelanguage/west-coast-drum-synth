@@ -42,25 +42,28 @@ enum LaneExtraParamOffset : int32 {
   kLaneExtraParamCount
 };
 
-enum LaneShapingParamOffset : int32 {
+enum LaneMacroParamOffset : int32 {
   kLaneTransientDecay = 0,
   kLaneTransientMix,
-  kLaneNoiseFilterReso,
+  kLaneNoiseResonance,
   kLaneNoiseEnvAmount,
-  kLaneShapingParamCount
+  kLaneMacroParamCount
 };
 
 constexpr Vst::ParamID kLaneParamBase = 100;
 constexpr Vst::ParamID kLaneExtraParamBase = 200;
-constexpr Vst::ParamID kLaneShapingParamBase = 300;
+constexpr Vst::ParamID kLaneMacroParamBase = 300;
 constexpr Vst::ParamID kLaneCoreMaxParamId = kLaneParamBase + (kLaneCount * kLaneParamCount) - 1;
 constexpr Vst::ParamID kLaneExtraMaxParamId = kLaneExtraParamBase + (kLaneCount * kLaneExtraParamCount) - 1;
-constexpr Vst::ParamID kLaneShapingMaxParamId = kLaneShapingParamBase + (kLaneCount * kLaneShapingParamCount) - 1;
-constexpr Vst::ParamID kMaxParamId = kLaneShapingMaxParamId;
+constexpr Vst::ParamID kLaneMacroMaxParamId = kLaneMacroParamBase + (kLaneCount * kLaneMacroParamCount) - 1;
+constexpr Vst::ParamID kCoreOrExtraMaxParamId =
+  (kLaneCoreMaxParamId > kLaneExtraMaxParamId) ? kLaneCoreMaxParamId : kLaneExtraMaxParamId;
+constexpr Vst::ParamID kMaxParamId =
+  (kCoreOrExtraMaxParamId > kLaneMacroMaxParamId) ? kCoreOrExtraMaxParamId : kLaneMacroMaxParamId;
 constexpr int32 kParameterStateSize = kMaxParamId + 1;
 constexpr int32 kTotalParameterCount =
   kParamGlobalCount + (kLaneCount * kLaneParamCount) + (kLaneCount * kLaneExtraParamCount) +
-  (kLaneCount * kLaneShapingParamCount);
+  (kLaneCount * kLaneMacroParamCount);
 
 inline constexpr Vst::ParamID laneParamID (int32 lane, LaneParamOffset offset)
 {
@@ -105,18 +108,23 @@ inline constexpr int32 laneExtraOffsetFromParamID (Vst::ParamID paramId)
   return (paramId - kLaneExtraParamBase) % kLaneExtraParamCount;
 }
 
-inline constexpr int32 laneFromShapingParamID (Vst::ParamID paramId)
+inline constexpr Vst::ParamID laneMacroParamID (int32 lane, LaneMacroParamOffset offset)
 {
-  if (paramId < kLaneShapingParamBase || paramId > kLaneShapingMaxParamId)
-    return -1;
-  return (paramId - kLaneShapingParamBase) / kLaneShapingParamCount;
+  return kLaneMacroParamBase + (lane * kLaneMacroParamCount) + offset;
 }
 
-inline constexpr int32 laneShapingOffsetFromParamID (Vst::ParamID paramId)
+inline constexpr int32 laneFromMacroParamID (Vst::ParamID paramId)
 {
-  if (paramId < kLaneShapingParamBase || paramId > kLaneShapingMaxParamId)
+  if (paramId < kLaneMacroParamBase || paramId > kLaneMacroMaxParamId)
     return -1;
-  return (paramId - kLaneShapingParamBase) % kLaneShapingParamCount;
+  return (paramId - kLaneMacroParamBase) / kLaneMacroParamCount;
+}
+
+inline constexpr int32 laneMacroOffsetFromParamID (Vst::ParamID paramId)
+{
+  if (paramId < kLaneMacroParamBase || paramId > kLaneMacroMaxParamId)
+    return -1;
+  return (paramId - kLaneMacroParamBase) % kLaneMacroParamCount;
 }
 
 inline constexpr std::array<Vst::ParamID, kTotalParameterCount> allParameterIds ()
@@ -137,8 +145,8 @@ inline constexpr std::array<Vst::ParamID, kTotalParameterCount> allParameterIds 
   }
   for (int32 lane = 0; lane < kLaneCount; ++lane)
   {
-    for (int32 param = 0; param < kLaneShapingParamCount; ++param)
-      ids[index++] = laneShapingParamID (lane, static_cast<LaneShapingParamOffset> (param));
+    for (int32 param = 0; param < kLaneMacroParamCount; ++param)
+      ids[index++] = laneMacroParamID (lane, static_cast<LaneMacroParamOffset> (param));
   }
   return ids;
 }

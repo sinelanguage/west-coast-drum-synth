@@ -18,7 +18,7 @@ namespace Steinberg::WestCoastDrumSynth {
 namespace {
 
 constexpr uint32 kStateVersion = 3;
-constexpr uint32 kStateVersion2 = 2;
+constexpr uint32 kPreviousStateVersion = 2;
 constexpr uint32 kLegacyStateVersion = 1;
 constexpr int32 kLegacyLaneCount = 4;
 
@@ -30,12 +30,12 @@ constexpr std::array<std::array<double, kLaneExtraParamCount>, kLaneCount> kLane
   {{0.56, 0.30, 0.56, 0.66, 0.38, 0.60}}, // Perc B
 }};
 
-constexpr std::array<std::array<double, kLaneShapingParamCount>, kLaneCount> kLaneShapingDefaults {{
-  {{0.28, 0.30, 0.12, 0.40}}, // Kick: short click, mild mix, low reso, moderate env
-  {{0.35, 0.55, 0.58, 0.72}}, // Snare: medium click, mid mix, high reso, strong env
-  {{0.20, 0.70, 0.50, 0.55}}, // Hat: short click, noisy mix, mid reso, mid env
-  {{0.32, 0.42, 0.38, 0.50}}, // Perc A
-  {{0.30, 0.48, 0.40, 0.55}}, // Perc B
+constexpr std::array<std::array<double, kLaneMacroParamCount>, kLaneCount> kLaneMacroDefaults {{
+  {{0.28, 0.44, 0.34, 0.56}}, // Kick
+  {{0.38, 0.56, 0.50, 0.72}}, // Snare
+  {{0.20, 0.36, 0.66, 0.86}}, // Hat
+  {{0.34, 0.46, 0.42, 0.58}}, // Perc A
+  {{0.30, 0.48, 0.46, 0.62}}, // Perc B
 }};
 
 UString128 toString128 (const char* ascii)
@@ -141,31 +141,32 @@ tresult PLUGIN_API WestCoastController::initialize (FUnknown* context)
     }
   }
 
-  const std::array<std::array<const char*, kLaneShapingParamCount>, kLaneCount> laneShapingTitles {{
-    {{"Kick Atk Decay", "Kick Atk Mix", "Kick Noise Reso", "Kick Noise Env"}},
-    {{"Snare Atk Decay", "Snare Atk Mix", "Snare Noise Reso", "Snare Noise Env"}},
-    {{"Hat Atk Decay", "Hat Atk Mix", "Hat Noise Reso", "Hat Noise Env"}},
-    {{"Perc A Atk Decay", "Perc A Atk Mix", "Perc A Noise Reso", "Perc A Noise Env"}},
-    {{"Perc B Atk Decay", "Perc B Atk Mix", "Perc B Noise Reso", "Perc B Noise Env"}},
+  const std::array<std::array<const char*, kLaneMacroParamCount>, kLaneCount> laneMacroTitles {{
+    {{"Kick Transient Decay", "Kick Transient Mix", "Kick Noise Resonance", "Kick Noise Env"}},
+    {{"Snare Transient Decay", "Snare Transient Mix", "Snare Noise Resonance", "Snare Noise Env"}},
+    {{"Hat Transient Decay", "Hat Transient Mix", "Hat Noise Resonance", "Hat Noise Env"}},
+    {{"Perc A Transient Decay", "Perc A Transient Mix", "Perc A Noise Resonance", "Perc A Noise Env"}},
+    {{"Perc B Transient Decay", "Perc B Transient Mix", "Perc B Noise Resonance", "Perc B Noise Env"}},
   }};
-  const std::array<const char*, kLaneShapingParamCount> laneShapingUnits {"ms", "%", "%", "%"};
-  const std::array<std::pair<double, double>, kLaneShapingParamCount> laneShapingRanges {
-    std::make_pair (1.0, 50.0), std::make_pair (0.0, 100.0),
-    std::make_pair (0.0, 100.0), std::make_pair (0.0, 100.0),
+  const std::array<const char*, kLaneMacroParamCount> laneMacroUnits {"ms", "%", "%", "%"};
+  const std::array<std::pair<double, double>, kLaneMacroParamCount> laneMacroRanges {
+    std::make_pair (2.0, 420.0),
+    std::make_pair (0.0, 140.0),
+    std::make_pair (0.0, 100.0),
+    std::make_pair (0.0, 100.0),
   };
 
   for (int32 lane = 0; lane < kLaneCount; ++lane)
   {
-    for (int32 parameterOffset = 0; parameterOffset < kLaneShapingParamCount; ++parameterOffset)
+    for (int32 parameterOffset = 0; parameterOffset < kLaneMacroParamCount; ++parameterOffset)
     {
-      const auto offset = static_cast<LaneShapingParamOffset> (parameterOffset);
-      const double minimum = laneShapingRanges[parameterOffset].first;
-      const double maximum = laneShapingRanges[parameterOffset].second;
-      const double normalizedDefault = kLaneShapingDefaults[lane][parameterOffset];
+      const auto offset = static_cast<LaneMacroParamOffset> (parameterOffset);
+      const double minimum = laneMacroRanges[parameterOffset].first;
+      const double maximum = laneMacroRanges[parameterOffset].second;
+      const double normalizedDefault = kLaneMacroDefaults[lane][parameterOffset];
       const double defaultPlain = minimum + (normalizedDefault * (maximum - minimum));
-      parameters.addParameter (makeRangeParam (laneShapingTitles[lane][parameterOffset],
-                                               laneShapingParamID (lane, offset),
-                                               laneShapingUnits[parameterOffset], minimum, maximum, defaultPlain));
+      parameters.addParameter (makeRangeParam (laneMacroTitles[lane][parameterOffset], laneMacroParamID (lane, offset),
+                                               laneMacroUnits[parameterOffset], minimum, maximum, defaultPlain));
     }
   }
 
@@ -190,6 +191,17 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
   int32 ignoredPreset = 0;
   if (!streamer.readInt32 (ignoredPreset))
     return kResultFalse;
+
+  const auto applyMacroDefaults = [this] () {
+    for (int32 lane = 0; lane < kLaneCount; ++lane)
+    {
+      for (int32 parameterOffset = 0; parameterOffset < kLaneMacroParamCount; ++parameterOffset)
+      {
+        setParamNormalized (laneMacroParamID (lane, static_cast<LaneMacroParamOffset> (parameterOffset)),
+                            kLaneMacroDefaults[lane][parameterOffset]);
+      }
+    }
+  };
 
   if (version == kLegacyStateVersion)
   {
@@ -266,6 +278,43 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
         setParamNormalized (laneShapingParamID (lane, static_cast<LaneShapingParamOffset> (parameterOffset)),
                             kLaneShapingDefaults[lane][parameterOffset]);
     }
+    applyMacroDefaults ();
+    return kResultOk;
+  }
+
+  if (version == kPreviousStateVersion)
+  {
+    for (int32 param = 0; param < kParamGlobalCount; ++param)
+    {
+      double value = 0.0;
+      if (!streamer.readDouble (value))
+        return kResultFalse;
+      setParamNormalized (static_cast<Vst::ParamID> (param), value);
+    }
+
+    for (int32 lane = 0; lane < kLaneCount; ++lane)
+    {
+      for (int32 parameterOffset = 0; parameterOffset < kLaneParamCount; ++parameterOffset)
+      {
+        double value = 0.0;
+        if (!streamer.readDouble (value))
+          return kResultFalse;
+        setParamNormalized (laneParamID (lane, static_cast<LaneParamOffset> (parameterOffset)), value);
+      }
+    }
+
+    for (int32 lane = 0; lane < kLaneCount; ++lane)
+    {
+      for (int32 parameterOffset = 0; parameterOffset < kLaneExtraParamCount; ++parameterOffset)
+      {
+        double value = 0.0;
+        if (!streamer.readDouble (value))
+          return kResultFalse;
+        setParamNormalized (laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (parameterOffset)), value);
+      }
+    }
+
+    applyMacroDefaults ();
     return kResultOk;
   }
 

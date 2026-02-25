@@ -41,8 +41,11 @@ void DrumVoice::trigger (const LaneFrame& frame)
   frame_.frequencyHz = std::clamp (frame_.frequencyHz, 20.0, 15000.0);
   frame_.pitchEnvAmount = clamp01 (frame_.pitchEnvAmount);
   frame_.transientAmount = clamp01 (frame_.transientAmount);
+  frame_.transientMix = std::clamp (frame_.transientMix, 0.0, 1.4);
   frame_.snapAmount = clamp01 (frame_.snapAmount);
   frame_.noiseTone = std::clamp (frame_.noiseTone, -1.0, 1.0);
+  frame_.noiseResonance = std::clamp (frame_.noiseResonance, 0.0, 0.98);
+  frame_.noiseEnvAmount = std::clamp (frame_.noiseEnvAmount, 0.0, 1.5);
   frame_.level = clamp01 (frame_.level);
   frame_.foldAmount = clamp01 (frame_.foldAmount);
   frame_.fmAmount = clamp01 (frame_.fmAmount);
@@ -55,12 +58,14 @@ void DrumVoice::trigger (const LaneFrame& frame)
   frame_.decaySeconds = std::clamp (frame_.decaySeconds, 0.01, 2.5);
   frame_.pitchEnvDecaySeconds = std::clamp (frame_.pitchEnvDecaySeconds, 0.004, 0.8);
   frame_.noiseDecaySeconds = std::clamp (frame_.noiseDecaySeconds, 0.004, 1.8);
+  frame_.transientDecaySeconds = std::clamp (frame_.transientDecaySeconds, 0.0015, 0.5);
 
   const double ampTau = frame_.decaySeconds;
   const double toneTau = std::max (0.01, frame_.decaySeconds * 0.33);
   const double pitchTau = frame_.pitchEnvDecaySeconds;
   const double noiseTau = frame_.noiseDecaySeconds;
-  const double transientTau = frame_.transientDecaySeconds;
+  const double transientTau =
+    std::clamp (frame_.transientDecaySeconds * (1.08 - (0.45 * frame_.snapAmount)), 0.0015, 0.5);
   ampDecayCoef_ = std::exp (-1.0 / (ampTau * sampleRate_));
   toneDecayCoef_ = std::exp (-1.0 / (toneTau * sampleRate_));
   pitchDecayCoef_ = std::exp (-1.0 / (pitchTau * sampleRate_));
@@ -127,9 +132,9 @@ double DrumVoice::process ()
   const double snappyEnv = std::pow (std::max (noiseEnv_, 0.0), snapExponent);
   const double noiseContour = ((1.0 - frame_.snapAmount) * noiseEnv_) + (frame_.snapAmount * snappyEnv);
   const double noiseCutoffBase = 280.0 + (toneBlend * 13000.0);
-  const double envMod = noiseContour * frame_.noiseEnvAmount * 3.2;
-  const double noiseCutoffEnv = std::clamp (noiseCutoffBase * (1.0 + envMod), 180.0, 18000.0);
-  const double noiseResonance = std::clamp (0.05 + (frame_.noiseFilterReso * 0.92), 0.0, 0.97);
+  const double noiseCutoffEnv =
+    std::clamp (noiseCutoffBase * (1.0 + (noiseContour * frame_.noiseEnvAmount * 2.9)), 180.0, 18000.0);
+  const double noiseResonance = std::clamp (frame_.noiseResonance + (frame_.snapAmount * 0.16), 0.0, 0.98);
   const double resonantNoise = processStateVariableLowpass (shapedNoise, noiseCutoffEnv, noiseResonance, noiseResLowState_,
                                                             noiseResBandState_);
   const double noise = resonantNoise * frame_.noiseAmount * noiseContour * kNoiseBlendGain[character];
@@ -138,7 +143,8 @@ double DrumVoice::process ()
   const double transientNoise = randomBipolar ();
   const double transientBlend = std::clamp (frame_.transientMix * kNoiseTransientBlend[character] * 2.0, 0.0, 1.0);
   const double transientCore = (transientOsc * (1.0 - transientBlend)) + (transientNoise * transientBlend);
-  const double transient = transientCore * transientEnv_ * std::pow (frame_.transientAmount, 0.75) * 1.75;
+  const double transientGain = std::pow (frame_.transientAmount, 0.75) * frame_.transientMix * 1.45;
+  const double transient = transientCore * transientEnv_ * transientGain;
 
   const double lpg = ampEnv_ * (0.40 + (0.60 * toneEnv_));
   const double drive = 1.0 + (frame_.driveAmount * 8.0);
