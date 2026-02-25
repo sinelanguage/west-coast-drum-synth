@@ -309,6 +309,9 @@
 		<control-tag name="Run" tag="3"/>
 		<control-tag name="FollowHost" tag="4"/>
 		<control-tag name="Preset" tag="5"/>
+		<control-tag name="OscFilterCutoff" tag="6"/>
+		<control-tag name="OscFilterResonance" tag="7"/>
+		<control-tag name="OscFilterEnv" tag="8"/>
 		<control-tag name="KickTune" tag="100"/>
 		<control-tag name="KickDecay" tag="101"/>
 		<control-tag name="KickFold" tag="102"/>
@@ -431,5 +434,17 @@
 		<control-tag name="PercBTransFltEnv" tag="429"/>
 	</control-tags>
 	<gradients>
+		<gradient name="Switch On">
+			<color-stop rgba="#f5b35fff" start="0"/>
+			<color-stop rgba="#b06f2aff" start="1"/>
+		</gradient>
+		<gradient name="Switch On Active">
+			<color-stop rgba="#6fe0ffff" start="0"/>
+			<color-stop rgba="#2d89b8ff" start="1"/>
+		</gradient>
+		<gradient name="Switch Off">
+			<color-stop rgba="#5a677bff" start="0"/>
+			<color-stop rgba="#303a4bff" start="1"/>
+		</gradient>
 	</gradients>
 </vstgui-ui-description>
