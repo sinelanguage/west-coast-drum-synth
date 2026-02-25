@@ -119,20 +119,21 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          python - <<'PY'
-          from pathlib import Path
+          $files = @(
+            "build/_deps/vst3sdk-src/cmake/modules/SMTG_PlatformToolset.cmake",
+            "build/_deps/vst3sdk-src/vstgui4/vstgui/cmake/modules/vstgui_init.cmake"
+          )
 
-          files = [
-              Path("build/_deps/vst3sdk-src/cmake/modules/SMTG_PlatformToolset.cmake"),
-              Path("build/_deps/vst3sdk-src/vstgui4/vstgui/cmake/modules/vstgui_init.cmake"),
-          ]
-
-          needle = '-Wno-multichar'
-          for path in files:
-              text = path.read_text()
-              if needle in text:
-                  path.write_text(text.replace(needle, ''))
-          PY
+          foreach ($file in $files) {
+            if (-not (Test-Path $file)) {
+              throw "Missing expected SDK file: $file"
+            }
+            $text = Get-Content -Path $file -Raw
+            $updated = $text -replace "-Wno-multichar", ""
+            if ($updated -ne $text) {
+              [System.IO.File]::WriteAllText((Resolve-Path $file), $updated, [System.Text.UTF8Encoding]::new($false))
+            }
+          }
 
       - name: Reconfigure after MSVC warning patch
         run: >
