@@ -236,10 +236,47 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
     for (int32 lane = 0; lane < kLaneCount; ++lane)
     {
       for (int32 parameterOffset = 0; parameterOffset < kLaneExtraParamCount; ++parameterOffset)
-      {
         setParamNormalized (laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (parameterOffset)),
                             kLaneExtraDefaults[lane][parameterOffset]);
-      }
+      for (int32 parameterOffset = 0; parameterOffset < kLaneShapingParamCount; ++parameterOffset)
+        setParamNormalized (laneShapingParamID (lane, static_cast<LaneShapingParamOffset> (parameterOffset)),
+                            kLaneShapingDefaults[lane][parameterOffset]);
+    }
+    return kResultOk;
+  }
+
+  if (version == kStateVersion2)
+  {
+    constexpr int32 v2ParamCount =
+      kParamGlobalCount + (kLaneCount * kLaneParamCount) + (kLaneCount * kLaneExtraParamCount);
+    constexpr auto v2Ids = [] ()
+    {
+      std::array<Vst::ParamID, v2ParamCount> ids {};
+      int32 index = 0;
+      for (int32 i = 0; i < kParamGlobalCount; ++i)
+        ids[index++] = static_cast<Vst::ParamID> (i);
+      for (int32 lane = 0; lane < kLaneCount; ++lane)
+        for (int32 p = 0; p < kLaneParamCount; ++p)
+          ids[index++] = laneParamID (lane, static_cast<LaneParamOffset> (p));
+      for (int32 lane = 0; lane < kLaneCount; ++lane)
+        for (int32 p = 0; p < kLaneExtraParamCount; ++p)
+          ids[index++] = laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (p));
+      return ids;
+    }();
+
+    for (const auto id : v2Ids)
+    {
+      double value = 0.0;
+      if (!streamer.readDouble (value))
+        return kResultFalse;
+      setParamNormalized (id, value);
+    }
+
+    for (int32 lane = 0; lane < kLaneCount; ++lane)
+    {
+      for (int32 parameterOffset = 0; parameterOffset < kLaneShapingParamCount; ++parameterOffset)
+        setParamNormalized (laneShapingParamID (lane, static_cast<LaneShapingParamOffset> (parameterOffset)),
+                            kLaneShapingDefaults[lane][parameterOffset]);
     }
     applyMacroDefaults ();
     return kResultOk;

@@ -51,6 +51,10 @@ void DrumVoice::trigger (const LaneFrame& frame)
   frame_.fmAmount = clamp01 (frame_.fmAmount);
   frame_.noiseAmount = std::clamp (frame_.noiseAmount, 0.0, 2.2);
   frame_.driveAmount = clamp01 (frame_.driveAmount);
+  frame_.transientDecaySeconds = std::clamp (frame_.transientDecaySeconds, 0.001, 0.05);
+  frame_.transientMix = clamp01 (frame_.transientMix);
+  frame_.noiseFilterReso = clamp01 (frame_.noiseFilterReso);
+  frame_.noiseEnvAmount = clamp01 (frame_.noiseEnvAmount);
   frame_.decaySeconds = std::clamp (frame_.decaySeconds, 0.01, 2.5);
   frame_.pitchEnvDecaySeconds = std::clamp (frame_.pitchEnvDecaySeconds, 0.004, 0.8);
   frame_.noiseDecaySeconds = std::clamp (frame_.noiseDecaySeconds, 0.004, 1.8);
@@ -137,7 +141,7 @@ double DrumVoice::process ()
 
   const double transientOsc = std::sin (transientPhase_);
   const double transientNoise = randomBipolar ();
-  const double transientBlend = kNoiseTransientBlend[character];
+  const double transientBlend = std::clamp (frame_.transientMix * kNoiseTransientBlend[character] * 2.0, 0.0, 1.0);
   const double transientCore = (transientOsc * (1.0 - transientBlend)) + (transientNoise * transientBlend);
   const double transientGain = std::pow (frame_.transientAmount, 0.75) * frame_.transientMix * 1.45;
   const double transient = transientCore * transientEnv_ * transientGain;

@@ -75,6 +75,11 @@ inline constexpr Vst::ParamID laneExtraParamID (int32 lane, LaneExtraParamOffset
   return kLaneExtraParamBase + (lane * kLaneExtraParamCount) + offset;
 }
 
+inline constexpr Vst::ParamID laneShapingParamID (int32 lane, LaneShapingParamOffset offset)
+{
+  return kLaneShapingParamBase + (lane * kLaneShapingParamCount) + offset;
+}
+
 inline constexpr int32 laneFromParamID (Vst::ParamID paramId)
 {
   if (paramId < kLaneParamBase || paramId > kLaneCoreMaxParamId)

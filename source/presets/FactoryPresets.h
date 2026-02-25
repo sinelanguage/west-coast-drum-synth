@@ -22,6 +22,10 @@ struct NormalizedLanePreset {
   double noiseTone {0.5};
   double noiseDecay {0.3};
   double snap {0.3};
+  double transientDecay {0.30};
+  double transientMix {0.40};
+  double noiseFilterReso {0.35};
+  double noiseEnvAmount {0.50};
 };
 
 struct FactoryPreset {
