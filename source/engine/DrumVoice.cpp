@@ -53,7 +53,6 @@ void DrumVoice::trigger (const LaneFrame& frame)
   frame_.driveAmount = clamp01 (frame_.driveAmount);
   frame_.transientDecaySeconds = std::clamp (frame_.transientDecaySeconds, 0.001, 0.05);
   frame_.transientMix = clamp01 (frame_.transientMix);
-  frame_.noiseFilterReso = clamp01 (frame_.noiseFilterReso);
   frame_.noiseEnvAmount = clamp01 (frame_.noiseEnvAmount);
   frame_.decaySeconds = std::clamp (frame_.decaySeconds, 0.01, 2.5);
   frame_.pitchEnvDecaySeconds = std::clamp (frame_.pitchEnvDecaySeconds, 0.004, 0.8);

@@ -185,9 +185,9 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
       for (int32 param = 0; param < kLaneExtraParamCount; ++param)
         setParam (laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (param)),
                   kLaneExtraDefaults[lane][param]);
-      for (int32 param = 0; param < kLaneShapingParamCount; ++param)
-        setParam (laneShapingParamID (lane, static_cast<LaneShapingParamOffset> (param)),
-                  kLaneShapingDefaults[lane][param]);
+      for (int32 param = 0; param < kLaneMacroParamCount; ++param)
+        setParam (laneMacroParamID (lane, static_cast<LaneMacroParamOffset> (param)),
+                  kLaneMacroDefaults[lane][param]);
     }
 
     const auto& preset = getFactoryPresets ()[loadedPreset_];
@@ -197,7 +197,7 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
     return kResultOk;
   }
 
-  if (version == kStateVersion2)
+  if (version == kPreviousStateVersion)
   {
     constexpr int32 v2ParamCount =
       kParamGlobalCount + (kLaneCount * kLaneParamCount) + (kLaneCount * kLaneExtraParamCount);
@@ -226,52 +226,12 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
 
     for (int32 lane = 0; lane < kLaneCount; ++lane)
     {
-      for (int32 param = 0; param < kLaneShapingParamCount; ++param)
-        setParam (laneShapingParamID (lane, static_cast<LaneShapingParamOffset> (param)),
-                  kLaneShapingDefaults[lane][param]);
+      for (int32 param = 0; param < kLaneMacroParamCount; ++param)
+        setParam (laneMacroParamID (lane, static_cast<LaneMacroParamOffset> (param)),
+                  kLaneMacroDefaults[lane][param]);
     }
     applyMacroDefaults ();
 
-    const auto& preset = getFactoryPresets ()[loadedPreset_];
-    sequencer_.setPattern (preset.pattern);
-    updateLaneFramesFromParameters ();
-    presetPending_ = false;
-    return kResultOk;
-  }
-
-  if (version == kPreviousStateVersion)
-  {
-    for (int32 param = 0; param < kParamGlobalCount; ++param)
-    {
-      double normalized = 0.0;
-      if (!streamer.readDouble (normalized))
-        return kResultFalse;
-      setParam (static_cast<Vst::ParamID> (param), normalized);
-    }
-
-    for (int32 lane = 0; lane < kLaneCount; ++lane)
-    {
-      for (int32 param = 0; param < kLaneParamCount; ++param)
-      {
-        double normalized = 0.0;
-        if (!streamer.readDouble (normalized))
-          return kResultFalse;
-        setParam (laneParamID (lane, static_cast<LaneParamOffset> (param)), normalized);
-      }
-    }
-
-    for (int32 lane = 0; lane < kLaneCount; ++lane)
-    {
-      for (int32 param = 0; param < kLaneExtraParamCount; ++param)
-      {
-        double normalized = 0.0;
-        if (!streamer.readDouble (normalized))
-          return kResultFalse;
-        setParam (laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (param)), normalized);
-      }
-    }
-
-    applyMacroDefaults ();
     const auto& preset = getFactoryPresets ()[loadedPreset_];
     sequencer_.setPattern (preset.pattern);
     updateLaneFramesFromParameters ();
@@ -614,12 +574,6 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
       std::clamp ((0.20 + (getParam (laneMacroParamID (lane, kLaneNoiseEnvAmount)) * 1.20)) * kNoiseEnvScale[lane],
                   0.0, 1.5);
     frame.snapAmount = std::clamp (getParam (laneExtraParamID (lane, kLaneSnap)) * kSnapScale[lane], 0.0, 1.0);
-
-    const double transientDecayNorm = getParam (laneShapingParamID (lane, kLaneTransientDecay));
-    frame.transientDecaySeconds = 0.001 + (transientDecayNorm * transientDecayNorm * 0.049);
-    frame.transientMix = getParam (laneShapingParamID (lane, kLaneTransientMix));
-    frame.noiseFilterReso = getParam (laneShapingParamID (lane, kLaneNoiseFilterReso));
-    frame.noiseEnvAmount = getParam (laneShapingParamID (lane, kLaneNoiseEnvAmount));
 
     frame.driveAmount = getParam (laneParamID (lane, kLaneDrive));
     frame.level = std::pow (getParam (laneParamID (lane, kLaneLevel)), 1.15);

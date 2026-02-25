@@ -29,10 +29,6 @@ struct LaneFrame {
   double noiseResonance {0.45};
   double noiseEnvAmount {0.55};
   double snapAmount {0.2};
-  double transientDecaySeconds {0.006};
-  double transientMix {0.5}; // 0 = pure sine click, 1 = pure noise click
-  double noiseFilterReso {0.3};
-  double noiseEnvAmount {0.5};
   double driveAmount {0.1};
   double level {0.7};
   double pan {0.0};

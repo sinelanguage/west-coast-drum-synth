@@ -238,14 +238,14 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
       for (int32 parameterOffset = 0; parameterOffset < kLaneExtraParamCount; ++parameterOffset)
         setParamNormalized (laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (parameterOffset)),
                             kLaneExtraDefaults[lane][parameterOffset]);
-      for (int32 parameterOffset = 0; parameterOffset < kLaneShapingParamCount; ++parameterOffset)
-        setParamNormalized (laneShapingParamID (lane, static_cast<LaneShapingParamOffset> (parameterOffset)),
-                            kLaneShapingDefaults[lane][parameterOffset]);
+      for (int32 parameterOffset = 0; parameterOffset < kLaneMacroParamCount; ++parameterOffset)
+        setParamNormalized (laneMacroParamID (lane, static_cast<LaneMacroParamOffset> (parameterOffset)),
+                            kLaneMacroDefaults[lane][parameterOffset]);
     }
     return kResultOk;
   }
 
-  if (version == kStateVersion2)
+  if (version == kPreviousStateVersion)
   {
     constexpr int32 v2ParamCount =
       kParamGlobalCount + (kLaneCount * kLaneParamCount) + (kLaneCount * kLaneExtraParamCount);
@@ -274,46 +274,10 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
 
     for (int32 lane = 0; lane < kLaneCount; ++lane)
     {
-      for (int32 parameterOffset = 0; parameterOffset < kLaneShapingParamCount; ++parameterOffset)
-        setParamNormalized (laneShapingParamID (lane, static_cast<LaneShapingParamOffset> (parameterOffset)),
-                            kLaneShapingDefaults[lane][parameterOffset]);
+      for (int32 parameterOffset = 0; parameterOffset < kLaneMacroParamCount; ++parameterOffset)
+        setParamNormalized (laneMacroParamID (lane, static_cast<LaneMacroParamOffset> (parameterOffset)),
+                            kLaneMacroDefaults[lane][parameterOffset]);
     }
-    applyMacroDefaults ();
-    return kResultOk;
-  }
-
-  if (version == kPreviousStateVersion)
-  {
-    for (int32 param = 0; param < kParamGlobalCount; ++param)
-    {
-      double value = 0.0;
-      if (!streamer.readDouble (value))
-        return kResultFalse;
-      setParamNormalized (static_cast<Vst::ParamID> (param), value);
-    }
-
-    for (int32 lane = 0; lane < kLaneCount; ++lane)
-    {
-      for (int32 parameterOffset = 0; parameterOffset < kLaneParamCount; ++parameterOffset)
-      {
-        double value = 0.0;
-        if (!streamer.readDouble (value))
-          return kResultFalse;
-        setParamNormalized (laneParamID (lane, static_cast<LaneParamOffset> (parameterOffset)), value);
-      }
-    }
-
-    for (int32 lane = 0; lane < kLaneCount; ++lane)
-    {
-      for (int32 parameterOffset = 0; parameterOffset < kLaneExtraParamCount; ++parameterOffset)
-      {
-        double value = 0.0;
-        if (!streamer.readDouble (value))
-          return kResultFalse;
-        setParamNormalized (laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (parameterOffset)), value);
-      }
-    }
-
     applyMacroDefaults ();
     return kResultOk;
   }
