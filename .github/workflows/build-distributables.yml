@@ -38,6 +38,7 @@ jobs:
           -DCMAKE_OSX_ARCHITECTURES=arm64
           -DCMAKE_C_FLAGS=
           -DCMAKE_CXX_FLAGS=
+          -DFETCHCONTENT_UPDATES_DISCONNECTED=ON
 
       - name: Relax VSTGUI warning policy on macOS
         run: |
@@ -68,6 +69,7 @@ jobs:
           -DCMAKE_OSX_ARCHITECTURES=arm64
           -DCMAKE_C_FLAGS=
           -DCMAKE_CXX_FLAGS=
+          -DFETCHCONTENT_UPDATES_DISCONNECTED=ON
 
       - name: Build plugin
         run: cmake --build build --target WestCoastDrumSynth -j3
@@ -111,6 +113,35 @@ jobs:
           -A x64
           -DCMAKE_C_FLAGS=
           -DCMAKE_CXX_FLAGS=
+          -DFETCHCONTENT_UPDATES_DISCONNECTED=ON
+
+      - name: Relax SDK warning flags for MSVC
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python - <<'PY'
+          from pathlib import Path
+
+          files = [
+              Path("build/_deps/vst3sdk-src/cmake/modules/SMTG_PlatformToolset.cmake"),
+              Path("build/_deps/vst3sdk-src/vstgui4/vstgui/cmake/modules/vstgui_init.cmake"),
+          ]
+
+          needle = '-Wno-multichar'
+          for path in files:
+              text = path.read_text()
+              if needle in text:
+                  path.write_text(text.replace(needle, ''))
+          PY
+
+      - name: Reconfigure after MSVC warning patch
+        run: >
+          cmake -S . -B build
+          -G "Visual Studio 17 2022"
+          -A x64
+          -DCMAKE_C_FLAGS=
+          -DCMAKE_CXX_FLAGS=
+          -DFETCHCONTENT_UPDATES_DISCONNECTED=ON
 
       - name: Build plugin
         run: cmake --build build --config Release --target WestCoastDrumSynth
