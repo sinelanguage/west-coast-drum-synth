@@ -22,11 +22,11 @@ constexpr uint32 kLegacyStateVersion = 1;
 constexpr int32 kLegacyLaneCount = 4;
 
 constexpr std::array<std::array<double, kLaneExtraParamCount>, kLaneCount> kLaneExtraDefaults {{
-  {{0.84, 0.30, 0.70, 0.38, 0.22, 0.18}}, // Kick
-  {{0.42, 0.44, 0.46, 0.66, 0.38, 0.80}}, // Snare
-  {{0.20, 0.22, 0.32, 0.90, 0.16, 0.68}}, // Hat
-  {{0.48, 0.34, 0.40, 0.58, 0.32, 0.46}}, // Perc A
-  {{0.56, 0.30, 0.46, 0.66, 0.28, 0.54}}, // Perc B
+  {{0.84, 0.30, 0.76, 0.36, 0.26, 0.24}}, // Kick
+  {{0.46, 0.48, 0.62, 0.72, 0.58, 0.84}}, // Snare
+  {{0.20, 0.22, 0.38, 0.90, 0.20, 0.72}}, // Hat
+  {{0.48, 0.34, 0.50, 0.58, 0.40, 0.52}}, // Perc A
+  {{0.56, 0.30, 0.56, 0.66, 0.38, 0.60}}, // Perc B
 }};
 
 UString128 toString128 (const char* ascii)
