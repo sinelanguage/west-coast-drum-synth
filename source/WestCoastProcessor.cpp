@@ -21,11 +21,11 @@ constexpr uint32 kLegacyStateVersion = 1;
 constexpr int32 kLegacyLaneCount = 4;
 
 constexpr std::array<std::array<double, kLaneExtraParamCount>, kLaneCount> kLaneExtraDefaults {{
-  {{0.84, 0.30, 0.70, 0.38, 0.22, 0.18}}, // Kick
-  {{0.42, 0.44, 0.46, 0.66, 0.38, 0.80}}, // Snare
-  {{0.20, 0.22, 0.32, 0.90, 0.16, 0.68}}, // Hat
-  {{0.48, 0.34, 0.40, 0.58, 0.32, 0.46}}, // Perc A
-  {{0.56, 0.30, 0.46, 0.66, 0.28, 0.54}}, // Perc B
+  {{0.84, 0.30, 0.76, 0.36, 0.26, 0.24}}, // Kick
+  {{0.46, 0.48, 0.62, 0.72, 0.58, 0.84}}, // Snare
+  {{0.20, 0.22, 0.38, 0.90, 0.20, 0.72}}, // Hat
+  {{0.48, 0.34, 0.50, 0.58, 0.40, 0.52}}, // Perc A
+  {{0.56, 0.30, 0.56, 0.66, 0.38, 0.60}}, // Perc B
 }};
 
 inline double clamp01 (double x)
@@ -451,8 +451,9 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
   static constexpr std::array<LaneCharacter, kLaneCount> kLaneCharacters {
     LaneCharacter::Kick, LaneCharacter::Snare, LaneCharacter::Hat, LaneCharacter::PercA, LaneCharacter::PercB};
   static constexpr std::array<double, kLaneCount> kPitchEnvScale {1.0, 0.58, 0.24, 0.64, 0.70};
-  static constexpr std::array<double, kLaneCount> kTransientScale {1.0, 0.72, 0.46, 0.62, 0.70};
-  static constexpr std::array<double, kLaneCount> kNoiseScale {0.48, 1.0, 1.16, 0.78, 0.88};
+  static constexpr std::array<double, kLaneCount> kTransientScale {1.0, 0.96, 0.62, 0.86, 0.92};
+  static constexpr std::array<double, kLaneCount> kNoiseScale {0.74, 1.85, 1.28, 1.14, 1.24};
+  static constexpr std::array<double, kLaneCount> kNoiseDecayScale {0.75, 1.70, 0.90, 1.18, 1.26};
   static constexpr std::array<double, kLaneCount> kSnapScale {0.24, 1.0, 0.86, 0.58, 0.64};
 
   for (int32 lane = 0; lane < kLaneCount; ++lane)
@@ -470,18 +471,18 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
 
     frame.foldAmount = getParam (laneParamID (lane, kLaneFold));
     frame.fmAmount = getParam (laneParamID (lane, kLaneFm));
-    frame.noiseAmount = getParam (laneParamID (lane, kLaneNoise)) * kNoiseScale[lane];
+    frame.noiseAmount = std::pow (getParam (laneParamID (lane, kLaneNoise)), 0.82) * kNoiseScale[lane];
     frame.pitchEnvAmount = std::clamp (getParam (laneExtraParamID (lane, kLanePitchEnvAmount)) *
                                          kPitchEnvScale[lane],
                                        0.0, 1.0);
     const double pitchDecay = getParam (laneExtraParamID (lane, kLanePitchEnvDecay));
     frame.pitchEnvDecaySeconds = 0.006 + (pitchDecay * pitchDecay * 0.55);
-    frame.transientAmount = std::clamp (getParam (laneExtraParamID (lane, kLaneTransientAttack)) *
+    frame.transientAmount = std::clamp (std::pow (getParam (laneExtraParamID (lane, kLaneTransientAttack)), 0.72) *
                                           kTransientScale[lane],
                                         0.0, 1.0);
     frame.noiseTone = (getParam (laneExtraParamID (lane, kLaneNoiseTone)) * 2.0) - 1.0;
     const double noiseDecay = getParam (laneExtraParamID (lane, kLaneNoiseDecay));
-    frame.noiseDecaySeconds = 0.008 + (noiseDecay * noiseDecay * 1.3);
+    frame.noiseDecaySeconds = (0.008 + (noiseDecay * noiseDecay * 1.3)) * kNoiseDecayScale[lane];
     frame.snapAmount = std::clamp (getParam (laneExtraParamID (lane, kLaneSnap)) * kSnapScale[lane], 0.0, 1.0);
     frame.driveAmount = getParam (laneParamID (lane, kLaneDrive));
     frame.level = std::pow (getParam (laneParamID (lane, kLaneLevel)), 1.15);

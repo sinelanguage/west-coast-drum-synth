@@ -26,6 +26,7 @@ constexpr std::array<double, 5> kTransientBaseHz {1700.0, 2500.0, 7000.0, 3100.0
 constexpr std::array<double, 5> kNoiseBlendGain {0.45, 1.0, 1.2, 0.72, 0.85};
 constexpr std::array<double, 5> kBodyGain {1.05, 0.70, 0.30, 0.88, 0.92};
 constexpr std::array<double, 5> kFmScale {1.0, 0.85, 0.40, 0.78, 0.85};
+constexpr std::array<double, 5> kNoiseTransientBlend {0.45, 0.75, 0.35, 0.58, 0.62};
 
 } // namespace
 
@@ -45,7 +46,7 @@ void DrumVoice::trigger (const LaneFrame& frame)
   frame_.level = clamp01 (frame_.level);
   frame_.foldAmount = clamp01 (frame_.foldAmount);
   frame_.fmAmount = clamp01 (frame_.fmAmount);
-  frame_.noiseAmount = clamp01 (frame_.noiseAmount);
+  frame_.noiseAmount = std::clamp (frame_.noiseAmount, 0.0, 2.2);
   frame_.driveAmount = clamp01 (frame_.driveAmount);
   frame_.decaySeconds = std::clamp (frame_.decaySeconds, 0.01, 2.5);
   frame_.pitchEnvDecaySeconds = std::clamp (frame_.pitchEnvDecaySeconds, 0.004, 0.8);
@@ -55,7 +56,8 @@ void DrumVoice::trigger (const LaneFrame& frame)
   const double toneTau = std::max (0.01, frame_.decaySeconds * 0.33);
   const double pitchTau = frame_.pitchEnvDecaySeconds;
   const double noiseTau = frame_.noiseDecaySeconds;
-  const double transientTau = 0.002 + ((1.0 - frame_.transientAmount) * 0.010);
+  const double transientTau =
+    0.002 + ((1.0 - frame_.transientAmount) * 0.010) + (frame_.decaySeconds * (0.01 + (0.02 * frame_.snapAmount)));
   ampDecayCoef_ = std::exp (-1.0 / (ampTau * sampleRate_));
   toneDecayCoef_ = std::exp (-1.0 / (toneTau * sampleRate_));
   pitchDecayCoef_ = std::exp (-1.0 / (pitchTau * sampleRate_));
@@ -105,6 +107,12 @@ double DrumVoice::process ()
   const double dynamicFold = frame_.foldAmount * (1.0 + (0.9 * toneEnv_));
   body = wavefold (body, dynamicFold);
 
+  const double bodyCutoffBase = std::clamp (frame_.frequencyHz * (2.0 + (frame_.foldAmount * 6.0)), 120.0, 12000.0);
+  const double bodyCutoffEnv =
+    std::clamp (bodyCutoffBase * (1.0 + (toneEnv_ * (0.85 + (0.9 * frame_.fmAmount)))), 120.0, 16000.0);
+  const double bodyResonance = std::clamp (0.08 + (0.58 * frame_.driveAmount) + (0.22 * frame_.foldAmount), 0.0, 0.95);
+  body = processStateVariableLowpass (body, bodyCutoffEnv, bodyResonance, bodyLowState_, bodyBandState_);
+
   const double rawNoise = randomBipolar ();
   noiseLowState_ += noiseLpCoef_ * (rawNoise - noiseLowState_);
   noiseHighState_ += noiseHpCoef_ * (rawNoise - noiseHighState_);
@@ -115,10 +123,18 @@ double DrumVoice::process ()
   const double snapExponent = std::clamp (0.85 - (frame_.snapAmount * 0.55), 0.25, 1.0);
   const double snappyEnv = std::pow (std::max (noiseEnv_, 0.0), snapExponent);
   const double noiseContour = ((1.0 - frame_.snapAmount) * noiseEnv_) + (frame_.snapAmount * snappyEnv);
-  const double noise = shapedNoise * frame_.noiseAmount * noiseContour * kNoiseBlendGain[character];
+  const double noiseCutoffBase = 280.0 + (toneBlend * 13000.0);
+  const double noiseCutoffEnv = std::clamp (noiseCutoffBase * (1.0 + (noiseContour * frame_.snapAmount * 2.8)), 180.0, 18000.0);
+  const double noiseResonance = std::clamp (0.10 + (frame_.snapAmount * 0.86), 0.0, 0.97);
+  const double resonantNoise = processStateVariableLowpass (shapedNoise, noiseCutoffEnv, noiseResonance, noiseResLowState_,
+                                                            noiseResBandState_);
+  const double noise = resonantNoise * frame_.noiseAmount * noiseContour * kNoiseBlendGain[character];
 
-  const double transient =
-    ((std::sin (transientPhase_) * 0.72) + (randomBipolar () * 0.28)) * transientEnv_ * frame_.transientAmount;
+  const double transientOsc = std::sin (transientPhase_);
+  const double transientNoise = randomBipolar ();
+  const double transientBlend = kNoiseTransientBlend[character];
+  const double transientCore = (transientOsc * (1.0 - transientBlend)) + (transientNoise * transientBlend);
+  const double transient = transientCore * transientEnv_ * std::pow (frame_.transientAmount, 0.75) * 1.75;
 
   const double lpg = ampEnv_ * (0.40 + (0.60 * toneEnv_));
   const double drive = 1.0 + (frame_.driveAmount * 8.0);
@@ -155,6 +171,10 @@ void DrumVoice::reset ()
   transientEnv_ = 0.0;
   noiseLowState_ = 0.0;
   noiseHighState_ = 0.0;
+  noiseResLowState_ = 0.0;
+  noiseResBandState_ = 0.0;
+  bodyLowState_ = 0.0;
+  bodyBandState_ = 0.0;
   active_ = false;
 }
 
@@ -176,6 +196,19 @@ double DrumVoice::wavefold (double x, double amount)
       x = -2.0 - x;
   }
   return x;
+}
+
+double DrumVoice::processStateVariableLowpass (double input, double cutoffHz, double resonance, double& lowState,
+                                               double& bandState)
+{
+  const double clippedCutoff = std::clamp (cutoffHz, 20.0, sampleRate_ * 0.47);
+  const double f = std::clamp ((2.0 * std::sin ((3.14159265358979323846 * clippedCutoff) / sampleRate_)), 0.0, 1.0);
+  const double q = std::clamp (resonance, 0.0, 0.99);
+  const double damping = 1.0 - q;
+  const double high = input - lowState - (damping * bandState);
+  bandState += f * high;
+  lowState += f * bandState;
+  return lowState;
 }
 
 double DrumVoice::randomBipolar ()

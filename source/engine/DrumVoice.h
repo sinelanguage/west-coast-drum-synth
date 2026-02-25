@@ -40,6 +40,8 @@ public:
 
 private:
   static double wavefold (double x, double amount);
+  double processStateVariableLowpass (double input, double cutoffHz, double resonance, double& lowState,
+                                      double& bandState);
   double randomBipolar ();
   static double wrapPhase (double phase);
 
@@ -65,6 +67,10 @@ private:
   double noiseHighState_ {0.0};
   double noiseLpCoef_ {0.15};
   double noiseHpCoef_ {0.15};
+  double noiseResLowState_ {0.0};
+  double noiseResBandState_ {0.0};
+  double bodyLowState_ {0.0};
+  double bodyBandState_ {0.0};
 
   uint32_t noiseState_ {0x9E3779B9U};
   bool active_ {false};
