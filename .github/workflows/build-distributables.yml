@@ -38,6 +38,7 @@ jobs:
           -DCMAKE_OSX_ARCHITECTURES=arm64
           -DCMAKE_C_FLAGS=
           -DCMAKE_CXX_FLAGS=
+          -DSMTG_CREATE_MODULE_INFO=OFF
           -DFETCHCONTENT_UPDATES_DISCONNECTED=ON
 
       - name: Relax VSTGUI warning policy on macOS
@@ -69,6 +70,7 @@ jobs:
           -DCMAKE_OSX_ARCHITECTURES=arm64
           -DCMAKE_C_FLAGS=
           -DCMAKE_CXX_FLAGS=
+          -DSMTG_CREATE_MODULE_INFO=OFF
           -DFETCHCONTENT_UPDATES_DISCONNECTED=ON
 
       - name: Build plugin
@@ -113,6 +115,7 @@ jobs:
           -A x64
           -DCMAKE_C_FLAGS=
           -DCMAKE_CXX_FLAGS=
+          -DSMTG_CREATE_MODULE_INFO=OFF
           -DFETCHCONTENT_UPDATES_DISCONNECTED=ON
 
       - name: Relax SDK warning flags for MSVC
@@ -142,6 +145,7 @@ jobs:
           -A x64
           -DCMAKE_C_FLAGS=
           -DCMAKE_CXX_FLAGS=
+          -DSMTG_CREATE_MODULE_INFO=OFF
           -DFETCHCONTENT_UPDATES_DISCONNECTED=ON
 
       - name: Build plugin
