@@ -76,3 +76,20 @@ Install the bundle to:
 - macOS: `/Library/Audio/Plug-Ins/VST3/`
 - Linux: `~/.vst3/`
 - Windows: `C:\Program Files\Common Files\VST3\`
+
+## Share builds with friends (macOS ARM + Windows 11)
+
+This repo includes a GitHub Actions workflow at `.github/workflows/build-distributables.yml` that builds:
+- `westcoastdrumsynth-macos-arm64-vst3`
+- `westcoastdrumsynth-windows11-x64-vst3`
+
+How to use it:
+1. Push your branch.
+2. Open **Actions -> Build distributables** in GitHub.
+3. Run it manually (or let it run on push).
+4. Download the two `.zip` artifacts from the workflow run and share those files.
+
+Friend install notes:
+- macOS (Apple Silicon): unzip, copy `WestCoastDrumSynth.vst3` to `/Library/Audio/Plug-Ins/VST3/`.
+- Windows 11: unzip, copy `WestCoastDrumSynth.vst3` to `C:\Program Files\Common Files\VST3\`.
+- These builds are unsigned/not notarized, so your friends may need to allow the plugin manually the first time.

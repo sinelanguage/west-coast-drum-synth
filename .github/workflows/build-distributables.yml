@@ -1,0 +1,93 @@
+name: Build distributables
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - "cursor/**"
+    paths:
+      - CMakeLists.txt
+      - source/**
+      - resource/**
+      - .github/workflows/build-distributables.yml
+
+permissions:
+  contents: read
+
+jobs:
+  build-macos-arm64:
+    name: macOS ARM64 VST3
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure (Release, arm64)
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=arm64
+
+      - name: Build plugin
+        run: cmake --build build --target WestCoastDrumSynth -j3
+
+      - name: Package macOS artifact
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+
+          if [ -d "build/VST3/Release/WestCoastDrumSynth.vst3" ]; then
+            PLUGIN_PATH="build/VST3/Release/WestCoastDrumSynth.vst3"
+          elif [ -d "build/VST3/WestCoastDrumSynth.vst3" ]; then
+            PLUGIN_PATH="build/VST3/WestCoastDrumSynth.vst3"
+          else
+            echo "Could not locate macOS VST3 bundle."
+            exit 1
+          fi
+
+          cp -R "${PLUGIN_PATH}" "dist/WestCoastDrumSynth.vst3"
+          ditto -c -k --sequesterRsrc --keepParent "dist/WestCoastDrumSynth.vst3" \
+            "dist/westcoastdrumsynth-macos-arm64.vst3.zip"
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: westcoastdrumsynth-macos-arm64-vst3
+          path: dist/westcoastdrumsynth-macos-arm64.vst3.zip
+          if-no-files-found: error
+
+  build-windows-11:
+    name: Windows 11 x64 VST3
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure (Release, VS2022)
+        run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64
+
+      - name: Build plugin
+        run: cmake --build build --config Release --target WestCoastDrumSynth
+
+      - name: Package Windows artifact
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $candidatePaths = @(
+            "build/VST3/Release/WestCoastDrumSynth.vst3",
+            "build/VST3/WestCoastDrumSynth.vst3"
+          )
+          $pluginPath = $candidatePaths | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (-not $pluginPath) {
+            throw "Could not locate Windows VST3 bundle."
+          }
+
+          New-Item -ItemType Directory -Path dist -Force | Out-Null
+          Copy-Item -Path $pluginPath -Destination "dist/WestCoastDrumSynth.vst3" -Recurse -Force
+          Compress-Archive -Path "dist/WestCoastDrumSynth.vst3" `
+                           -DestinationPath "dist/westcoastdrumsynth-windows11-x64.vst3.zip" -Force
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: westcoastdrumsynth-windows11-x64-vst3
+          path: dist/westcoastdrumsynth-windows11-x64.vst3.zip
+          if-no-files-found: error
