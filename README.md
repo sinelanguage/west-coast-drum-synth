@@ -5,8 +5,9 @@ West Coast Drum Synth is a VST3 drum-machine instrument built directly on the St
 ## Features
 
 - Buchla / west coast-inspired percussive synthesis
-- 4 lanes: Kick, Snare, Hat, Perc
+- 5 lanes: Kick, Snare, Hat, Perc A, Perc B
 - Per-lane controls: Tune, Decay, Fold, FM, Noise, Drive, Level, Pan
+- Per-lane macro controls: Pitch Env/Decay, Attack Click, Transient Decay/Mix, Noise Tone/Decay, Noise Resonance, Noise Env Amount, Snap
 - Internal 16-step sequencer with swing
 - Host transport/tempo follow
 - Factory presets

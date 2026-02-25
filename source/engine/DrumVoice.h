@@ -22,8 +22,12 @@ struct LaneFrame {
   double pitchEnvAmount {0.25};
   double pitchEnvDecaySeconds {0.06};
   double transientAmount {0.2};
+  double transientDecaySeconds {0.03};
+  double transientMix {0.42};
   double noiseTone {0.0}; // -1 (dark) .. +1 (bright)
   double noiseDecaySeconds {0.12};
+  double noiseResonance {0.45};
+  double noiseEnvAmount {0.55};
   double snapAmount {0.2};
   double driveAmount {0.1};
   double level {0.7};
