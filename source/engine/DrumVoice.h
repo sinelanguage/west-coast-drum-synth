@@ -16,21 +16,11 @@ struct LaneFrame {
   LaneCharacter character {LaneCharacter::Kick};
   double frequencyHz {120.0};
   double decaySeconds {0.25};
-  double oscLevel {0.9};
   double foldAmount {0.3};
   double fmAmount {0.2};
-  double bodyFilterCutoffHz {2600.0};
-  double bodyFilterResonance {0.3};
-  double bodyFilterEnvAmount {0.8};
-  double outputLevel {0.7};
-
-  double noiseLevel {0.15};
   double noiseAmount {0.15};
-  double noiseFilterCutoffHz {6200.0};
   double pitchEnvAmount {0.25};
   double pitchEnvDecaySeconds {0.06};
-
-  double transientLevel {0.45};
   double transientAmount {0.2};
   double transientDecaySeconds {0.03};
   double transientMix {0.42};
