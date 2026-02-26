@@ -16,8 +16,10 @@ namespace Steinberg::WestCoastDrumSynth {
 
 namespace {
 
-constexpr uint32 kStateVersion = 4;
+constexpr uint32 kStateVersion = 5;
+constexpr uint32 kV4StateVersion = 4;
 constexpr uint32 kV3StateVersion = 3;
+constexpr int32 kV4LaneCount = 5;
 constexpr uint32 kPreviousStateVersion = 2;
 constexpr uint32 kLegacyStateVersion = 1;
 constexpr int32 kLegacyLaneCount = 4;
@@ -27,24 +29,36 @@ constexpr std::array<std::array<double, kLaneExtraParamCount>, kLaneCount> kLane
   {{0.84, 0.30, 0.76, 0.36, 0.26, 0.24}},
   {{0.46, 0.48, 0.62, 0.72, 0.58, 0.84}},
   {{0.20, 0.22, 0.38, 0.90, 0.20, 0.72}},
-  {{0.48, 0.34, 0.50, 0.58, 0.40, 0.52}},
-  {{0.56, 0.30, 0.56, 0.66, 0.38, 0.60}},
+  {{0.42, 0.38, 0.48, 0.52, 0.42, 0.48}},
+  {{0.44, 0.36, 0.50, 0.54, 0.44, 0.50}},
+  {{0.52, 0.34, 0.54, 0.60, 0.40, 0.56}},
+  {{0.54, 0.32, 0.56, 0.62, 0.38, 0.58}},
+  {{0.48, 0.40, 0.58, 0.68, 0.52, 0.72}},
+  {{0.38, 0.45, 0.62, 0.72, 0.58, 0.65}},
 }};
 
 constexpr std::array<std::array<double, kLaneMacroParamCount>, kLaneCount> kLaneMacroDefaults {{
   {{0.28, 0.44, 0.34, 0.56}},
   {{0.38, 0.56, 0.50, 0.72}},
   {{0.20, 0.36, 0.66, 0.86}},
-  {{0.34, 0.46, 0.42, 0.58}},
-  {{0.30, 0.48, 0.46, 0.62}},
+  {{0.32, 0.48, 0.40, 0.54}},
+  {{0.34, 0.46, 0.42, 0.56}},
+  {{0.36, 0.50, 0.44, 0.58}},
+  {{0.38, 0.48, 0.46, 0.60}},
+  {{0.30, 0.52, 0.50, 0.62}},
+  {{0.28, 0.54, 0.55, 0.68}},
 }};
 
 constexpr std::array<std::array<double, kLaneFilterParamCount>, kLaneCount> kLaneFilterDefaults {{
   {{0.65, 0.08, 0.40, 0.70, 0.05, 0.35}},
   {{0.68, 0.12, 0.30, 0.72, 0.08, 0.45}},
   {{0.82, 0.06, 0.20, 0.85, 0.04, 0.30}},
-  {{0.70, 0.10, 0.35, 0.74, 0.06, 0.38}},
-  {{0.72, 0.10, 0.32, 0.76, 0.06, 0.40}},
+  {{0.72, 0.12, 0.38, 0.76, 0.08, 0.42}},
+  {{0.74, 0.11, 0.40, 0.78, 0.07, 0.44}},
+  {{0.70, 0.14, 0.36, 0.74, 0.09, 0.40}},
+  {{0.72, 0.13, 0.38, 0.76, 0.08, 0.42}},
+  {{0.68, 0.16, 0.42, 0.72, 0.10, 0.48}},
+  {{0.66, 0.18, 0.45, 0.70, 0.12, 0.52}},
 }};
 
 inline double clamp01 (double x)
@@ -88,13 +102,22 @@ inline int32 laneForMidiPitch (int16 pitch)
       return 2;
     case 48:
     case 50:
-    case 52:
       return 3;
+    case 52:
+    case 54:
+      return 4;
     case 47:
     case 49:
+      return 5;
     case 51:
     case 53:
-      return 4;
+      return 6;
+    case 37:
+    case 39:
+      return 7;
+    case 41:
+    case 43:
+      return 8;
     default:
       return -1;
   }
@@ -233,17 +256,17 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
   if (version == kPreviousStateVersion)
   {
     constexpr int32 v2ParamCount =
-      kPreviousGlobalParamCount + (kLaneCount * kLaneParamCount) + (kLaneCount * kLaneExtraParamCount);
+      kPreviousGlobalParamCount + (kV4LaneCount * kLaneParamCount) + (kV4LaneCount * kLaneExtraParamCount);
     constexpr auto v2Ids = [] ()
     {
       std::array<Vst::ParamID, v2ParamCount> ids {};
       int32 index = 0;
       for (int32 i = 0; i < kPreviousGlobalParamCount; ++i)
         ids[index++] = static_cast<Vst::ParamID> (i);
-      for (int32 lane = 0; lane < kLaneCount; ++lane)
+      for (int32 lane = 0; lane < kV4LaneCount; ++lane)
         for (int32 p = 0; p < kLaneParamCount; ++p)
           ids[index++] = laneParamID (lane, static_cast<LaneParamOffset> (p));
-      for (int32 lane = 0; lane < kLaneCount; ++lane)
+      for (int32 lane = 0; lane < kV4LaneCount; ++lane)
         for (int32 p = 0; p < kLaneExtraParamCount; ++p)
           ids[index++] = laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (p));
       return ids;
@@ -255,6 +278,14 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
       if (!streamer.readDouble (normalized))
         return kResultFalse;
       setParam (id, normalized);
+    }
+    for (int32 lane = kV4LaneCount; lane < kLaneCount; ++lane)
+    {
+      for (int32 p = 0; p < kLaneParamCount; ++p)
+        setParam (laneParamID (lane, static_cast<LaneParamOffset> (p)), 0.5);
+      for (int32 p = 0; p < kLaneExtraParamCount; ++p)
+        setParam (laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (p)),
+                  kLaneExtraDefaults[lane][p]);
     }
     applyMacroDefaults ();
     applyFilterDefaults ();
@@ -268,21 +299,21 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
 
   if (version == kV3StateVersion)
   {
-    constexpr int32 v3ParamCount = kPreviousGlobalParamCount + (kLaneCount * kLaneParamCount) +
-                                   (kLaneCount * kLaneExtraParamCount) + (kLaneCount * kLaneMacroParamCount);
+    constexpr int32 v3ParamCount = kPreviousGlobalParamCount + (kV4LaneCount * kLaneParamCount) +
+                                   (kV4LaneCount * kLaneExtraParamCount) + (kV4LaneCount * kLaneMacroParamCount);
     constexpr auto v3Ids = [] ()
     {
       std::array<Vst::ParamID, v3ParamCount> ids {};
       int32 index = 0;
       for (int32 i = 0; i < kPreviousGlobalParamCount; ++i)
         ids[index++] = static_cast<Vst::ParamID> (i);
-      for (int32 lane = 0; lane < kLaneCount; ++lane)
+      for (int32 lane = 0; lane < kV4LaneCount; ++lane)
         for (int32 p = 0; p < kLaneParamCount; ++p)
           ids[index++] = laneParamID (lane, static_cast<LaneParamOffset> (p));
-      for (int32 lane = 0; lane < kLaneCount; ++lane)
+      for (int32 lane = 0; lane < kV4LaneCount; ++lane)
         for (int32 p = 0; p < kLaneExtraParamCount; ++p)
           ids[index++] = laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (p));
-      for (int32 lane = 0; lane < kLaneCount; ++lane)
+      for (int32 lane = 0; lane < kV4LaneCount; ++lane)
         for (int32 p = 0; p < kLaneMacroParamCount; ++p)
           ids[index++] = laneMacroParamID (lane, static_cast<LaneMacroParamOffset> (p));
       return ids;
@@ -295,12 +326,57 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
         return kResultFalse;
       setParam (id, normalized);
     }
+    for (int32 lane = kV4LaneCount; lane < kLaneCount; ++lane)
+    {
+      for (int32 p = 0; p < kLaneParamCount; ++p)
+        setParam (laneParamID (lane, static_cast<LaneParamOffset> (p)), 0.5);
+      for (int32 p = 0; p < kLaneExtraParamCount; ++p)
+        setParam (laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (p)),
+                  kLaneExtraDefaults[lane][p]);
+      for (int32 p = 0; p < kLaneMacroParamCount; ++p)
+        setParam (laneMacroParamID (lane, static_cast<LaneMacroParamOffset> (p)),
+                  kLaneMacroDefaults[lane][p]);
+    }
     applyFilterDefaults ();
 
     setParam (kParamOscFilterCutoff, 0.20);
     setParam (kParamOscFilterResonance, 0.34);
     setParam (kParamOscFilterEnv, 0.46);
 
+    const auto& preset = getFactoryPresets ()[loadedPreset_];
+    sequencer_.setPattern (preset.pattern);
+    updateLaneFramesFromParameters ();
+    presetPending_ = false;
+    return kResultOk;
+  }
+
+  if (version == kV4StateVersion)
+  {
+    constexpr int32 v4ParamCount = kParamGlobalCount + (kV4LaneCount * kLaneParamCount) +
+                                   (kV4LaneCount * kLaneExtraParamCount) +
+                                   (kV4LaneCount * kLaneMacroParamCount) +
+                                   (kV4LaneCount * kLaneFilterParamCount);
+    for (int32 i = 0; i < v4ParamCount; ++i)
+    {
+      double normalized = 0.0;
+      if (!streamer.readDouble (normalized))
+        return kResultFalse;
+      setParam (allParameterIds ()[i], normalized);
+    }
+    for (int32 lane = kV4LaneCount; lane < kLaneCount; ++lane)
+    {
+      for (int32 p = 0; p < kLaneParamCount; ++p)
+        setParam (laneParamID (lane, static_cast<LaneParamOffset> (p)), 0.5);
+      for (int32 p = 0; p < kLaneExtraParamCount; ++p)
+        setParam (laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (p)),
+                  kLaneExtraDefaults[lane][p]);
+      for (int32 p = 0; p < kLaneMacroParamCount; ++p)
+        setParam (laneMacroParamID (lane, static_cast<LaneMacroParamOffset> (p)),
+                  kLaneMacroDefaults[lane][p]);
+      for (int32 p = 0; p < kLaneFilterParamCount; ++p)
+        setParam (laneFilterParamID (lane, static_cast<LaneFilterParamOffset> (p)),
+                  kLaneFilterDefaults[lane][p]);
+    }
     const auto& preset = getFactoryPresets ()[loadedPreset_];
     sequencer_.setPattern (preset.pattern);
     updateLaneFramesFromParameters ();
@@ -608,22 +684,41 @@ void WestCoastProcessor::processParameterChanges (Vst::IParameterChanges* change
 
 void WestCoastProcessor::updateLaneFramesFromParameters ()
 {
-  static constexpr std::array<double, kLaneCount> kBaseFrequencies {52.0, 185.0, 3800.0, 420.0, 620.0};
+  // Kick, Snare, Hat, PercA1, PercA2 (low bass), PercB1, PercB2 (higher), RimShot, Clap
+  static constexpr std::array<double, kLaneCount> kBaseFrequencies {
+    52.0, 185.0, 3800.0, 45.0, 65.0, 520.0, 820.0, 950.0, 650.0};
   static constexpr std::array<LaneCharacter, kLaneCount> kLaneCharacters {
-    LaneCharacter::Kick, LaneCharacter::Snare, LaneCharacter::Hat, LaneCharacter::PercA, LaneCharacter::PercB};
-  static constexpr std::array<double, kLaneCount> kPitchEnvScale {1.0, 0.60, 0.28, 0.66, 0.72};
-  static constexpr std::array<double, kLaneCount> kTransientAttackScale {1.0, 0.92, 0.74, 0.88, 0.94};
-  static constexpr std::array<double, kLaneCount> kTransientDecayScale {1.0, 1.16, 0.68, 0.92, 1.0};
-  static constexpr std::array<double, kLaneCount> kTransientLevelScale {1.0, 1.10, 0.88, 0.96, 1.02};
-  static constexpr std::array<double, kLaneCount> kNoiseLevelScale {1.05, 2.05, 1.65, 1.42, 1.50};
-  static constexpr std::array<double, kLaneCount> kNoiseDecayScale {0.82, 1.58, 0.94, 1.10, 1.20};
-  static constexpr std::array<double, kLaneCount> kNoiseResScale {0.90, 1.04, 1.12, 0.98, 1.04};
-  static constexpr std::array<double, kLaneCount> kNoiseEnvScale {0.88, 1.02, 1.18, 0.98, 1.08};
-  static constexpr std::array<double, kLaneCount> kSnapScale {0.24, 1.0, 0.86, 0.58, 0.64};
-  static constexpr std::array<double, kLaneCount> kOscCutoffScale {0.62, 0.88, 1.70, 1.04, 1.18};
-  static constexpr std::array<double, kLaneCount> kOscResScale {1.08, 1.0, 0.82, 0.94, 0.98};
-  static constexpr std::array<double, kLaneCount> kOscEnvScale {1.24, 1.02, 0.58, 0.84, 0.88};
-  static constexpr std::array<double, kLaneCount> kOscBalance {1.0, 0.92, 0.76, 0.90, 0.94};
+    LaneCharacter::Kick, LaneCharacter::Snare, LaneCharacter::Hat,
+    LaneCharacter::PercA, LaneCharacter::PercA, LaneCharacter::PercB, LaneCharacter::PercB,
+    LaneCharacter::RimShot, LaneCharacter::Clap};
+  static constexpr std::array<double, kLaneCount> kPitchEnvScale {
+    1.0, 0.60, 0.28, 0.85, 0.82, 0.72, 0.68, 0.58, 0.48};
+  static constexpr std::array<double, kLaneCount> kTransientAttackScale {
+    1.0, 0.92, 0.74, 0.90, 0.88, 0.92, 0.90, 0.95, 0.88};
+  static constexpr std::array<double, kLaneCount> kTransientDecayScale {
+    1.0, 1.16, 0.68, 1.05, 1.02, 0.94, 0.90, 0.85, 0.78};
+  static constexpr std::array<double, kLaneCount> kTransientLevelScale {
+    1.0, 1.10, 0.88, 1.00, 0.98, 1.02, 1.00, 1.08, 1.12};
+  static constexpr std::array<double, kLaneCount> kNoiseLevelScale {
+    1.05, 2.05, 1.65, 1.35, 1.38, 1.42, 1.45, 1.55, 1.75};
+  static constexpr std::array<double, kLaneCount> kNoiseDecayScale {
+    0.82, 1.58, 0.94, 1.15, 1.12, 1.08, 1.05, 0.95, 0.88};
+  static constexpr std::array<double, kLaneCount> kNoiseResScale {
+    0.90, 1.04, 1.12, 0.98, 1.00, 1.02, 1.04, 1.08, 1.12};
+  static constexpr std::array<double, kLaneCount> kNoiseEnvScale {
+    0.88, 1.02, 1.18, 0.98, 1.00, 1.05, 1.08, 1.12, 1.18};
+  static constexpr std::array<double, kLaneCount> kSnapScale {
+    0.24, 1.0, 0.86, 0.55, 0.52, 0.62, 0.60, 0.75, 0.68};
+  static constexpr std::array<double, kLaneCount> kOscCutoffScale {
+    0.62, 0.88, 1.70, 1.08, 1.06, 1.12, 1.10, 1.15, 1.18};
+  static constexpr std::array<double, kLaneCount> kOscResScale {
+    1.08, 1.0, 0.82, 0.96, 0.98, 1.00, 1.02, 1.05, 1.08};
+  static constexpr std::array<double, kLaneCount> kOscEnvScale {
+    1.24, 1.02, 0.58, 0.92, 0.90, 0.88, 0.86, 0.82, 0.78};
+  static constexpr std::array<double, kLaneCount> kOscBalance {
+    1.0, 0.92, 0.76, 0.94, 0.92, 0.90, 0.88, 0.86, 0.82};
+  // Perc lanes get ±36 semitones for low bass and high percussion; others ±24
+  static constexpr std::array<double, kLaneCount> kPitchSemitoneRange {24.0, 24.0, 24.0, 36.0, 36.0, 36.0, 36.0, 36.0, 36.0};
 
   const double oscFilterCutoffNorm = getParam (kParamOscFilterCutoff);
   const double oscFilterResNorm = getParam (kParamOscFilterResonance);
@@ -638,9 +733,10 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
     frame.character = kLaneCharacters[lane];
 
     const double tune = getParam (laneParamID (lane, kLaneTune));
-    const double semitones = (tune * 2.0 - 1.0) * 24.0;
+    const double semitoneRange = kPitchSemitoneRange[lane];
+    const double semitones = (tune * 2.0 - 1.0) * semitoneRange;
     frame.frequencyHz = kBaseFrequencies[lane] * std::pow (2.0, semitones / 12.0);
-    frame.frequencyHz = std::clamp (frame.frequencyHz, 20.0, 15000.0);
+    frame.frequencyHz = std::clamp (frame.frequencyHz, 16.0, 20000.0);
 
     const double decay = getParam (laneParamID (lane, kLaneDecay));
     frame.decaySeconds = 0.02 + (decay * decay * 1.95);
@@ -691,10 +787,10 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
     frame.pan = (getParam (laneParamID (lane, kLanePan)) * 2.0) - 1.0;
 
     frame.oscFilterCutoff = getParam (laneFilterParamID (lane, kLaneOscFilterCutoff));
-    frame.oscFilterResonance = std::clamp (getParam (laneFilterParamID (lane, kLaneOscFilterRes)) * 0.96, 0.0, 0.96);
+    frame.oscFilterResonance = std::clamp (getParam (laneFilterParamID (lane, kLaneOscFilterRes)), 0.0, 1.0);
     frame.oscFilterEnvAmount = getParam (laneFilterParamID (lane, kLaneOscFilterEnv));
     frame.transFilterCutoff = getParam (laneFilterParamID (lane, kLaneTransFilterCutoff));
-    frame.transFilterResonance = std::clamp (getParam (laneFilterParamID (lane, kLaneTransFilterRes)) * 0.96, 0.0, 0.96);
+    frame.transFilterResonance = std::clamp (getParam (laneFilterParamID (lane, kLaneTransFilterRes)), 0.0, 1.0);
     frame.transFilterEnvAmount = getParam (laneFilterParamID (lane, kLaneTransFilterEnv));
 
     laneFrames_[lane] = frame;

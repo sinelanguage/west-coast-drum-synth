@@ -8,8 +8,10 @@ enum class LaneCharacter : uint8_t {
   Kick = 0,
   Snare,
   Hat,
-  PercA,
-  PercB
+  PercA,   // Low bass groove (lanes 3, 4)
+  PercB,   // Higher percussion (lanes 5, 6)
+  RimShot,
+  Clap
 };
 
 struct LaneFrame {

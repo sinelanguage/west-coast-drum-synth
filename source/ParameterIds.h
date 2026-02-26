@@ -6,7 +6,7 @@
 
 namespace Steinberg::WestCoastDrumSynth {
 
-constexpr int32 kLaneCount = 5;
+constexpr int32 kLaneCount = 9;
 constexpr int32 kPatternSteps = 16;
 using PatternGrid = std::array<std::array<bool, kPatternSteps>, kLaneCount>;
 

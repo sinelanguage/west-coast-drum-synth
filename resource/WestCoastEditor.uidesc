@@ -352,6 +352,38 @@
 		<control-tag name="PercBDrive" tag="137"/>
 		<control-tag name="PercBLevel" tag="138"/>
 		<control-tag name="PercBPan" tag="139"/>
+		<control-tag name="PercA2Tune" tag="140"/>
+		<control-tag name="PercA2Decay" tag="141"/>
+		<control-tag name="PercA2Fold" tag="142"/>
+		<control-tag name="PercA2Fm" tag="143"/>
+		<control-tag name="PercA2Noise" tag="144"/>
+		<control-tag name="PercA2Drive" tag="145"/>
+		<control-tag name="PercA2Level" tag="146"/>
+		<control-tag name="PercA2Pan" tag="147"/>
+		<control-tag name="PercB2Tune" tag="148"/>
+		<control-tag name="PercB2Decay" tag="149"/>
+		<control-tag name="PercB2Fold" tag="150"/>
+		<control-tag name="PercB2Fm" tag="151"/>
+		<control-tag name="PercB2Noise" tag="152"/>
+		<control-tag name="PercB2Drive" tag="153"/>
+		<control-tag name="PercB2Level" tag="154"/>
+		<control-tag name="PercB2Pan" tag="155"/>
+		<control-tag name="RimShotTune" tag="156"/>
+		<control-tag name="RimShotDecay" tag="157"/>
+		<control-tag name="RimShotFold" tag="158"/>
+		<control-tag name="RimShotFm" tag="159"/>
+		<control-tag name="RimShotNoise" tag="160"/>
+		<control-tag name="RimShotDrive" tag="161"/>
+		<control-tag name="RimShotLevel" tag="162"/>
+		<control-tag name="RimShotPan" tag="163"/>
+		<control-tag name="ClapTune" tag="164"/>
+		<control-tag name="ClapDecay" tag="165"/>
+		<control-tag name="ClapFold" tag="166"/>
+		<control-tag name="ClapFm" tag="167"/>
+		<control-tag name="ClapNoise" tag="168"/>
+		<control-tag name="ClapDrive" tag="169"/>
+		<control-tag name="ClapLevel" tag="170"/>
+		<control-tag name="ClapPan" tag="171"/>
 		<control-tag name="KickPitchEnv" tag="200"/>
 		<control-tag name="KickPitchEnvDecay" tag="201"/>
 		<control-tag name="KickTransient" tag="202"/>
@@ -382,6 +414,30 @@
 		<control-tag name="PercBNoiseTone" tag="227"/>
 		<control-tag name="PercBNoiseDecay" tag="228"/>
 		<control-tag name="PercBSnap" tag="229"/>
+		<control-tag name="PercA2PitchEnv" tag="230"/>
+		<control-tag name="PercA2PitchEnvDecay" tag="231"/>
+		<control-tag name="PercA2Transient" tag="232"/>
+		<control-tag name="PercA2NoiseTone" tag="233"/>
+		<control-tag name="PercA2NoiseDecay" tag="234"/>
+		<control-tag name="PercA2Snap" tag="235"/>
+		<control-tag name="PercB2PitchEnv" tag="236"/>
+		<control-tag name="PercB2PitchEnvDecay" tag="237"/>
+		<control-tag name="PercB2Transient" tag="238"/>
+		<control-tag name="PercB2NoiseTone" tag="239"/>
+		<control-tag name="PercB2NoiseDecay" tag="240"/>
+		<control-tag name="PercB2Snap" tag="241"/>
+		<control-tag name="RimShotPitchEnv" tag="242"/>
+		<control-tag name="RimShotPitchEnvDecay" tag="243"/>
+		<control-tag name="RimShotTransient" tag="244"/>
+		<control-tag name="RimShotNoiseTone" tag="245"/>
+		<control-tag name="RimShotNoiseDecay" tag="246"/>
+		<control-tag name="RimShotSnap" tag="247"/>
+		<control-tag name="ClapPitchEnv" tag="248"/>
+		<control-tag name="ClapPitchEnvDecay" tag="249"/>
+		<control-tag name="ClapTransient" tag="250"/>
+		<control-tag name="ClapNoiseTone" tag="251"/>
+		<control-tag name="ClapNoiseDecay" tag="252"/>
+		<control-tag name="ClapSnap" tag="253"/>
 		<control-tag name="KickTransientDecay" tag="300"/>
 		<control-tag name="KickTransientMix" tag="301"/>
 		<control-tag name="KickNoiseResonance" tag="302"/>
@@ -402,6 +458,22 @@
 		<control-tag name="PercBTransientMix" tag="317"/>
 		<control-tag name="PercBNoiseResonance" tag="318"/>
 		<control-tag name="PercBNoiseEnvAmount" tag="319"/>
+		<control-tag name="PercA2TransientDecay" tag="320"/>
+		<control-tag name="PercA2TransientMix" tag="321"/>
+		<control-tag name="PercA2NoiseResonance" tag="322"/>
+		<control-tag name="PercA2NoiseEnvAmount" tag="323"/>
+		<control-tag name="PercB2TransientDecay" tag="324"/>
+		<control-tag name="PercB2TransientMix" tag="325"/>
+		<control-tag name="PercB2NoiseResonance" tag="326"/>
+		<control-tag name="PercB2NoiseEnvAmount" tag="327"/>
+		<control-tag name="RimShotTransientDecay" tag="328"/>
+		<control-tag name="RimShotTransientMix" tag="329"/>
+		<control-tag name="RimShotNoiseResonance" tag="330"/>
+		<control-tag name="RimShotNoiseEnvAmount" tag="331"/>
+		<control-tag name="ClapTransientDecay" tag="332"/>
+		<control-tag name="ClapTransientMix" tag="333"/>
+		<control-tag name="ClapNoiseResonance" tag="334"/>
+		<control-tag name="ClapNoiseEnvAmount" tag="335"/>
 		<control-tag name="KickOscCutoff" tag="400"/>
 		<control-tag name="KickOscReso" tag="401"/>
 		<control-tag name="KickOscFltEnv" tag="402"/>
@@ -432,6 +504,30 @@
 		<control-tag name="PercBTransCutoff" tag="427"/>
 		<control-tag name="PercBTransReso" tag="428"/>
 		<control-tag name="PercBTransFltEnv" tag="429"/>
+		<control-tag name="PercA2OscCutoff" tag="430"/>
+		<control-tag name="PercA2OscReso" tag="431"/>
+		<control-tag name="PercA2OscFltEnv" tag="432"/>
+		<control-tag name="PercA2TransCutoff" tag="433"/>
+		<control-tag name="PercA2TransReso" tag="434"/>
+		<control-tag name="PercA2TransFltEnv" tag="435"/>
+		<control-tag name="PercB2OscCutoff" tag="436"/>
+		<control-tag name="PercB2OscReso" tag="437"/>
+		<control-tag name="PercB2OscFltEnv" tag="438"/>
+		<control-tag name="PercB2TransCutoff" tag="439"/>
+		<control-tag name="PercB2TransReso" tag="440"/>
+		<control-tag name="PercB2TransFltEnv" tag="441"/>
+		<control-tag name="RimShotOscCutoff" tag="442"/>
+		<control-tag name="RimShotOscReso" tag="443"/>
+		<control-tag name="RimShotOscFltEnv" tag="444"/>
+		<control-tag name="RimShotTransCutoff" tag="445"/>
+		<control-tag name="RimShotTransReso" tag="446"/>
+		<control-tag name="RimShotTransFltEnv" tag="447"/>
+		<control-tag name="ClapOscCutoff" tag="448"/>
+		<control-tag name="ClapOscReso" tag="449"/>
+		<control-tag name="ClapOscFltEnv" tag="450"/>
+		<control-tag name="ClapTransCutoff" tag="451"/>
+		<control-tag name="ClapTransReso" tag="452"/>
+		<control-tag name="ClapTransFltEnv" tag="453"/>
 	</control-tags>
 	<gradients>
 		<gradient name="Switch On">

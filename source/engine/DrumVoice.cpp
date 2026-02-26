@@ -28,12 +28,13 @@ inline double softClip (double x)
   return std::tanh (x * kSoftClipDrive) / std::tanh (kSoftClipDrive);
 }
 
-constexpr std::array<double, 5> kPitchSemitoneSpan {66.0, 20.0, 8.0, 22.0, 28.0};
-constexpr std::array<double, 5> kTransientBaseHz {1700.0, 2500.0, 7000.0, 3100.0, 4200.0};
-constexpr std::array<double, 5> kNoiseBlendGain {0.85, 1.25, 1.45, 1.10, 1.15};
-constexpr std::array<double, 5> kBodyGain {1.05, 0.84, 0.42, 0.98, 1.02};
-constexpr std::array<double, 5> kFmScale {1.0, 0.85, 0.40, 0.78, 0.85};
-constexpr std::array<double, 5> kNoiseTransientBlend {0.40, 0.68, 0.38, 0.54, 0.58};
+// Indexed by LaneCharacter: Kick, Snare, Hat, PercA, PercB, RimShot, Clap
+constexpr std::array<double, 7> kPitchSemitoneSpan {66.0, 20.0, 8.0, 36.0, 32.0, 18.0, 14.0};
+constexpr std::array<double, 7> kTransientBaseHz {1700.0, 2500.0, 7000.0, 900.0, 4500.0, 3500.0, 2200.0};
+constexpr std::array<double, 7> kNoiseBlendGain {0.85, 1.25, 1.45, 1.10, 1.15, 1.30, 1.45};
+constexpr std::array<double, 7> kBodyGain {1.05, 0.84, 0.42, 1.02, 0.96, 0.92, 0.88};
+constexpr std::array<double, 7> kFmScale {1.0, 0.85, 0.40, 0.92, 0.88, 0.65, 0.45};
+constexpr std::array<double, 7> kNoiseTransientBlend {0.40, 0.68, 0.38, 0.52, 0.58, 0.72, 0.55};
 
 inline double cutoffFromNormalized (double normalized, double minHz, double maxHz)
 {
@@ -116,14 +117,14 @@ double DrumVoice::process ()
   if (!active_)
     return 0.0;
 
-  const size_t character = characterIndex (frame_.character);
+  const size_t character = std::min (characterIndex (frame_.character), size_t {6});
 
   // --- OSCILLATOR PATH ---
   const double pitchSemitoneSweep = frame_.pitchEnvAmount * pitchEnv_ * kPitchSemitoneSpan[character];
   const double pitchRatio = std::pow (2.0, pitchSemitoneSweep / 12.0);
 
   const double modFrequency =
-    frame_.frequencyHz * pitchRatio * (1.15 + (frame_.fmAmount * (4.8 * kFmScale[character])));
+    frame_.frequencyHz * pitchRatio * (1.0 + (frame_.fmAmount * (5.5 * kFmScale[character])));
   const double carrierFrequency = frame_.frequencyHz * pitchRatio * (1.0 + (toneEnv_ * 0.07));
 
   modPhase_ += (kTwoPi * modFrequency) / sampleRate_;
@@ -133,20 +134,24 @@ double DrumVoice::process ()
   carrierPhase_ = wrapPhase (carrierPhase_);
   transientPhase_ = wrapPhase (transientPhase_);
 
-  const double fmDepth = frame_.fmAmount * ((6.4 * toneEnv_ * kFmScale[character]) + 0.3);
+  // Thru-zero FM: modulation depth allows phase reversal (negative instantaneous freq)
+  const double fmDepth = frame_.fmAmount * ((12.0 * toneEnv_ * kFmScale[character]) + 0.5);
   const double modSignal = std::sin (modPhase_) * fmDepth;
   double body = std::sin (carrierPhase_ + modSignal);
 
-  const double dynamicFold = frame_.foldAmount * (1.0 + (0.9 * toneEnv_));
+  // Wavefolding: more dynamic range (1 + amount*16), 5 folds for richer harmonics
+  const double dynamicFold = frame_.foldAmount * (1.2 + (1.2 * toneEnv_));
   body = wavefold (body, dynamicFold);
 
-  const double oscBaseCutoff = cutoffFromNormalized (frame_.oscFilterCutoff, 80.0, 18000.0);
-  const double oscEnvMod = oscBaseCutoff * frame_.oscFilterEnvAmount * toneEnv_ * 3.0;
+  // Filters: wider cutoff range, stronger resonance and env modulation, +3dB gain
+  const double oscBaseCutoff = cutoffFromNormalized (frame_.oscFilterCutoff, 40.0, 20000.0);
+  const double oscEnvMod = oscBaseCutoff * frame_.oscFilterEnvAmount * toneEnv_ * 4.5;
   const double oscCutoffHz = std::clamp (oscBaseCutoff + oscEnvMod, 20.0, sampleRate_ * 0.47);
-  body = processStateVariableLowpass (body, oscCutoffHz, frame_.oscFilterResonance,
+  const double oscResScaled = std::min (0.98, frame_.oscFilterResonance * 1.35);
+  body = processStateVariableLowpass (body, oscCutoffHz, oscResScaled,
                                       oscFilterLowState_, oscFilterBandState_);
-  const double oscGate = ampEnv_ * (0.32 + (0.68 * toneEnv_));
-  const double oscOut = body * frame_.oscLevel * oscGate * kBodyGain[character];
+  const double oscGate = ampEnv_ * (0.38 + (0.72 * toneEnv_));
+  const double oscOut = body * frame_.oscLevel * oscGate * kBodyGain[character] * 1.41;
 
   // --- TRANSIENT PATH ---
   const double transientOsc = std::sin (transientPhase_);
@@ -155,11 +160,12 @@ double DrumVoice::process ()
     std::clamp ((frame_.transientMix * 0.65) + (frame_.snapAmount * kNoiseTransientBlend[character]), 0.0, 1.0);
   const double transientCore = (transientOsc * (1.0 - transientBlend)) + (transientNoise * transientBlend);
 
-  const double transBaseCutoff = cutoffFromNormalized (frame_.transFilterCutoff, 400.0, 18000.0);
-  const double transEnvMod = transBaseCutoff * frame_.transFilterEnvAmount * transientEnv_ * 2.5;
+  const double transBaseCutoff = cutoffFromNormalized (frame_.transFilterCutoff, 200.0, 20000.0);
+  const double transEnvMod = transBaseCutoff * frame_.transFilterEnvAmount * transientEnv_ * 3.5;
   const double transCutoffHz = std::clamp (transBaseCutoff + transEnvMod, 20.0, sampleRate_ * 0.47);
+  const double transResScaled = std::min (0.98, frame_.transFilterResonance * 1.35);
   const double filteredTransient = processStateVariableLowpass (transientCore, transCutoffHz,
-                                                                frame_.transFilterResonance,
+                                                                transResScaled,
                                                                 transFilterLowState_, transFilterBandState_);
 
   const double transientGain = (0.35 + (frame_.transientAmount * 1.2)) * frame_.transientLevel;
@@ -248,10 +254,10 @@ bool DrumVoice::isActive () const
 
 double DrumVoice::wavefold (double x, double amount)
 {
-  const double gain = 1.0 + (amount * 7.0);
+  const double gain = 1.0 + (amount * 16.0);
   x *= gain;
 
-  for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < 5; ++i)
   {
     if (x > 1.0)
       x = 2.0 - x;
