@@ -529,9 +529,9 @@ VSTGUI::CView* WestCoastController::verifyView (VSTGUI::CView* view, const VSTGU
   else if (auto* parent = view->getParentView ())
   {
     const VSTGUI::CCoord parentWidth = parent->getViewSize ().getWidth ();
-    if (parentWidth >= 270.0 && parentWidth <= 330.0)
+    if (parentWidth >= 250.0 && parentWidth <= 330.0)
       layoutScale = kCompactScaleX;
-    else if (parentWidth > 90.0 && parentWidth < 220.0)
+    else if (parentWidth > 60.0 && parentWidth < 250.0)
       layoutScale = parentWidth / kModuleBaseWidth;
   }
 
