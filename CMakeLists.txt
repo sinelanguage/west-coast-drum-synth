@@ -75,6 +75,16 @@ else()
   set(VST3_SDK_SOURCE_DIR "${vst3sdk_SOURCE_DIR}")
 endif()
 
+# AppleClang 17+ warns on an unused local in VSTGUI's cgbitmap.cpp.
+# The VST3 SDK promotes warnings to errors, so relax only this warning for
+# the third-party VSTGUI target to keep project sources strict.
+if(APPLE AND TARGET vstgui)
+  target_compile_options(vstgui PRIVATE
+    $<$<COMPILE_LANGUAGE:CXX>:-Wno-error=unused-variable>
+    $<$<COMPILE_LANGUAGE:OBJCXX>:-Wno-error=unused-variable>
+  )
+endif()
+
 set(SDK_ROOT "${VST3_SDK_SOURCE_DIR}")
 set(public_sdk_SOURCE_DIR "${VST3_SDK_SOURCE_DIR}/public.sdk")
 set(pluginterfaces_SOURCE_DIR "${VST3_SDK_SOURCE_DIR}/pluginterfaces")
