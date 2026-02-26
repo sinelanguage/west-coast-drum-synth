@@ -63,7 +63,7 @@ constexpr std::array<std::array<double, kLaneFilterParamCount>, kLaneCount> kLan
   {{0.66, 0.18, 0.45, 0.70, 0.12, 0.52}},
 }};
 
-constexpr VSTGUI::CCoord kCompactScaleX = 0.44;
+constexpr VSTGUI::CCoord kCompactScaleX = 0.40;
 constexpr VSTGUI::CCoord kModuleBaseWidth = 296.0;
 
 inline VSTGUI::CRect scaleRectX (const VSTGUI::CRect& rect, VSTGUI::CCoord scaleX)
