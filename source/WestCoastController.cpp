@@ -63,7 +63,7 @@ constexpr std::array<std::array<double, kLaneFilterParamCount>, kLaneCount> kLan
   {{0.66, 0.18, 0.45, 0.70, 0.12, 0.52}},
 }};
 
-constexpr VSTGUI::CCoord kCompactScaleX = 0.40;
+constexpr VSTGUI::CCoord kCompactScaleX = 0.42;
 constexpr VSTGUI::CCoord kModuleBaseWidth = 296.0;
 
 inline VSTGUI::CRect scaleRectX (const VSTGUI::CRect& rect, VSTGUI::CCoord scaleX)
@@ -531,7 +531,7 @@ VSTGUI::CView* WestCoastController::verifyView (VSTGUI::CView* view, const VSTGU
     const VSTGUI::CCoord parentWidth = parent->getViewSize ().getWidth ();
     if (parentWidth >= 270.0 && parentWidth <= 330.0)
       layoutScale = kCompactScaleX;
-    else if (parentWidth > 120.0 && parentWidth < 190.0)
+    else if (parentWidth > 90.0 && parentWidth < 220.0)
       layoutScale = parentWidth / kModuleBaseWidth;
   }
 
