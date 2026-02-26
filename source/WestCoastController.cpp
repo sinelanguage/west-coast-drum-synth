@@ -517,26 +517,28 @@ VSTGUI::CView* WestCoastController::verifyView (VSTGUI::CView* view, const VSTGU
   auto bounds = view->getViewSize ();
   bool boundsChanged = false;
 
-  if (auto* parent = view->getParentView ())
+  VSTGUI::CCoord layoutScale = 1.0;
+  const bool isMainWideLayout = bounds.getWidth () > 2500.0;
+  const bool isModulePanel =
+    bounds.getWidth () > 280.0 && bounds.getWidth () < 320.0 && bounds.getHeight () > 500.0;
+
+  if (isMainWideLayout || isModulePanel)
+  {
+    layoutScale = kCompactScaleX;
+  }
+  else if (auto* parent = view->getParentView ())
   {
     const VSTGUI::CCoord parentWidth = parent->getViewSize ().getWidth ();
-    VSTGUI::CCoord layoutScale = 1.0;
-
-    if (parentWidth > 2500.0)
-      layoutScale = kCompactScaleX;
-    else if (parentWidth > 1100.0 && parentWidth < 1600.0 && bounds.getWidth () > 280.0 &&
-             bounds.getWidth () < 320.0 && bounds.getHeight () > 500.0)
-      layoutScale = kCompactScaleX;
-    else if (parentWidth >= 270.0 && parentWidth <= 330.0)
+    if (parentWidth >= 270.0 && parentWidth <= 330.0)
       layoutScale = kCompactScaleX;
     else if (parentWidth > 120.0 && parentWidth < 190.0)
       layoutScale = parentWidth / kModuleBaseWidth;
+  }
 
-    if (layoutScale < 0.999 || layoutScale > 1.001)
-    {
-      bounds = scaleRectX (bounds, layoutScale);
-      boundsChanged = true;
-    }
+  if (layoutScale < 0.999 || layoutScale > 1.001)
+  {
+    bounds = scaleRectX (bounds, layoutScale);
+    boundsChanged = true;
   }
 
   if (auto* slider = dynamic_cast<VSTGUI::CSlider*> (view))
