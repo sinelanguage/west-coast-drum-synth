@@ -18,26 +18,34 @@ namespace Steinberg::WestCoastDrumSynth {
 namespace {
 
 constexpr uint32 kStateVersion = 4;
-constexpr uint32 kPreviousStateVersion = 3;
-constexpr uint32 kLegacyStateVersion = 2;
-constexpr uint32 kVeryLegacyStateVersion = 1;
+constexpr uint32 kV3StateVersion = 3;
+constexpr uint32 kPreviousStateVersion = 2;
+constexpr uint32 kLegacyStateVersion = 1;
 constexpr int32 kLegacyLaneCount = 4;
 constexpr int32 kPreviousGlobalParamCount = 6;
 
 constexpr std::array<std::array<double, kLaneExtraParamCount>, kLaneCount> kLaneExtraDefaults {{
-  {{0.84, 0.30, 0.76, 0.36, 0.26, 0.24}}, // Kick
-  {{0.46, 0.48, 0.62, 0.72, 0.58, 0.84}}, // Snare
-  {{0.20, 0.22, 0.38, 0.90, 0.20, 0.72}}, // Hat
-  {{0.48, 0.34, 0.50, 0.58, 0.40, 0.52}}, // Perc A
-  {{0.56, 0.30, 0.56, 0.66, 0.38, 0.60}}, // Perc B
+  {{0.84, 0.30, 0.76, 0.36, 0.26, 0.24}},
+  {{0.46, 0.48, 0.62, 0.72, 0.58, 0.84}},
+  {{0.20, 0.22, 0.38, 0.90, 0.20, 0.72}},
+  {{0.48, 0.34, 0.50, 0.58, 0.40, 0.52}},
+  {{0.56, 0.30, 0.56, 0.66, 0.38, 0.60}},
 }};
 
 constexpr std::array<std::array<double, kLaneMacroParamCount>, kLaneCount> kLaneMacroDefaults {{
-  {{0.28, 0.44, 0.34, 0.56}}, // Kick
-  {{0.38, 0.56, 0.50, 0.72}}, // Snare
-  {{0.20, 0.36, 0.66, 0.86}}, // Hat
-  {{0.34, 0.46, 0.42, 0.58}}, // Perc A
-  {{0.30, 0.48, 0.46, 0.62}}, // Perc B
+  {{0.28, 0.44, 0.34, 0.56}},
+  {{0.38, 0.56, 0.50, 0.72}},
+  {{0.20, 0.36, 0.66, 0.86}},
+  {{0.34, 0.46, 0.42, 0.58}},
+  {{0.30, 0.48, 0.46, 0.62}},
+}};
+
+constexpr std::array<std::array<double, kLaneFilterParamCount>, kLaneCount> kLaneFilterDefaults {{
+  {{0.65, 0.08, 0.40, 0.70, 0.05, 0.35}},
+  {{0.68, 0.12, 0.30, 0.72, 0.08, 0.45}},
+  {{0.82, 0.06, 0.20, 0.85, 0.04, 0.30}},
+  {{0.70, 0.10, 0.35, 0.74, 0.06, 0.38}},
+  {{0.72, 0.10, 0.32, 0.76, 0.06, 0.40}},
 }};
 
 UString128 toString128 (const char* ascii)
@@ -181,6 +189,37 @@ tresult PLUGIN_API WestCoastController::initialize (FUnknown* context)
     }
   }
 
+  const std::array<std::array<const char*, kLaneFilterParamCount>, kLaneCount> laneFilterTitles {{
+    {{"Kick Osc Cutoff", "Kick Osc Reso", "Kick Osc Flt Env", "Kick Trans Cutoff", "Kick Trans Reso", "Kick Trans Flt Env"}},
+    {{"Snare Osc Cutoff", "Snare Osc Reso", "Snare Osc Flt Env", "Snare Trans Cutoff", "Snare Trans Reso", "Snare Trans Flt Env"}},
+    {{"Hat Osc Cutoff", "Hat Osc Reso", "Hat Osc Flt Env", "Hat Trans Cutoff", "Hat Trans Reso", "Hat Trans Flt Env"}},
+    {{"Perc A Osc Cutoff", "Perc A Osc Reso", "Perc A Osc Flt Env", "Perc A Trans Cutoff", "Perc A Trans Reso", "Perc A Trans Flt Env"}},
+    {{"Perc B Osc Cutoff", "Perc B Osc Reso", "Perc B Osc Flt Env", "Perc B Trans Cutoff", "Perc B Trans Reso", "Perc B Trans Flt Env"}},
+  }};
+  const std::array<const char*, kLaneFilterParamCount> laneFilterUnits {"%", "%", "%", "%", "%", "%"};
+  const std::array<std::pair<double, double>, kLaneFilterParamCount> laneFilterRanges {
+    std::make_pair (0.0, 100.0),
+    std::make_pair (0.0, 100.0),
+    std::make_pair (0.0, 100.0),
+    std::make_pair (0.0, 100.0),
+    std::make_pair (0.0, 100.0),
+    std::make_pair (0.0, 100.0),
+  };
+
+  for (int32 lane = 0; lane < kLaneCount; ++lane)
+  {
+    for (int32 parameterOffset = 0; parameterOffset < kLaneFilterParamCount; ++parameterOffset)
+    {
+      const auto offset = static_cast<LaneFilterParamOffset> (parameterOffset);
+      const double minimum = laneFilterRanges[parameterOffset].first;
+      const double maximum = laneFilterRanges[parameterOffset].second;
+      const double normalizedDefault = kLaneFilterDefaults[lane][parameterOffset];
+      const double defaultPlain = minimum + (normalizedDefault * (maximum - minimum));
+      parameters.addParameter (makeRangeParam (laneFilterTitles[lane][parameterOffset], laneFilterParamID (lane, offset),
+                                               laneFilterUnits[parameterOffset], minimum, maximum, defaultPlain));
+    }
+  }
+
   return kResultOk;
 }
 
@@ -214,7 +253,18 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
     }
   };
 
-  if (version == kVeryLegacyStateVersion)
+  const auto applyFilterDefaults = [this] () {
+    for (int32 lane = 0; lane < kLaneCount; ++lane)
+    {
+      for (int32 parameterOffset = 0; parameterOffset < kLaneFilterParamCount; ++parameterOffset)
+      {
+        setParamNormalized (laneFilterParamID (lane, static_cast<LaneFilterParamOffset> (parameterOffset)),
+                            kLaneFilterDefaults[lane][parameterOffset]);
+      }
+    }
+  };
+
+  if (version == kLegacyStateVersion)
   {
     for (int32 param = 0; param < kPreviousGlobalParamCount; ++param)
     {
@@ -249,10 +299,9 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
       for (int32 parameterOffset = 0; parameterOffset < kLaneExtraParamCount; ++parameterOffset)
         setParamNormalized (laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (parameterOffset)),
                             kLaneExtraDefaults[lane][parameterOffset]);
-      for (int32 parameterOffset = 0; parameterOffset < kLaneMacroParamCount; ++parameterOffset)
-        setParamNormalized (laneMacroParamID (lane, static_cast<LaneMacroParamOffset> (parameterOffset)),
-                            kLaneMacroDefaults[lane][parameterOffset]);
     }
+    applyMacroDefaults ();
+    applyFilterDefaults ();
     setParamNormalized (kParamOscFilterCutoff, 0.20);
     setParamNormalized (kParamOscFilterResonance, 0.34);
     setParamNormalized (kParamOscFilterEnv, 0.46);
@@ -285,21 +334,15 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
         return kResultFalse;
       setParamNormalized (id, value);
     }
-
-    for (int32 lane = 0; lane < kLaneCount; ++lane)
-    {
-      for (int32 parameterOffset = 0; parameterOffset < kLaneMacroParamCount; ++parameterOffset)
-        setParamNormalized (laneMacroParamID (lane, static_cast<LaneMacroParamOffset> (parameterOffset)),
-                            kLaneMacroDefaults[lane][parameterOffset]);
-    }
     applyMacroDefaults ();
+    applyFilterDefaults ();
     setParamNormalized (kParamOscFilterCutoff, 0.20);
     setParamNormalized (kParamOscFilterResonance, 0.34);
     setParamNormalized (kParamOscFilterEnv, 0.46);
     return kResultOk;
   }
 
-  if (version == kPreviousStateVersion)
+  if (version == kV3StateVersion)
   {
     constexpr int32 v3ParamCount = kPreviousGlobalParamCount + (kLaneCount * kLaneParamCount) +
                                    (kLaneCount * kLaneExtraParamCount) + (kLaneCount * kLaneMacroParamCount);
@@ -328,7 +371,7 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
         return kResultFalse;
       setParamNormalized (id, value);
     }
-
+    applyFilterDefaults ();
     setParamNormalized (kParamOscFilterCutoff, 0.20);
     setParamNormalized (kParamOscFilterResonance, 0.34);
     setParamNormalized (kParamOscFilterEnv, 0.46);
