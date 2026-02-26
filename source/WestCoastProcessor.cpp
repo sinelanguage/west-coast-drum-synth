@@ -230,7 +230,7 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
     return kResultOk;
   }
 
-  if (version == kLegacyStateVersion)
+  if (version == kPreviousStateVersion)
   {
     constexpr int32 v2ParamCount =
       kPreviousGlobalParamCount + (kLaneCount * kLaneParamCount) + (kLaneCount * kLaneExtraParamCount);
@@ -268,49 +268,6 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
 
   if (version == kV3StateVersion)
   {
-    constexpr int32 v3ParamCount =
-      kParamGlobalCount + (kLaneCount * kLaneParamCount) + (kLaneCount * kLaneExtraParamCount) +
-      (kLaneCount * kLaneMacroParamCount);
-    constexpr auto v3Ids = [] ()
-    {
-      std::array<Vst::ParamID, v3ParamCount> ids {};
-      int32 index = 0;
-      for (int32 i = 0; i < kParamGlobalCount; ++i)
-        ids[index++] = static_cast<Vst::ParamID> (i);
-      for (int32 lane = 0; lane < kLaneCount; ++lane)
-        for (int32 p = 0; p < kLaneParamCount; ++p)
-          ids[index++] = laneParamID (lane, static_cast<LaneParamOffset> (p));
-      for (int32 lane = 0; lane < kLaneCount; ++lane)
-        for (int32 p = 0; p < kLaneExtraParamCount; ++p)
-          ids[index++] = laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (p));
-      for (int32 lane = 0; lane < kLaneCount; ++lane)
-        for (int32 p = 0; p < kLaneMacroParamCount; ++p)
-          ids[index++] = laneMacroParamID (lane, static_cast<LaneMacroParamOffset> (p));
-      return ids;
-    }();
-
-    for (const auto id : v3Ids)
-    {
-      double normalized = 0.0;
-      if (!streamer.readDouble (normalized))
-        return kResultFalse;
-      setParam (id, normalized);
-    }
-    applyFilterDefaults ();
-
-    setParam (kParamOscFilterCutoff, 0.20);
-    setParam (kParamOscFilterResonance, 0.34);
-    setParam (kParamOscFilterEnv, 0.46);
-
-    const auto& preset = getFactoryPresets ()[loadedPreset_];
-    sequencer_.setPattern (preset.pattern);
-    updateLaneFramesFromParameters ();
-    presetPending_ = false;
-    return kResultOk;
-  }
-
-  if (version == kPreviousStateVersion)
-  {
     constexpr int32 v3ParamCount = kPreviousGlobalParamCount + (kLaneCount * kLaneParamCount) +
                                    (kLaneCount * kLaneExtraParamCount) + (kLaneCount * kLaneMacroParamCount);
     constexpr auto v3Ids = [] ()
@@ -338,6 +295,7 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
         return kResultFalse;
       setParam (id, normalized);
     }
+    applyFilterDefaults ();
 
     setParam (kParamOscFilterCutoff, 0.20);
     setParam (kParamOscFilterResonance, 0.34);
@@ -719,7 +677,7 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
     frame.noiseTone = (noiseTone * 2.0) - 1.0;
     frame.noiseFilterCutoffHz = 220.0 + (std::pow (noiseTone, 1.40) * 16000.0);
     const double noiseDecay = getParam (laneExtraParamID (lane, kLaneNoiseDecay));
-    frame.noiseDecaySeconds = (0.008 + (noiseDecay * noiseDecay * 1.3)) * kNoiseDecayScale[lane];
+    frame.noiseDecaySeconds = (0.008 + (noiseDecay * noiseDecay * 1.3));
     frame.noiseResonance =
       std::clamp ((0.05 + (getParam (laneMacroParamID (lane, kLaneNoiseResonance)) * 0.90)) * kNoiseResScale[lane],
                   0.0, 0.98);

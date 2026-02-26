@@ -115,7 +115,7 @@ tresult PLUGIN_API WestCoastController::initialize (FUnknown* context)
     std::make_pair (0.0, 100.0), std::make_pair (0.0, 100.0), std::make_pair (0.0, 100.0),
     std::make_pair (0.0, 100.0), std::make_pair (-100.0, 100.0),
   };
-  const std::array<double, kLaneParamCount> laneDefaults {0.0, 0.50, 40.0, 35.0, 40.0, 18.0, 75.0, 0.0};
+  const std::array<double, kLaneParamCount> laneDefaults {0.0, 0.50, 40.0, 35.0, 28.0, 18.0, 72.0, 0.0};
 
   for (int32 lane = 0; lane < kLaneCount; ++lane)
   {
@@ -302,6 +302,9 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
     }
     applyMacroDefaults ();
     applyFilterDefaults ();
+    setParamNormalized (kParamOscFilterCutoff, 0.20);
+    setParamNormalized (kParamOscFilterResonance, 0.34);
+    setParamNormalized (kParamOscFilterEnv, 0.46);
     return kResultOk;
   }
 
@@ -333,48 +336,13 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
     }
     applyMacroDefaults ();
     applyFilterDefaults ();
-    return kResultOk;
-  }
-
-  if (version == kV3StateVersion)
-  {
-    constexpr int32 v3ParamCount =
-      kParamGlobalCount + (kLaneCount * kLaneParamCount) + (kLaneCount * kLaneExtraParamCount) +
-      (kLaneCount * kLaneMacroParamCount);
-    constexpr auto v3Ids = [] ()
-    {
-      std::array<Vst::ParamID, v3ParamCount> ids {};
-      int32 index = 0;
-      for (int32 i = 0; i < kParamGlobalCount; ++i)
-        ids[index++] = static_cast<Vst::ParamID> (i);
-      for (int32 lane = 0; lane < kLaneCount; ++lane)
-        for (int32 p = 0; p < kLaneParamCount; ++p)
-          ids[index++] = laneParamID (lane, static_cast<LaneParamOffset> (p));
-      for (int32 lane = 0; lane < kLaneCount; ++lane)
-        for (int32 p = 0; p < kLaneExtraParamCount; ++p)
-          ids[index++] = laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (p));
-      for (int32 lane = 0; lane < kLaneCount; ++lane)
-        for (int32 p = 0; p < kLaneMacroParamCount; ++p)
-          ids[index++] = laneMacroParamID (lane, static_cast<LaneMacroParamOffset> (p));
-      return ids;
-    }();
-
-    for (const auto id : v3Ids)
-    {
-      double value = 0.0;
-      if (!streamer.readDouble (value))
-        return kResultFalse;
-      setParamNormalized (id, value);
-    }
-    applyFilterDefaults ();
-    applyMacroDefaults ();
     setParamNormalized (kParamOscFilterCutoff, 0.20);
     setParamNormalized (kParamOscFilterResonance, 0.34);
     setParamNormalized (kParamOscFilterEnv, 0.46);
     return kResultOk;
   }
 
-  if (version == kPreviousStateVersion)
+  if (version == kV3StateVersion)
   {
     constexpr int32 v3ParamCount = kPreviousGlobalParamCount + (kLaneCount * kLaneParamCount) +
                                    (kLaneCount * kLaneExtraParamCount) + (kLaneCount * kLaneMacroParamCount);
@@ -403,7 +371,7 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
         return kResultFalse;
       setParamNormalized (id, value);
     }
-
+    applyFilterDefaults ();
     setParamNormalized (kParamOscFilterCutoff, 0.20);
     setParamNormalized (kParamOscFilterResonance, 0.34);
     setParamNormalized (kParamOscFilterEnv, 0.46);

@@ -140,13 +140,30 @@ double DrumVoice::process ()
   const double dynamicFold = frame_.foldAmount * (1.0 + (0.9 * toneEnv_));
   body = wavefold (body, dynamicFold);
 
-  const double bodyCutoffEnv = std::clamp (frame_.bodyFilterCutoffHz * (1.0 + (toneEnv_ * frame_.bodyFilterEnvAmount)),
-                                           80.0, 18000.0);
-  const double bodyResonance =
-    std::clamp (frame_.bodyFilterResonance + (0.12 * frame_.driveAmount) + (0.08 * frame_.foldAmount), 0.0, 0.98);
-  body = processStateVariableLowpass (body, bodyCutoffEnv, bodyResonance, bodyLowState_, bodyBandState_);
+  const double oscBaseCutoff = cutoffFromNormalized (frame_.oscFilterCutoff, 80.0, 18000.0);
+  const double oscEnvMod = oscBaseCutoff * frame_.oscFilterEnvAmount * toneEnv_ * 3.0;
+  const double oscCutoffHz = std::clamp (oscBaseCutoff + oscEnvMod, 20.0, sampleRate_ * 0.47);
+  body = processStateVariableLowpass (body, oscCutoffHz, frame_.oscFilterResonance,
+                                      oscFilterLowState_, oscFilterBandState_);
   const double oscGate = ampEnv_ * (0.32 + (0.68 * toneEnv_));
-  const double osc = body * frame_.oscLevel * oscGate * kBodyGain[character];
+  const double oscOut = body * frame_.oscLevel * oscGate * kBodyGain[character];
+
+  // --- TRANSIENT PATH ---
+  const double transientOsc = std::sin (transientPhase_);
+  const double transientNoise = randomBipolar ();
+  const double transientBlend =
+    std::clamp ((frame_.transientMix * 0.65) + (frame_.snapAmount * kNoiseTransientBlend[character]), 0.0, 1.0);
+  const double transientCore = (transientOsc * (1.0 - transientBlend)) + (transientNoise * transientBlend);
+
+  const double transBaseCutoff = cutoffFromNormalized (frame_.transFilterCutoff, 400.0, 18000.0);
+  const double transEnvMod = transBaseCutoff * frame_.transFilterEnvAmount * transientEnv_ * 2.5;
+  const double transCutoffHz = std::clamp (transBaseCutoff + transEnvMod, 20.0, sampleRate_ * 0.47);
+  const double filteredTransient = processStateVariableLowpass (transientCore, transCutoffHz,
+                                                                frame_.transFilterResonance,
+                                                                transFilterLowState_, transFilterBandState_);
+
+  const double transientGain = (0.35 + (frame_.transientAmount * 1.2)) * frame_.transientLevel;
+  const double transOut = filteredTransient * transientEnv_ * transientGain;
 
   // --- NOISE PATH ---
   const double rawNoise = randomBipolar ();
@@ -163,28 +180,22 @@ double DrumVoice::process ()
   const double noiseCutoffEnv = std::clamp (noiseCutoffBase * (0.60 + (noiseContour * (1.1 + (frame_.noiseEnvAmount * 2.4)))),
                                             180.0, 19000.0);
   const double noiseResonance = std::clamp (frame_.noiseResonance + (frame_.snapAmount * 0.16), 0.0, 0.98);
-  const double resonantNoise = processStateVariableLowpass (shapedNoise, noiseCutoffEnv, noiseResonance, noiseResLowState_,
-                                                            noiseResBandState_);
-  const double noise =
+  const double resonantNoise = processStateVariableLowpass (shapedNoise, noiseCutoffEnv, noiseResonance,
+                                                            noiseResLowState_, noiseResBandState_);
+  const double noiseOut =
     resonantNoise * frame_.noiseAmount * frame_.noiseLevel * noiseContour * kNoiseBlendGain[character];
 
-  const double transientOsc = std::sin (transientPhase_);
-  const double transientNoise = randomBipolar ();
-  const double transientBlend =
-    std::clamp ((frame_.transientMix * 0.65) + (frame_.snapAmount * kNoiseTransientBlend[character]), 0.0, 1.0);
-  const double transientCore = (transientOsc * (1.0 - transientBlend)) + (transientNoise * transientBlend);
-  const double transientGain = (0.35 + (frame_.transientAmount * 1.2)) * frame_.transientLevel;
-  const double transient = transientCore * transientEnv_ * transientGain;
-
-  const double noiseGain = std::max (0.15, frame_.noiseLevel);
+  // --- SUMMING ---
+  const double noiseGainWeight = std::max (0.15, frame_.noiseLevel);
   const double transientGainWeight = std::max (0.12, frame_.transientLevel);
   const double componentPower =
-    std::max ((frame_.oscLevel * frame_.oscLevel) + (noiseGain * noiseGain) + (transientGainWeight * transientGainWeight),
+    std::max ((frame_.oscLevel * frame_.oscLevel) + (noiseGainWeight * noiseGainWeight) +
+                (transientGainWeight * transientGainWeight),
               1e-6);
   const double normalization = 1.0 / std::sqrt (componentPower);
 
   const double drive = 1.0 + (frame_.driveAmount * 8.0);
-  const double dryMix = (osc + noise + transient) * normalization;
+  const double dryMix = (oscOut + noiseOut + transOut) * normalization;
   const double sample = softClip (dryMix * drive) * frame_.outputLevel;
 
   // --- ENVELOPE DECAY ---
