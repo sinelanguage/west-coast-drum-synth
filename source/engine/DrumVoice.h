@@ -34,7 +34,7 @@ struct LaneFrame {
   double transientAmount {0.2};
   double transientDecaySeconds {0.03};
   double transientMix {0.42};
-  double noiseTone {0.0};
+  double noiseTone {0.0}; // -1 (dark) .. +1 (bright)
   double noiseDecaySeconds {0.12};
   double noiseResonance {0.45};
   double noiseEnvAmount {0.55};
@@ -42,13 +42,6 @@ struct LaneFrame {
   double driveAmount {0.1};
   double level {0.7};
   double pan {0.0};
-
-  double oscFilterCutoff {0.65};
-  double oscFilterResonance {0.08};
-  double oscFilterEnvAmount {0.35};
-  double transFilterCutoff {0.70};
-  double transFilterResonance {0.05};
-  double transFilterEnvAmount {0.40};
 };
 
 class DrumVoice {
@@ -88,13 +81,10 @@ private:
   double noiseHighState_ {0.0};
   double noiseLpCoef_ {0.15};
   double noiseHpCoef_ {0.15};
-
   double noiseResLowState_ {0.0};
   double noiseResBandState_ {0.0};
-  double oscFilterLowState_ {0.0};
-  double oscFilterBandState_ {0.0};
-  double transFilterLowState_ {0.0};
-  double transFilterBandState_ {0.0};
+  double bodyLowState_ {0.0};
+  double bodyBandState_ {0.0};
 
   uint32_t noiseState_ {0x9E3779B9U};
   bool active_ {false};
