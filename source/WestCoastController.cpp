@@ -63,6 +63,18 @@ constexpr std::array<std::array<double, kLaneFilterParamCount>, kLaneCount> kLan
   {{0.66, 0.18, 0.45, 0.70, 0.12, 0.52}},
 }};
 
+constexpr VSTGUI::CCoord kCompactScaleX = 0.42;
+
+inline VSTGUI::CRect scaleRectX (const VSTGUI::CRect& rect, VSTGUI::CCoord scaleX)
+{
+  VSTGUI::CRect scaled = rect;
+  const VSTGUI::CCoord width = rect.getWidth () * scaleX;
+  const VSTGUI::CCoord left = rect.left * scaleX;
+  scaled.left = left;
+  scaled.right = left + width;
+  return scaled;
+}
+
 UString128 toString128 (const char* ascii)
 {
   return UString128 (ascii ? ascii : "");
@@ -490,8 +502,8 @@ IPlugView* PLUGIN_API WestCoastController::createView (FIDString name)
   {
     auto* editor = new VSTGUI::AspectRatioVST3Editor (this, "Editor", "WestCoastEditor.uidesc");
     editor->setDelegate (this);
-    editor->setMinZoomFactor (0.44);
-    editor->setEditorSizeConstrains (VSTGUI::CPoint (1240., 312.), VSTGUI::CPoint (3600., 908.));
+    editor->setMinZoomFactor (0.72);
+    editor->setEditorSizeConstrains (VSTGUI::CPoint (980., 420.), VSTGUI::CPoint (2600., 900.));
     return editor;
   }
   return nullptr;
@@ -501,21 +513,58 @@ VSTGUI::CView* WestCoastController::verifyView (VSTGUI::CView* view, const VSTGU
                                                 const VSTGUI::IUIDescription* /*description*/,
                                                 VSTGUI::VST3Editor* /*editor*/)
 {
-  auto* slider = dynamic_cast<VSTGUI::CSlider*> (view);
-  if (!slider || slider->isStyleHorizontal ())
-    return view;
+  auto bounds = view->getViewSize ();
+  bool boundsChanged = false;
 
-  auto bounds = slider->getViewSize ();
-  constexpr VSTGUI::CCoord kTargetSliderWidth = 42.0;
-  if (bounds.getWidth () <= kTargetSliderWidth + 0.1)
-    return view;
+  VSTGUI::CCoord layoutScale = 1.0;
+  const bool isMainWideLayout = bounds.getWidth () > 2500.0;
+  const bool isModulePanel =
+    bounds.getWidth () > 280.0 && bounds.getWidth () < 320.0 && bounds.getHeight () > 500.0;
+  const bool isModuleLocalView = bounds.right <= 300.0 && bounds.getHeight () < 690.0;
 
-  const VSTGUI::CCoord inset = (bounds.getWidth () - kTargetSliderWidth) * 0.5;
-  bounds.left += inset;
-  bounds.right -= inset;
-  slider->setViewSize (bounds, true);
-  slider->setMouseableArea (bounds);
-  slider->invalid ();
+  if (isMainWideLayout || isModulePanel || isModuleLocalView)
+    layoutScale = kCompactScaleX;
+
+  if (layoutScale < 0.999 || layoutScale > 1.001)
+  {
+    bounds = scaleRectX (bounds, layoutScale);
+    boundsChanged = true;
+  }
+
+  if (auto* slider = dynamic_cast<VSTGUI::CSlider*> (view))
+  {
+    slider->setFrameColor (VSTGUI::CColor (75, 82, 91, 255));
+    slider->setBackColor (VSTGUI::CColor (34, 37, 41, 255));
+
+    if (slider->isStyleHorizontal ())
+    {
+      if (!slider->getMouseEnabled () || bounds.getHeight () <= 12.0)
+        slider->setValueColor (VSTGUI::CColor (128, 212, 153, 255));
+      else
+        slider->setValueColor (VSTGUI::CColor (137, 182, 214, 255));
+    }
+    else
+    {
+      slider->setValueColor (VSTGUI::CColor (255, 159, 91, 255));
+
+      constexpr VSTGUI::CCoord kTargetSliderWidth = 20.0;
+      if (bounds.getWidth () > kTargetSliderWidth + 0.1)
+      {
+        const VSTGUI::CCoord inset = (bounds.getWidth () - kTargetSliderWidth) * 0.5;
+        bounds.left += inset;
+        bounds.right -= inset;
+        boundsChanged = true;
+      }
+    }
+  }
+
+  if (boundsChanged)
+  {
+    view->setViewSize (bounds, true);
+    view->setMouseableArea (bounds);
+    view->invalid ();
+  }
+
   return view;
 }
 
