@@ -513,7 +513,7 @@ VSTGUI::CView* WestCoastController::verifyView (VSTGUI::CView* view, const VSTGU
   const VSTGUI::CCoord inset = (bounds.getWidth () - kTargetSliderWidth) * 0.5;
   bounds.left += inset;
   bounds.right -= inset;
-  slider->setViewSize (bounds);
+  slider->setViewSize (bounds, true);
   slider->setMouseableArea (bounds);
   slider->invalid ();
   return view;
