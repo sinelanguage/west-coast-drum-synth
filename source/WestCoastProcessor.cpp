@@ -86,7 +86,7 @@ inline double normalizedFromPresetIndex (int32 presetIndex)
          static_cast<double> (kFactoryPresetCount - 1);
 }
 
-inline int32 laneForMidiPitch (int16 pitch)
+inline int32 laneForLegacyDrumMap (int16 pitch)
 {
   switch (pitch)
   {
@@ -123,12 +123,31 @@ inline int32 laneForMidiPitch (int16 pitch)
   }
 }
 
+inline int32 laneForMidiPitch (int16 pitch)
+{
+  if (pitch < 0 || pitch > 127)
+    return -1;
+
+  // Chromatic keyzones: C through G# in every octave map directly to the 9 lanes.
+  // This keeps the layout predictable while preserving legacy GM-note compatibility.
+  constexpr int16 kKeyzoneRoot = 24; // C0
+  if (pitch >= kKeyzoneRoot)
+  {
+    const int16 noteInOctave = static_cast<int16> ((pitch - kKeyzoneRoot) % 12);
+    if (noteInOctave >= 0 && noteInOctave < kLaneCount)
+      return noteInOctave;
+  }
+
+  return laneForLegacyDrumMap (pitch);
+}
+
 } // namespace
 
 WestCoastProcessor::WestCoastProcessor ()
 {
   setControllerClass (kControllerUID);
   params_.fill (0.0);
+  laneLedState_.fill (-1.0);
 }
 
 FUnknown* WestCoastProcessor::createInstance (void*)
@@ -555,6 +574,20 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
     return kResultFalse;
 
   data.outputs[0].silenceFlags = 0;
+
+  if (data.outputParameterChanges)
+  {
+    for (int32 lane = 0; lane < kLaneCount; ++lane)
+    {
+      const double ledValue = voices_[lane].isActive () ? 1.0 : 0.0;
+      if (std::abs (laneLedState_[lane] - ledValue) > 0.5)
+      {
+        pushParamChange (data.outputParameterChanges, laneLedParamID (lane), ledValue);
+        laneLedState_[lane] = ledValue;
+      }
+    }
+  }
+
   return kResultOk;
 }
 
@@ -563,6 +596,7 @@ void WestCoastProcessor::resetEngine ()
   sequencer_.reset ();
   for (auto& voice : voices_)
     voice.reset ();
+  laneLedState_.fill (-1.0);
 }
 
 void WestCoastProcessor::loadPresetByIndex (int32 presetIndex, Vst::IParameterChanges* outputChanges)
@@ -717,8 +751,9 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
     1.24, 1.02, 0.58, 0.92, 0.90, 0.88, 0.86, 0.82, 0.78};
   static constexpr std::array<double, kLaneCount> kOscBalance {
     1.0, 0.92, 0.76, 0.94, 0.92, 0.90, 0.88, 0.86, 0.82};
-  // Perc lanes get ±36 semitones for low bass and high percussion; others ±24
-  static constexpr std::array<double, kLaneCount> kPitchSemitoneRange {24.0, 24.0, 24.0, 36.0, 36.0, 36.0, 36.0, 36.0, 36.0};
+  // Wider tune travel for sub rumbles and bright metallic percussion.
+  static constexpr std::array<double, kLaneCount> kPitchSemitoneRange {
+    60.0, 52.0, 48.0, 60.0, 58.0, 62.0, 64.0, 56.0, 54.0};
 
   const double oscFilterCutoffNorm = getParam (kParamOscFilterCutoff);
   const double oscFilterResNorm = getParam (kParamOscFilterResonance);
@@ -736,7 +771,7 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
     const double semitoneRange = kPitchSemitoneRange[lane];
     const double semitones = (tune * 2.0 - 1.0) * semitoneRange;
     frame.frequencyHz = kBaseFrequencies[lane] * std::pow (2.0, semitones / 12.0);
-    frame.frequencyHz = std::clamp (frame.frequencyHz, 16.0, 20000.0);
+    frame.frequencyHz = std::clamp (frame.frequencyHz, 8.0, 20000.0);
 
     const double decay = getParam (laneParamID (lane, kLaneDecay));
     frame.decaySeconds = 0.02 + (decay * decay * 1.95);
