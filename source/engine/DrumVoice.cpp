@@ -51,7 +51,7 @@ void DrumVoice::setSampleRate (double sampleRate)
 void DrumVoice::trigger (const LaneFrame& frame)
 {
   frame_ = frame;
-  frame_.frequencyHz = std::clamp (frame_.frequencyHz, 20.0, 18000.0);
+  frame_.frequencyHz = std::clamp (frame_.frequencyHz, 8.0, 18000.0);
   frame_.oscLevel = std::clamp (frame_.oscLevel, 0.0, 2.0);
   frame_.bodyFilterCutoffHz = std::clamp (frame_.bodyFilterCutoffHz, 80.0, 18000.0);
   frame_.bodyFilterResonance = std::clamp (frame_.bodyFilterResonance, 0.0, 0.98);

@@ -7,6 +7,7 @@
 #include "pluginterfaces/base/ibstream.h"
 #include "pluginterfaces/base/ustring.h"
 #include "public.sdk/source/vst/vstparameters.h"
+#include "vstgui/lib/controls/cslider.h"
 #include "vstgui/plugin-bindings/vst3editor.h"
 
 #include <algorithm>
@@ -256,6 +257,12 @@ tresult PLUGIN_API WestCoastController::initialize (FUnknown* context)
     }
   }
 
+  const std::array<const char*, kLaneCount> laneLedTitles {
+    "Kick Trigger LED", "Snare Trigger LED", "Hat Trigger LED", "Perc A1 Trigger LED", "Perc A2 Trigger LED",
+    "Perc B1 Trigger LED", "Perc B2 Trigger LED", "RimShot Trigger LED", "Clap Trigger LED"};
+  for (int32 lane = 0; lane < kLaneCount; ++lane)
+    parameters.addParameter (makeRangeParam (laneLedTitles[lane], laneLedParamID (lane), "", 0.0, 1.0, 0.0));
+
   return kResultOk;
 }
 
@@ -481,11 +488,40 @@ IPlugView* PLUGIN_API WestCoastController::createView (FIDString name)
 {
   if (FIDStringsEqual (name, Vst::ViewType::kEditor))
   {
-    auto* editor = new VSTGUI::VST3Editor (this, "Editor", "WestCoastEditor.uidesc");
-    editor->setEditorSizeConstrains (VSTGUI::CPoint (1560., 712.), VSTGUI::CPoint (3180., 1920.));
+    auto* editor = new VSTGUI::AspectRatioVST3Editor (this, "Editor", "WestCoastEditor.uidesc");
+    editor->setDelegate (this);
+    editor->setMinZoomFactor (0.44);
+    editor->setEditorSizeConstrains (VSTGUI::CPoint (1240., 312.), VSTGUI::CPoint (3600., 908.));
     return editor;
   }
   return nullptr;
+}
+
+VSTGUI::CView* WestCoastController::verifyView (VSTGUI::CView* view, const VSTGUI::UIAttributes& /*attributes*/,
+                                                const VSTGUI::IUIDescription* /*description*/,
+                                                VSTGUI::VST3Editor* /*editor*/)
+{
+  auto* slider = dynamic_cast<VSTGUI::CSlider*> (view);
+  if (!slider || slider->isStyleHorizontal ())
+    return view;
+
+  auto bounds = slider->getViewSize ();
+  constexpr VSTGUI::CCoord kTargetSliderWidth = 42.0;
+  if (bounds.getWidth () <= kTargetSliderWidth + 0.1)
+    return view;
+
+  const VSTGUI::CCoord inset = (bounds.getWidth () - kTargetSliderWidth) * 0.5;
+  bounds.left += inset;
+  bounds.right -= inset;
+  slider->setViewSize (bounds, true);
+  slider->setMouseableArea (bounds);
+  slider->invalid ();
+  return view;
+}
+
+bool WestCoastController::isPrivateParameter (const Vst::ParamID paramID)
+{
+  return isLaneLedParamID (paramID);
 }
 
 } // namespace Steinberg::WestCoastDrumSynth

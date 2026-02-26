@@ -67,6 +67,8 @@ constexpr Vst::ParamID kLaneParamBase = 100;
 constexpr Vst::ParamID kLaneExtraParamBase = 200;
 constexpr Vst::ParamID kLaneMacroParamBase = 300;
 constexpr Vst::ParamID kLaneFilterParamBase = 400;
+constexpr Vst::ParamID kLaneLedParamBase = 500;
+constexpr int32 kLaneLedParamCount = kLaneCount;
 
 constexpr Vst::ParamID kLaneCoreMaxParamId = kLaneParamBase + (kLaneCount * kLaneParamCount) - 1;
 constexpr Vst::ParamID kLaneExtraMaxParamId = kLaneExtraParamBase + (kLaneCount * kLaneExtraParamCount) - 1;
@@ -97,6 +99,16 @@ inline constexpr Vst::ParamID laneMacroParamID (int32 lane, LaneMacroParamOffset
 inline constexpr Vst::ParamID laneFilterParamID (int32 lane, LaneFilterParamOffset offset)
 {
   return kLaneFilterParamBase + (lane * kLaneFilterParamCount) + offset;
+}
+
+inline constexpr Vst::ParamID laneLedParamID (int32 lane)
+{
+  return kLaneLedParamBase + lane;
+}
+
+inline constexpr bool isLaneLedParamID (Vst::ParamID paramId)
+{
+  return paramId >= kLaneLedParamBase && paramId < (kLaneLedParamBase + kLaneLedParamCount);
 }
 
 inline constexpr int32 laneFromParamID (Vst::ParamID paramId)

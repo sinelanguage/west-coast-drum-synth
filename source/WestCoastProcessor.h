@@ -39,6 +39,7 @@ private:
   std::array<double, kParameterStateSize> params_ {};
   std::array<LaneFrame, kLaneCount> laneFrames_ {};
   std::array<DrumVoice, kLaneCount> voices_ {};
+  std::array<double, kLaneCount> laneLedState_ {};
   StepSequencer sequencer_ {};
 
   int32 loadedPreset_ {0};
