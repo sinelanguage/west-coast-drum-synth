@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 3.22)
 
 project(WestCoastDrumSynth VERSION 0.1.0 LANGUAGES C CXX)
 
+# Default to Release so the real plugin GUI shows in DAWs. Debug builds enable VSTGUI
+# live-editing mode (black screen + tiny "e" button) instead of the actual interface.
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
+
 # macOS build controls:
 # - default to native Apple Silicon (arm64) when CMAKE_OSX_ARCHITECTURES is unset
 # - allow universal binaries via WCSD_MAC_UNIVERSAL=ON

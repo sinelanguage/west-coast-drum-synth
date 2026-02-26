@@ -32,11 +32,28 @@ West Coast Drum Synth is a VST3 drum-machine instrument built directly on the St
 ## Build (general)
 
 ```bash
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B build
 cmake --build build --target WestCoastDrumSynth -j
 ```
 
-**Release vs Debug:** Use `Release` for the real plugin GUI in a DAW. Debug builds enable VSTGUI's live-editing mode, which shows a minimal "e" button instead of the full interface.
+Build type defaults to Release so the real plugin GUI appears in DAWs.
+
+## Black screen or tiny "e" button when testing in Bitwig?
+
+**What’s wrong:** You’re running a **Debug** build. The VST3 SDK turns on VSTGUI’s live-editing mode in Debug, which replaces the plugin GUI with a developer UI (black window and a small “e” button).
+
+**How to fix it:**
+
+1. **Rebuild as Release** (recommended):
+   ```bash
+   rm -rf build
+   cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+   cmake --build build --target WestCoastDrumSynth -j
+   ```
+2. **Reinstall** the plugin into your VST3 folder.
+3. **Rescan** plugins in Bitwig.
+
+The project now defaults to Release when you don’t pass `-DCMAKE_BUILD_TYPE`, so new builds should show the real GUI.
 
 Optional local SDK path:
 
@@ -81,15 +98,10 @@ Install the bundle to:
 
 ## Bitwig on Mac (Apple Silicon)
 
-To see the **real GUI** (not the black editor or developer "e" button) in Bitwig on Mac ARM:
-
 ```bash
-# IMPORTANT: Use Release build. Debug builds show a developer editing UI instead of the real GUI.
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=arm64
+cmake -S . -B build -DCMAKE_OSX_ARCHITECTURES=arm64
 cmake --build build --target WestCoastDrumSynth -j
-
-# Install (sudo needed for /Library)
 sudo cp -R build/VST3/Release/WestCoastDrumSynth.vst3 /Library/Audio/Plug-Ins/VST3/
-
-# Rescan plugins in Bitwig (Settings → Plug-ins → Rescan)
 ```
+
+Then rescan plugins in Bitwig (Settings → Plug-ins → Rescan).
