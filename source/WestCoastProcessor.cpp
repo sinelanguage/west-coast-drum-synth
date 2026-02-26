@@ -17,9 +17,15 @@ namespace Steinberg::WestCoastDrumSynth {
 namespace {
 
 constexpr uint32 kStateVersion = 4;
+<<<<<<< cursor/plugin-ui-and-audio-0a5c
 constexpr uint32 kV3StateVersion = 3;
 constexpr uint32 kPreviousStateVersion = 2;
 constexpr uint32 kLegacyStateVersion = 1;
+=======
+constexpr uint32 kPreviousStateVersion = 3;
+constexpr uint32 kLegacyStateVersion = 2;
+constexpr uint32 kVeryLegacyStateVersion = 1;
+>>>>>>> main
 constexpr int32 kLegacyLaneCount = 4;
 constexpr int32 kPreviousGlobalParamCount = 6;
 
@@ -169,6 +175,7 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
     }
   };
 
+<<<<<<< cursor/plugin-ui-and-audio-0a5c
   const auto applyFilterDefaults = [this] () {
     for (int32 lane = 0; lane < kLaneCount; ++lane)
     {
@@ -181,6 +188,9 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
   };
 
   if (version == kLegacyStateVersion)
+=======
+  if (version == kVeryLegacyStateVersion)
+>>>>>>> main
   {
     for (int32 param = 0; param < kPreviousGlobalParamCount; ++param)
     {
@@ -653,6 +663,12 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
   static constexpr std::array<double, kLaneCount> kBaseFrequencies {52.0, 185.0, 3800.0, 420.0, 620.0};
   static constexpr std::array<LaneCharacter, kLaneCount> kLaneCharacters {
     LaneCharacter::Kick, LaneCharacter::Snare, LaneCharacter::Hat, LaneCharacter::PercA, LaneCharacter::PercB};
+<<<<<<< cursor/plugin-ui-and-audio-0a5c
+  static constexpr std::array<double, kLaneCount> kPitchEnvScale {1.0, 0.58, 0.24, 0.64, 0.70};
+  static constexpr std::array<double, kLaneCount> kTransientScale {1.0, 0.96, 0.62, 0.86, 0.92};
+  static constexpr std::array<double, kLaneCount> kTransientDecayScale {1.0, 1.22, 0.62, 0.94, 1.02};
+  static constexpr std::array<double, kLaneCount> kTransientMixScale {1.0, 1.10, 0.82, 0.96, 1.0};
+=======
   static constexpr std::array<double, kLaneCount> kPitchEnvScale {1.0, 0.60, 0.28, 0.66, 0.72};
   static constexpr std::array<double, kLaneCount> kTransientAttackScale {1.0, 0.92, 0.74, 0.88, 0.94};
   static constexpr std::array<double, kLaneCount> kTransientDecayScale {1.0, 1.16, 0.68, 0.92, 1.0};
@@ -661,6 +677,7 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
   static constexpr std::array<double, kLaneCount> kNoiseDecayScale {0.82, 1.58, 0.94, 1.10, 1.20};
   static constexpr std::array<double, kLaneCount> kNoiseResScale {0.90, 1.04, 1.12, 0.98, 1.04};
   static constexpr std::array<double, kLaneCount> kNoiseEnvScale {0.88, 1.02, 1.18, 0.98, 1.08};
+>>>>>>> main
   static constexpr std::array<double, kLaneCount> kSnapScale {0.24, 1.0, 0.86, 0.58, 0.64};
   static constexpr std::array<double, kLaneCount> kOscCutoffScale {0.62, 0.88, 1.70, 1.04, 1.18};
   static constexpr std::array<double, kLaneCount> kOscResScale {1.08, 1.0, 0.82, 0.94, 0.98};
@@ -692,6 +709,11 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
 
     frame.foldAmount = getParam (laneParamID (lane, kLaneFold));
     frame.fmAmount = getParam (laneParamID (lane, kLaneFm));
+<<<<<<< cursor/plugin-ui-and-audio-0a5c
+
+    frame.noiseAmount = getParam (laneParamID (lane, kLaneNoise)) * 2.0;
+
+=======
     frame.bodyFilterCutoffHz = std::clamp (globalOscCutoffHz * kOscCutoffScale[lane], 80.0, 18000.0);
     frame.bodyFilterResonance =
       std::clamp ((globalOscResonance + (frame.foldAmount * 0.12)) * kOscResScale[lane], 0.0, 0.98);
@@ -700,13 +722,20 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
     const double noise = getParam (laneParamID (lane, kLaneNoise));
     frame.noiseAmount = std::clamp (std::pow (noise, 0.82) * 1.35, 0.0, 2.5);
     frame.noiseLevel = std::clamp (std::pow (noise, 0.58) * kNoiseLevelScale[lane], 0.0, 2.5);
+>>>>>>> main
     frame.pitchEnvAmount = std::clamp (getParam (laneExtraParamID (lane, kLanePitchEnvAmount)) *
                                          kPitchEnvScale[lane],
                                        0.0, 1.0);
     const double pitchDecay = getParam (laneExtraParamID (lane, kLanePitchEnvDecay));
     frame.pitchEnvDecaySeconds = 0.006 + (pitchDecay * pitchDecay * 0.55);
+<<<<<<< cursor/plugin-ui-and-audio-0a5c
+
+    frame.transientAmount = std::clamp (getParam (laneExtraParamID (lane, kLaneTransientAttack)) *
+                                          kTransientScale[lane],
+=======
     frame.transientAmount = std::clamp (std::pow (getParam (laneExtraParamID (lane, kLaneTransientAttack)), 0.72) *
                                           kTransientAttackScale[lane],
+>>>>>>> main
                                         0.0, 1.0);
     const double transientDecay = getParam (laneMacroParamID (lane, kLaneTransientDecay));
     frame.transientDecaySeconds =
@@ -719,13 +748,19 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
     frame.noiseTone = (noiseTone * 2.0) - 1.0;
     frame.noiseFilterCutoffHz = 220.0 + (std::pow (noiseTone, 1.40) * 16000.0);
     const double noiseDecay = getParam (laneExtraParamID (lane, kLaneNoiseDecay));
-    frame.noiseDecaySeconds = (0.008 + (noiseDecay * noiseDecay * 1.3)) * kNoiseDecayScale[lane];
+    frame.noiseDecaySeconds = (0.008 + (noiseDecay * noiseDecay * 1.3));
     frame.noiseResonance =
+<<<<<<< cursor/plugin-ui-and-audio-0a5c
+      std::clamp (0.08 + (getParam (laneMacroParamID (lane, kLaneNoiseResonance)) * 0.88), 0.0, 0.98);
+    frame.noiseEnvAmount =
+      std::clamp (0.20 + (getParam (laneMacroParamID (lane, kLaneNoiseEnvAmount)) * 1.20), 0.0, 1.5);
+=======
       std::clamp ((0.05 + (getParam (laneMacroParamID (lane, kLaneNoiseResonance)) * 0.90)) * kNoiseResScale[lane],
                   0.0, 0.98);
     frame.noiseEnvAmount =
       std::clamp ((0.18 + (getParam (laneMacroParamID (lane, kLaneNoiseEnvAmount)) * 1.25)) * kNoiseEnvScale[lane],
                   0.0, 1.5);
+>>>>>>> main
     frame.snapAmount = std::clamp (getParam (laneExtraParamID (lane, kLaneSnap)) * kSnapScale[lane], 0.0, 1.0);
 
     frame.driveAmount = getParam (laneParamID (lane, kLaneDrive));

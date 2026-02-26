@@ -91,8 +91,6 @@ private:
 
   double noiseResLowState_ {0.0};
   double noiseResBandState_ {0.0};
-  double bodyLowState_ {0.0};
-  double bodyBandState_ {0.0};
   double oscFilterLowState_ {0.0};
   double oscFilterBandState_ {0.0};
   double transFilterLowState_ {0.0};
