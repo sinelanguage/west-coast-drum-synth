@@ -76,3 +76,18 @@ Install the bundle to:
 - macOS: `/Library/Audio/Plug-Ins/VST3/`
 - Linux: `~/.vst3/`
 - Windows: `C:\Program Files\Common Files\VST3\`
+
+## Bitwig on Mac (Apple Silicon)
+
+To see the GUI in Bitwig on Mac ARM:
+
+```bash
+# Build (on your Mac)
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=arm64
+cmake --build build --target WestCoastDrumSynth -j
+
+# Install (sudo needed for /Library)
+sudo cp -R build/VST3/Release/WestCoastDrumSynth.vst3 /Library/Audio/Plug-Ins/VST3/
+
+# Rescan plugins in Bitwig (Settings → Plug-ins → Rescan)
+```
