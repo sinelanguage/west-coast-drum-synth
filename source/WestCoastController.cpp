@@ -2,6 +2,8 @@
 
 #include "ParameterIds.h"
 #include "presets/FactoryPresets.h"
+#include "ui/ArturiaSlider.h"
+#include "ui/WCDrumView.h"
 
 #include "base/source/fstreamer.h"
 #include "pluginterfaces/base/ibstream.h"
@@ -9,6 +11,8 @@
 #include "public.sdk/source/vst/vstparameters.h"
 #include "vstgui/lib/controls/cslider.h"
 #include "vstgui/plugin-bindings/vst3editor.h"
+#include "vstgui/uidescription/iuidescription.h"
+#include "vstgui/uidescription/uiattributes.h"
 
 #include <algorithm>
 #include <array>
@@ -506,6 +510,35 @@ IPlugView* PLUGIN_API WestCoastController::createView (FIDString name)
     editor->setEditorSizeConstrains (VSTGUI::CPoint (980., 420.), VSTGUI::CPoint (2600., 900.));
     return editor;
   }
+  return nullptr;
+}
+
+VSTGUI::CView* WestCoastController::createCustomView (VSTGUI::UTF8StringPtr name,
+                                                       const VSTGUI::UIAttributes& attributes,
+                                                       const VSTGUI::IUIDescription* description,
+                                                       VSTGUI::VST3Editor* editor)
+{
+  if (!name || !editor)
+    return nullptr;
+
+  VSTGUI::CPoint origin (0, 0);
+  VSTGUI::CPoint size (1320, 700);
+  attributes.getPointAttribute ("origin", origin);
+  attributes.getPointAttribute ("size", size);
+
+  VSTGUI::CRect rect (origin.x, origin.y, origin.x + size.x, origin.y + size.y);
+
+  if (strcmp (name, "WCDrumView") == 0)
+  {
+    return new SineLanguage::WestCoastDrumSynth::WCDrumView (rect);
+  }
+
+  if (strcmp (name, "ArturiaSlider") == 0)
+  {
+    return new SineLanguage::WestCoastDrumSynth::ArturiaSlider (
+      rect, nullptr, -1, 0, 0, nullptr, nullptr, VSTGUI::CPoint (0, 0));
+  }
+
   return nullptr;
 }
 

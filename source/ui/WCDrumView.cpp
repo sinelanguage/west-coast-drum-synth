@@ -232,33 +232,6 @@ void WCDrumView::drawBackgroundRect(CDrawContext* ctx, const CRect& rect) {
     // Vent slots in header area
     drawVentSlots(ctx, fullRect);
 
-    // Synth section panel
-    CRect synthSection(fullRect.left + 16, fullRect.top + 55,
-                       fullRect.right - 16, fullRect.top + 315);
-    drawSectionPanel(ctx, synthSection, "COMPLEX OSCILLATOR  /  WAVEFOLDER  /  LOW PASS GATE");
-
-    // Sequencer section panel
-    CRect seqSection(fullRect.left + 16, fullRect.top + 325,
-                     fullRect.right - 16, fullRect.bottom - 16);
-    drawSectionPanel(ctx, seqSection, "SEQUENCER");
-
-    // Beat group shading in sequencer area
-    CCoord stepX = seqSection.left + 24;
-    CCoord stepW = 40.0;
-    for (int g = 0; g < 4; ++g) {
-        if (g % 2 == 0) {
-            CRect groupRect(stepX + g * 4 * stepW, seqSection.top + 30,
-                           stepX + (g * 4 + 4) * stepW - 4, seqSection.bottom - 8);
-            CGraphicsPath* groupPath = ctx->createGraphicsPath();
-            if (groupPath) {
-                groupPath->addRoundRect(groupRect, 3.0);
-                ctx->setFillColor(CColor(255, 255, 255, 5));
-                ctx->drawGraphicsPath(groupPath, CDrawContext::kPathFilled);
-                groupPath->forget();
-            }
-        }
-    }
-
     CViewContainer::drawBackgroundRect(ctx, rect);
 }
 

@@ -17,6 +17,10 @@ public:
   tresult PLUGIN_API setComponentState (IBStream* state) SMTG_OVERRIDE;
   IPlugView* PLUGIN_API createView (FIDString name) SMTG_OVERRIDE;
 
+  VSTGUI::CView* createCustomView (VSTGUI::UTF8StringPtr name,
+                                   const VSTGUI::UIAttributes& attributes,
+                                   const VSTGUI::IUIDescription* description,
+                                   VSTGUI::VST3Editor* editor) SMTG_OVERRIDE;
   VSTGUI::CView* verifyView (VSTGUI::CView* view, const VSTGUI::UIAttributes& attributes,
                              const VSTGUI::IUIDescription* description,
                              VSTGUI::VST3Editor* editor) SMTG_OVERRIDE;
