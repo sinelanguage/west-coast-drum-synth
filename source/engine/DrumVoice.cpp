@@ -232,6 +232,8 @@ void DrumVoice::reset ()
   noiseHighState_ = 0.0;
   noiseResLowState_ = 0.0;
   noiseResBandState_ = 0.0;
+  bodyLowState_ = 0.0;
+  bodyBandState_ = 0.0;
   oscFilterLowState_ = 0.0;
   oscFilterBandState_ = 0.0;
   transFilterLowState_ = 0.0;
