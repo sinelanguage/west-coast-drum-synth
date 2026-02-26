@@ -32,9 +32,11 @@ West Coast Drum Synth is a VST3 drum-machine instrument built directly on the St
 ## Build (general)
 
 ```bash
-cmake -S . -B build
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --target WestCoastDrumSynth -j
 ```
+
+**Release vs Debug:** Use `Release` for the real plugin GUI in a DAW. Debug builds enable VSTGUI's live-editing mode, which shows a minimal "e" button instead of the full interface.
 
 Optional local SDK path:
 
@@ -79,10 +81,10 @@ Install the bundle to:
 
 ## Bitwig on Mac (Apple Silicon)
 
-To see the GUI in Bitwig on Mac ARM:
+To see the **real GUI** (not the black editor or developer "e" button) in Bitwig on Mac ARM:
 
 ```bash
-# Build (on your Mac)
+# IMPORTANT: Use Release build. Debug builds show a developer editing UI instead of the real GUI.
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=arm64
 cmake --build build --target WestCoastDrumSynth -j
 
