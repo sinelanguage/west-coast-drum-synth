@@ -102,6 +102,11 @@ target_link_libraries(WestCoastDrumSynth
     vstgui_support
 )
 
+# Disable VSTGUI live-editing mode so the plugin shows its real UI in hosts.
+# vstgui_support enables VSTGUI_LIVE_EDITING in Debug builds, which shows the
+# UIDescription editor instead of the plugin's actual interface.
+target_compile_definitions(vstgui_support PUBLIC VSTGUI_LIVE_EDITING=0)
+
 smtg_target_add_plugin_resources(WestCoastDrumSynth
   RESOURCES
     "resource/WestCoastEditor.uidesc"
