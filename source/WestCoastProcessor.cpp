@@ -230,7 +230,7 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
     return kResultOk;
   }
 
-  if (version == kLegacyStateVersion)
+  if (version == kPreviousStateVersion)
   {
     constexpr int32 v2ParamCount =
       kPreviousGlobalParamCount + (kLaneCount * kLaneParamCount) + (kLaneCount * kLaneExtraParamCount);
