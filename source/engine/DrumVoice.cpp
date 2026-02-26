@@ -10,7 +10,6 @@ namespace Steinberg::WestCoastDrumSynth {
 namespace {
 
 constexpr double kTwoPi = 6.28318530717958647692;
-constexpr double kPi = 3.14159265358979323846;
 
 inline double clamp01 (double x)
 {
@@ -34,11 +33,6 @@ constexpr std::array<double, 5> kNoiseBlendGain {0.85, 1.25, 1.45, 1.10, 1.15};
 constexpr std::array<double, 5> kBodyGain {1.05, 0.84, 0.42, 0.98, 1.02};
 constexpr std::array<double, 5> kFmScale {1.0, 0.85, 0.40, 0.78, 0.85};
 constexpr std::array<double, 5> kNoiseTransientBlend {0.40, 0.68, 0.38, 0.54, 0.58};
-
-inline double cutoffFromNormalized (double normalized, double minHz, double maxHz)
-{
-  return minHz * std::pow (maxHz / minHz, normalized);
-}
 
 } // namespace
 
@@ -75,12 +69,6 @@ void DrumVoice::trigger (const LaneFrame& frame)
   frame_.pitchEnvDecaySeconds = std::clamp (frame_.pitchEnvDecaySeconds, 0.004, 0.8);
   frame_.noiseDecaySeconds = std::clamp (frame_.noiseDecaySeconds, 0.004, 1.8);
   frame_.transientDecaySeconds = std::clamp (frame_.transientDecaySeconds, 0.0015, 0.5);
-  frame_.oscFilterCutoff = clamp01 (frame_.oscFilterCutoff);
-  frame_.oscFilterResonance = std::clamp (frame_.oscFilterResonance, 0.0, 0.96);
-  frame_.oscFilterEnvAmount = clamp01 (frame_.oscFilterEnvAmount);
-  frame_.transFilterCutoff = clamp01 (frame_.transFilterCutoff);
-  frame_.transFilterResonance = std::clamp (frame_.transFilterResonance, 0.0, 0.96);
-  frame_.transFilterEnvAmount = clamp01 (frame_.transFilterEnvAmount);
 
   const double ampTau = frame_.decaySeconds;
   const double toneTau = std::max (0.01, frame_.decaySeconds * 0.28);
@@ -117,8 +105,6 @@ double DrumVoice::process ()
     return 0.0;
 
   const size_t character = characterIndex (frame_.character);
-
-  // --- OSCILLATOR PATH ---
   const double pitchSemitoneSweep = frame_.pitchEnvAmount * pitchEnv_ * kPitchSemitoneSpan[character];
   const double pitchRatio = std::pow (2.0, pitchSemitoneSweep / 12.0);
 
@@ -148,7 +134,6 @@ double DrumVoice::process ()
   const double oscGate = ampEnv_ * (0.32 + (0.68 * toneEnv_));
   const double osc = body * frame_.oscLevel * oscGate * kBodyGain[character];
 
-  // --- NOISE PATH ---
   const double rawNoise = randomBipolar ();
   noiseLowState_ += noiseLpCoef_ * (rawNoise - noiseLowState_);
   noiseHighState_ += noiseHpCoef_ * (rawNoise - noiseHighState_);
@@ -187,7 +172,6 @@ double DrumVoice::process ()
   const double dryMix = (osc + noise + transient) * normalization;
   const double sample = softClip (dryMix * drive) * frame_.outputLevel;
 
-  // --- ENVELOPE DECAY ---
   ampEnv_ *= ampDecayCoef_;
   toneEnv_ *= toneDecayCoef_;
   pitchEnv_ *= pitchDecayCoef_;
@@ -223,10 +207,6 @@ void DrumVoice::reset ()
   noiseResBandState_ = 0.0;
   bodyLowState_ = 0.0;
   bodyBandState_ = 0.0;
-  oscFilterLowState_ = 0.0;
-  oscFilterBandState_ = 0.0;
-  transFilterLowState_ = 0.0;
-  transFilterBandState_ = 0.0;
   active_ = false;
 }
 
@@ -254,7 +234,7 @@ double DrumVoice::processStateVariableLowpass (double input, double cutoffHz, do
                                                double& bandState)
 {
   const double clippedCutoff = std::clamp (cutoffHz, 20.0, sampleRate_ * 0.47);
-  const double f = std::clamp ((2.0 * std::sin ((kPi * clippedCutoff) / sampleRate_)), 0.0, 1.0);
+  const double f = std::clamp ((2.0 * std::sin ((3.14159265358979323846 * clippedCutoff) / sampleRate_)), 0.0, 1.0);
   const double q = std::clamp (resonance, 0.0, 0.99);
   const double damping = 1.0 - q;
   const double high = input - lowState - (damping * bandState);
