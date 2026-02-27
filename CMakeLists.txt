@@ -98,8 +98,6 @@ smtg_add_vst3plugin(WestCoastDrumSynth
   source/WestCoastProcessor.cpp
   source/WestCoastController.h
   source/WestCoastController.cpp
-  source/ui/WCDrumView.cpp
-  source/ui/ArturiaSlider.cpp
   source/engine/DrumVoice.h
   source/engine/DrumVoice.cpp
   source/engine/StepSequencer.h
@@ -123,7 +121,6 @@ target_link_libraries(WestCoastDrumSynth
 smtg_target_add_plugin_resources(WestCoastDrumSynth
   RESOURCES
     "resource/WestCoastEditor.uidesc"
-    "resource/knob.png"
 )
 
 smtg_target_configure_version_file(WestCoastDrumSynth)

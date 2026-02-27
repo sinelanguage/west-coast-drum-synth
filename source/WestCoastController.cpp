@@ -2,8 +2,6 @@
 
 #include "ParameterIds.h"
 #include "presets/FactoryPresets.h"
-#include "ui/ArturiaSlider.h"
-#include "ui/WCDrumView.h"
 
 #include "base/source/fstreamer.h"
 #include "pluginterfaces/base/ibstream.h"
@@ -12,7 +10,6 @@
 #include "vstgui/lib/controls/cslider.h"
 #include "vstgui/plugin-bindings/vst3editor.h"
 #include "vstgui/uidescription/iuidescription.h"
-#include "vstgui/uidescription/uiattributes.h"
 
 #include <algorithm>
 #include <array>
@@ -513,35 +510,6 @@ IPlugView* PLUGIN_API WestCoastController::createView (FIDString name)
   return nullptr;
 }
 
-VSTGUI::CView* WestCoastController::createCustomView (VSTGUI::UTF8StringPtr name,
-                                                       const VSTGUI::UIAttributes& attributes,
-                                                       const VSTGUI::IUIDescription* description,
-                                                       VSTGUI::VST3Editor* editor)
-{
-  if (!name || !editor)
-    return nullptr;
-
-  VSTGUI::CPoint origin (0, 0);
-  VSTGUI::CPoint size (1320, 700);
-  attributes.getPointAttribute ("origin", origin);
-  attributes.getPointAttribute ("size", size);
-
-  VSTGUI::CRect rect (origin.x, origin.y, origin.x + size.x, origin.y + size.y);
-
-  if (strcmp (name, "WCDrumView") == 0)
-  {
-    return new SineLanguage::WestCoastDrumSynth::WCDrumView (rect);
-  }
-
-  if (strcmp (name, "ArturiaSlider") == 0)
-  {
-    return new SineLanguage::WestCoastDrumSynth::ArturiaSlider (
-      rect, nullptr, -1, 0, 0, nullptr, nullptr, VSTGUI::CPoint (0, 0));
-  }
-
-  return nullptr;
-}
-
 VSTGUI::CView* WestCoastController::verifyView (VSTGUI::CView* view, const VSTGUI::UIAttributes& /*attributes*/,
                                                 const VSTGUI::IUIDescription* /*description*/,
                                                 VSTGUI::VST3Editor* /*editor*/)
@@ -566,19 +534,16 @@ VSTGUI::CView* WestCoastController::verifyView (VSTGUI::CView* view, const VSTGU
 
   if (auto* slider = dynamic_cast<VSTGUI::CSlider*> (view))
   {
-    slider->setFrameColor (VSTGUI::CColor (75, 82, 91, 255));
-    slider->setBackColor (VSTGUI::CColor (34, 37, 41, 255));
+    slider->setFrameColor (VSTGUI::CColor (74, 79, 88, 255));
+    slider->setBackColor (VSTGUI::CColor (58, 62, 70, 255));
 
     if (slider->isStyleHorizontal ())
     {
-      if (!slider->getMouseEnabled () || bounds.getHeight () <= 12.0)
-        slider->setValueColor (VSTGUI::CColor (128, 212, 153, 255));
-      else
-        slider->setValueColor (VSTGUI::CColor (137, 182, 214, 255));
+      slider->setValueColor (VSTGUI::CColor (0, 212, 170, 255));
     }
     else
     {
-      slider->setValueColor (VSTGUI::CColor (255, 159, 91, 255));
+      slider->setValueColor (VSTGUI::CColor (0, 212, 170, 255));
 
       constexpr VSTGUI::CCoord kTargetSliderWidth = 20.0;
       if (bounds.getWidth () > kTargetSliderWidth + 0.1)
