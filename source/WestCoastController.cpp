@@ -123,6 +123,7 @@ tresult PLUGIN_API WestCoastController::initialize (FUnknown* context)
     presetParam->appendString (presetName);
   }
   parameters.addParameter (presetParam);
+  parameters.addParameter (STR16 ("Randomize"), nullptr, 1, 0.0, Vst::ParameterInfo::kCanAutomate, kParamRandomize);
 
   const std::array<std::array<const char*, kLaneParamCount>, kLaneCount> laneTitles {{
     {{"Kick Tune", "Kick Decay", "Kick Fold", "Kick FM", "Kick Noise Level", "Kick Drive", "Kick Output", "Kick Pan"}},

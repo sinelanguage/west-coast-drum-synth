@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <random>
 #include <type_traits>
 
 namespace Steinberg::WestCoastDrumSynth {
@@ -171,6 +172,7 @@ tresult PLUGIN_API WestCoastProcessor::initialize (FUnknown* context)
   setParam (kParamRun, 0.0);
   setParam (kParamFollowTransport, 0.0);
   setParam (kParamPresetSelect, 0.0);
+  setParam (kParamRandomize, 0.0);
   setParam (kParamOscFilterCutoff, 0.20);
   setParam (kParamOscFilterResonance, 0.34);
   setParam (kParamOscFilterEnv, 0.46);
@@ -716,12 +718,20 @@ void WestCoastProcessor::processParameterChanges (Vst::IParameterChanges* change
     if (queue->getPoint (pointCount - 1, sampleOffset, value) != kResultOk)
       continue;
 
-    setParam (queue->getParameterId (), value);
+    const auto paramId = queue->getParameterId ();
+    setParam (paramId, value);
 
-    if (queue->getParameterId () == kParamPresetSelect)
+    if (paramId == kParamPresetSelect)
     {
       loadedPreset_ = presetIndexFromNormalized (value);
       presetPending_ = true;
+    }
+    else if (paramId == kParamRandomize && value > 0.5)
+    {
+      performRandomization (outputChanges);
+      setParam (kParamRandomize, 0.0);
+      if (outputChanges)
+        pushParamChange (outputChanges, kParamRandomize, 0.0);
     }
   }
 
@@ -729,6 +739,68 @@ void WestCoastProcessor::processParameterChanges (Vst::IParameterChanges* change
 
   if (presetPending_ && outputChanges)
     pushParamChange (outputChanges, kParamPresetSelect, getParam (kParamPresetSelect));
+}
+
+void WestCoastProcessor::performRandomization (Vst::IParameterChanges* outputChanges)
+{
+  if (!outputChanges)
+    return;
+
+  std::random_device rd;
+  std::mt19937 gen (rd ());
+  const auto rnd = [&gen] (double lo, double hi) {
+    return std::uniform_real_distribution<double> (lo, hi) (gen);
+  };
+  const auto jitter = [&rnd] (double center, double radius) {
+    return clamp01 (center + rnd (-radius, radius));
+  };
+
+  constexpr double decayJitter = 0.10;
+  for (int32 lane = 0; lane < kLaneCount; ++lane)
+  {
+    const double curDecay = getParam (laneParamID (lane, kLaneDecay));
+    const double curPitchEnvDecay = getParam (laneExtraParamID (lane, kLanePitchEnvDecay));
+    const double curNoiseDecay = getParam (laneExtraParamID (lane, kLaneNoiseDecay));
+    const double curTransientDecay = getParam (laneMacroParamID (lane, kLaneTransientDecay));
+
+    setParam (laneParamID (lane, kLaneTune), rnd (0.32, 0.58));
+    setParam (laneParamID (lane, kLaneDecay), jitter (curDecay, decayJitter));
+    setParam (laneParamID (lane, kLaneFold), rnd (0.25, 0.75));
+    setParam (laneParamID (lane, kLaneFm), rnd (0.20, 0.65));
+    setParam (laneParamID (lane, kLaneNoise), rnd (0.15, 0.55));
+    setParam (laneParamID (lane, kLaneDrive), rnd (0.10, 0.45));
+    setParam (laneParamID (lane, kLaneLevel), rnd (0.55, 0.92));
+    setParam (laneParamID (lane, kLanePan), rnd (0.25, 0.75));
+
+    setParam (laneExtraParamID (lane, kLanePitchEnvAmount), rnd (0.25, 0.75));
+    setParam (laneExtraParamID (lane, kLanePitchEnvDecay), jitter (curPitchEnvDecay, decayJitter));
+    setParam (laneExtraParamID (lane, kLaneTransientAttack), rnd (0.18, 0.55));
+    setParam (laneExtraParamID (lane, kLaneNoiseTone), rnd (0.35, 0.75));
+    setParam (laneExtraParamID (lane, kLaneNoiseDecay), jitter (curNoiseDecay, decayJitter));
+    setParam (laneExtraParamID (lane, kLaneSnap), rnd (0.20, 0.65));
+
+    setParam (laneMacroParamID (lane, kLaneTransientDecay), jitter (curTransientDecay, decayJitter));
+    setParam (laneMacroParamID (lane, kLaneTransientMix), rnd (0.30, 0.70));
+    setParam (laneMacroParamID (lane, kLaneNoiseResonance), rnd (0.25, 0.65));
+    setParam (laneMacroParamID (lane, kLaneNoiseEnvAmount), rnd (0.35, 0.75));
+
+    setParam (laneFilterParamID (lane, kLaneOscFilterCutoff), rnd (0.50, 0.85));
+    setParam (laneFilterParamID (lane, kLaneOscFilterRes), rnd (0.02, 0.18));
+    setParam (laneFilterParamID (lane, kLaneOscFilterEnv), rnd (0.20, 0.55));
+    setParam (laneFilterParamID (lane, kLaneTransFilterCutoff), rnd (0.55, 0.88));
+    setParam (laneFilterParamID (lane, kLaneTransFilterRes), rnd (0.02, 0.12));
+    setParam (laneFilterParamID (lane, kLaneTransFilterEnv), rnd (0.22, 0.55));
+  }
+
+  for (const auto id : allParameterIds ())
+  {
+    if (id != kParamRandomize && id != kParamPresetSelect && id != kParamMaster && id != kParamInternalTempo &&
+        id != kParamSwing && id != kParamRun && id != kParamFollowTransport &&
+        id < kLaneParamBase)
+      continue;
+    if (id >= kLaneParamBase && id <= kLaneFilterMaxParamId)
+      pushParamChange (outputChanges, id, getParam (id));
+  }
 }
 
 void WestCoastProcessor::updateLaneFramesFromParameters ()
