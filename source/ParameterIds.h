@@ -17,6 +17,7 @@ enum ParameterId : Vst::ParamID {
   kParamRun,
   kParamFollowTransport,
   kParamPresetSelect,
+  kParamRandomize,
   kParamOscFilterCutoff,
   kParamOscFilterResonance,
   kParamOscFilterEnv,

@@ -9,6 +9,7 @@
 #include "public.sdk/source/vst/vstparameters.h"
 #include "vstgui/lib/controls/cslider.h"
 #include "vstgui/plugin-bindings/vst3editor.h"
+#include "vstgui/uidescription/iuidescription.h"
 
 #include <algorithm>
 #include <array>
@@ -122,6 +123,7 @@ tresult PLUGIN_API WestCoastController::initialize (FUnknown* context)
     presetParam->appendString (presetName);
   }
   parameters.addParameter (presetParam);
+  parameters.addParameter (STR16 ("Randomize"), nullptr, 1, 0.0, Vst::ParameterInfo::kCanAutomate, kParamRandomize);
 
   const std::array<std::array<const char*, kLaneParamCount>, kLaneCount> laneTitles {{
     {{"Kick Tune", "Kick Decay", "Kick Fold", "Kick FM", "Kick Noise Level", "Kick Drive", "Kick Output", "Kick Pan"}},
@@ -533,19 +535,16 @@ VSTGUI::CView* WestCoastController::verifyView (VSTGUI::CView* view, const VSTGU
 
   if (auto* slider = dynamic_cast<VSTGUI::CSlider*> (view))
   {
-    slider->setFrameColor (VSTGUI::CColor (75, 82, 91, 255));
-    slider->setBackColor (VSTGUI::CColor (34, 37, 41, 255));
+    slider->setFrameColor (VSTGUI::CColor (74, 79, 88, 255));
+    slider->setBackColor (VSTGUI::CColor (58, 62, 70, 255));
 
     if (slider->isStyleHorizontal ())
     {
-      if (!slider->getMouseEnabled () || bounds.getHeight () <= 12.0)
-        slider->setValueColor (VSTGUI::CColor (128, 212, 153, 255));
-      else
-        slider->setValueColor (VSTGUI::CColor (137, 182, 214, 255));
+      slider->setValueColor (VSTGUI::CColor (0, 212, 170, 255));
     }
     else
     {
-      slider->setValueColor (VSTGUI::CColor (255, 159, 91, 255));
+      slider->setValueColor (VSTGUI::CColor (0, 212, 170, 255));
 
       constexpr VSTGUI::CCoord kTargetSliderWidth = 20.0;
       if (bounds.getWidth () > kTargetSliderWidth + 0.1)
