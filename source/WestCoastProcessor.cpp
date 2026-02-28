@@ -142,6 +142,13 @@ inline int32 laneForMidiPitch (int16 pitch)
   return laneForLegacyDrumMap (pitch);
 }
 
+inline int32 octaveOffsetFromPitch (int16 pitch)
+{
+  constexpr int16 kTrackingCenterNote = 60; // C3
+  const double octavesFromCenter = (static_cast<double> (pitch) - static_cast<double> (kTrackingCenterNote)) / 12.0;
+  return static_cast<int32> (std::floor (octavesFromCenter));
+}
+
 } // namespace
 
 WestCoastProcessor::WestCoastProcessor ()
@@ -521,7 +528,7 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
       const int32 lane = laneForMidiPitch (event.noteOn.pitch);
       if (lane >= 0 && lane < kLaneCount)
       {
-        voices_[lane].trigger (laneFrames_[lane]);
+        voices_[lane].trigger (laneFrameForMidiPitch (lane, event.noteOn.pitch));
         laneLedFlashSamples_[lane] = ledFlashDurationSamples_;
       }
     }
@@ -801,6 +808,46 @@ void WestCoastProcessor::performRandomization (Vst::IParameterChanges* outputCha
     if (id >= kLaneParamBase && id <= kLaneFilterMaxParamId)
       pushParamChange (outputChanges, id, getParam (id));
   }
+}
+
+LaneFrame WestCoastProcessor::laneFrameForMidiPitch (int32 lane, int16 pitch) const
+{
+  LaneFrame frame = laneFrames_[lane];
+  if (pitch < 0 || pitch > 127)
+    return frame;
+
+  // Keep lane mapping stable, but shape timbre by played octave so lower notes
+  // stay cleaner/rounder and higher notes stay brighter.
+  const int32 octaveOffset = std::clamp (octaveOffsetFromPitch (pitch), -3, 2);
+  if (octaveOffset == 0)
+    return frame;
+
+  frame.frequencyHz =
+    std::clamp (frame.frequencyHz * std::pow (2.0, static_cast<double> (octaveOffset)), 8.0, 20000.0);
+
+  const double lowBias = clamp01 (static_cast<double> (-std::min (octaveOffset, 0)) / 3.0);
+  const double highBias = clamp01 (static_cast<double> (std::max (octaveOffset, 0)) / 2.0);
+
+  const double harmonicScale = std::clamp ((1.0 - (0.55 * lowBias)) + (0.20 * highBias), 0.35, 1.25);
+  const double noiseScale = std::clamp ((1.0 - (0.65 * lowBias)) + (0.25 * highBias), 0.25, 1.35);
+  const double transientScale = std::clamp ((1.0 - (0.25 * lowBias)) + (0.15 * highBias), 0.45, 1.25);
+
+  frame.fmAmount = clamp01 (frame.fmAmount * harmonicScale);
+  frame.foldAmount = clamp01 (frame.foldAmount * harmonicScale);
+  frame.noiseAmount = std::clamp (frame.noiseAmount * noiseScale, 0.0, 2.5);
+  frame.noiseLevel = std::clamp (frame.noiseLevel * noiseScale, 0.0, 2.5);
+  frame.transientAmount = clamp01 (frame.transientAmount * transientScale);
+  frame.transientLevel = std::clamp (frame.transientLevel * transientScale, 0.0, 2.5);
+  frame.pitchEnvAmount = clamp01 (frame.pitchEnvAmount * (1.0 - (0.30 * lowBias)));
+  frame.decaySeconds =
+    std::clamp (frame.decaySeconds * (1.0 + (0.30 * lowBias) - (0.08 * highBias)), 0.01, 2.5);
+
+  const double bodyCutoffScale = std::clamp ((1.0 - (0.32 * lowBias)) + (0.18 * highBias), 0.55, 1.20);
+  const double noiseCutoffScale = std::clamp ((1.0 - (0.45 * lowBias)) + (0.25 * highBias), 0.40, 1.35);
+  frame.bodyFilterCutoffHz = std::clamp (frame.bodyFilterCutoffHz * bodyCutoffScale, 80.0, 18000.0);
+  frame.noiseFilterCutoffHz = std::clamp (frame.noiseFilterCutoffHz * noiseCutoffScale, 120.0, 18000.0);
+
+  return frame;
 }
 
 void WestCoastProcessor::updateLaneFramesFromParameters ()

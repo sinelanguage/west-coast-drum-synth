@@ -32,6 +32,7 @@ private:
   void loadPresetByIndex (int32 presetIndex, Vst::IParameterChanges* outputChanges);
   void processParameterChanges (Vst::IParameterChanges* changes, Vst::IParameterChanges* outputChanges);
   void performRandomization (Vst::IParameterChanges* outputChanges);
+  LaneFrame laneFrameForMidiPitch (int32 lane, int16 pitch) const;
   void updateLaneFramesFromParameters ();
   void pushParamChange (Vst::IParameterChanges* outputChanges, Vst::ParamID id, double normalizedValue) const;
   double getParam (Vst::ParamID id) const;
