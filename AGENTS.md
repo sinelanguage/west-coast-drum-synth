@@ -52,6 +52,14 @@ build/bin/Debug/validator build/VST3/Debug/WestCoastDrumSynth.vst3
 
 All 47 test cases should pass. There are no unit tests or other test frameworks in this repo.
 
+### GUI testing policy (Cursor Cloud)
+
+- For manual GUI validation, prefer `Ardour` first.
+- In Ardour, create a quick session, load `West Coast Drum Synth` as a VST3 instrument, and capture a screenshot/video of the plugin editor.
+- If Ardour cannot be used in the cloud VM (e.g. backend/audio-device initialization fails), use `Carla` as a fallback only to verify plugin discovery/metadata.
+- In Carla, a `Has Custom GUI: No` report is expected for this plugin in cloud/headless environments and should not be treated as a UI regression by itself.
+- Always report which host was used and include a walkthrough artifact from that host.
+
 ### Linting
 
 No dedicated linter configuration exists. Use standard C++ static analysis if needed (e.g. `clang-tidy`).
