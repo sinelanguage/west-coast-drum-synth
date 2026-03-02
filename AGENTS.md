@@ -56,7 +56,12 @@ All 47 test cases should pass. There are no unit tests or other test frameworks 
 
 - For manual GUI validation, prefer `Ardour` first.
 - In Ardour, create a quick session, load `West Coast Drum Synth` as a VST3 instrument, and capture a screenshot/video of the plugin editor.
-- If Ardour cannot be used in the cloud VM (e.g. backend/audio-device initialization fails), use `Carla` as a fallback only to verify plugin discovery/metadata.
+- If Ardour cannot be used in the cloud VM (e.g. backend/audio-device/session initialization fails), use `editorhost` for direct plugin-editor rendering:
+  ```bash
+  scripts/open_editorhost.sh
+  ```
+  This builds `editorhost` + plugin (Release) and launches the editor directly without DAW audio-engine setup.
+- Use `Carla` only as a metadata/discovery fallback (not as primary GUI-validation host).
 - In Carla, a `Has Custom GUI: No` report is expected for this plugin in cloud/headless environments and should not be treated as a UI regression by itself.
 - Always report which host was used and include a walkthrough artifact from that host.
 
