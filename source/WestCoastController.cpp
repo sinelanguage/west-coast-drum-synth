@@ -7,7 +7,6 @@
 #include "pluginterfaces/base/ibstream.h"
 #include "pluginterfaces/base/ustring.h"
 #include "public.sdk/source/vst/vstparameters.h"
-#include "vstgui/lib/controls/cslider.h"
 #include "vstgui/plugin-bindings/vst3editor.h"
 #include "vstgui/uidescription/iuidescription.h"
 
@@ -63,18 +62,6 @@ constexpr std::array<std::array<double, kLaneFilterParamCount>, kLaneCount> kLan
   {{0.68, 0.16, 0.42, 0.72, 0.10, 0.48}},
   {{0.66, 0.18, 0.45, 0.70, 0.12, 0.52}},
 }};
-
-constexpr VSTGUI::CCoord kCompactScaleX = 0.42;
-
-inline VSTGUI::CRect scaleRectX (const VSTGUI::CRect& rect, VSTGUI::CCoord scaleX)
-{
-  VSTGUI::CRect scaled = rect;
-  const VSTGUI::CCoord width = rect.getWidth () * scaleX;
-  const VSTGUI::CCoord left = rect.left * scaleX;
-  scaled.left = left;
-  scaled.right = left + width;
-  return scaled;
-}
 
 UString128 toString128 (const char* ascii)
 {
@@ -515,55 +502,6 @@ VSTGUI::CView* WestCoastController::verifyView (VSTGUI::CView* view, const VSTGU
                                                 const VSTGUI::IUIDescription* /*description*/,
                                                 VSTGUI::VST3Editor* /*editor*/)
 {
-  auto bounds = view->getViewSize ();
-  bool boundsChanged = false;
-
-  VSTGUI::CCoord layoutScale = 1.0;
-  const bool isMainWideLayout = bounds.getWidth () > 2500.0;
-  const bool isModulePanel =
-    bounds.getWidth () > 280.0 && bounds.getWidth () < 320.0 && bounds.getHeight () > 500.0;
-  const bool isModuleLocalView = bounds.right <= 300.0 && bounds.getHeight () < 690.0;
-
-  if (isMainWideLayout || isModulePanel || isModuleLocalView)
-    layoutScale = kCompactScaleX;
-
-  if (layoutScale < 0.999 || layoutScale > 1.001)
-  {
-    bounds = scaleRectX (bounds, layoutScale);
-    boundsChanged = true;
-  }
-
-  if (auto* slider = dynamic_cast<VSTGUI::CSlider*> (view))
-  {
-    slider->setFrameColor (VSTGUI::CColor (74, 79, 88, 255));
-    slider->setBackColor (VSTGUI::CColor (58, 62, 70, 255));
-
-    if (slider->isStyleHorizontal ())
-    {
-      slider->setValueColor (VSTGUI::CColor (0, 212, 170, 255));
-    }
-    else
-    {
-      slider->setValueColor (VSTGUI::CColor (0, 212, 170, 255));
-
-      constexpr VSTGUI::CCoord kTargetSliderWidth = 20.0;
-      if (bounds.getWidth () > kTargetSliderWidth + 0.1)
-      {
-        const VSTGUI::CCoord inset = (bounds.getWidth () - kTargetSliderWidth) * 0.5;
-        bounds.left += inset;
-        bounds.right -= inset;
-        boundsChanged = true;
-      }
-    }
-  }
-
-  if (boundsChanged)
-  {
-    view->setViewSize (bounds, true);
-    view->setMouseableArea (bounds);
-    view->invalid ();
-  }
-
   return view;
 }
 
