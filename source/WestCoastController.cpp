@@ -492,7 +492,7 @@ IPlugView* PLUGIN_API WestCoastController::createView (FIDString name)
     auto* editor = new VSTGUI::AspectRatioVST3Editor (this, "Editor", "WestCoastEditor.uidesc");
     editor->setDelegate (this);
     editor->setMinZoomFactor (0.72);
-    editor->setEditorSizeConstrains (VSTGUI::CPoint (980., 420.), VSTGUI::CPoint (2600., 900.));
+    editor->setEditorSizeConstrains (VSTGUI::CPoint (720., 374.), VSTGUI::CPoint (2048., 1060.));
     return editor;
   }
   return nullptr;
