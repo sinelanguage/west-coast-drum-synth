@@ -68,14 +68,14 @@ for w in SEC_WIDTHS:
     x += w + SEC_GAP
 
 # Slider geometry within a section
-SLIDER_W = 8
-SLIDER_H = 38
-SLIDER_STEP = 9   # 8px slider + 1px gap between bars
-SLIDER_TOP = 20   # y offset within section
-LABEL_TOP = 62    # y offset of label within section
-LABEL_W = 9       # tight labels matching slider step
+SLIDER_W = 16
+SLIDER_H = 46
+SLIDER_STEP = 17  # 16px slider + 1px gap between bars
+SLIDER_TOP = 15   # y offset within section (tight to title)
+LABEL_TOP = 63    # y offset of label within section (1px below slider bottom)
+LABEL_W = 16      # labels match slider width
 LABEL_H = 10
-SEC_TITLE_Y = 4
+SEC_TITLE_Y = 3
 SEC_TITLE_H = 10
 
 def slider_positions(sec_w, n):
@@ -86,12 +86,12 @@ def slider_positions(sec_w, n):
     lx = [s for s in sx]
     return sx, lx
 
-S4_92,  L4_92  = slider_positions(92, 4)   # OSC, PITCH, NOISE
-S4_112, L4_112 = slider_positions(112, 4)  # TRANSIENT
-S3_68,  L3_68  = slider_positions(68, 3)   # OUTPUT
+S4_96,  L4_96  = slider_positions(96, 4)   # OSC, PITCH, NOISE
+S4_116, L4_116 = slider_positions(116, 4)  # TRANSIENT
+S3_72,  L3_72  = slider_positions(72, 3)   # OUTPUT
 
-SECTION_SLIDER_X = [S4_92, S4_92, S4_112, S4_92, S3_68]
-SECTION_LABEL_X  = [L4_92, L4_92, L4_112, L4_92, L3_68]
+SECTION_SLIDER_X = [S4_96, S4_96, S4_116, S4_96, S3_72]
+SECTION_LABEL_X  = [L4_96, L4_96, L4_116, L4_96, L3_72]
 
 # LED meter within lane
 LED_X = 430
