@@ -51,12 +51,12 @@ SEP_Y = [ROW_Y[i] + LANE_H + 2 for i in range(3)]
 ACCENT_W = 3
 SEC_Y = 18      # section box top within lane
 SEC_H = 82      # section box height
-SEC_GAP = 5     # gap between section boxes
+SEC_GAP = 1     # 1px line between section boxes
 
-SEC_START_X = 15
+SEC_START_X = 7
 
-# Section widths
-SEC_WIDTHS = [92, 92, 112, 92, 68]
+# Section widths (expanded to fill space freed by tighter gaps)
+SEC_WIDTHS = [96, 96, 116, 96, 72]
 SEC_NAMES = ["OSC &amp; WAVESHAPE", "PITCH ENV", "TRANSIENT DESIGNER",
              "NOISE DESIGNER", "OUTPUT STAGE"]
 
@@ -70,19 +70,20 @@ for w in SEC_WIDTHS:
 # Slider geometry within a section
 SLIDER_W = 8
 SLIDER_H = 38
+SLIDER_STEP = 9   # 8px slider + 1px gap between bars
 SLIDER_TOP = 20   # y offset within section
 LABEL_TOP = 62    # y offset of label within section
-LABEL_W = 18
+LABEL_W = 9       # tight labels matching slider step
 LABEL_H = 10
 SEC_TITLE_Y = 4
 SEC_TITLE_H = 10
 
 def slider_positions(sec_w, n):
     """Return (slider_x_list, label_x_list) for n sliders in section of width sec_w."""
-    total_slider_span = (n - 1) * 18 + SLIDER_W
+    total_slider_span = (n - 1) * SLIDER_STEP + SLIDER_W
     margin = (sec_w - total_slider_span) // 2
-    sx = [margin + i * 18 for i in range(n)]
-    lx = [s - 5 for s in sx]
+    sx = [margin + i * SLIDER_STEP for i in range(n)]
+    lx = [s for s in sx]
     return sx, lx
 
 S4_92,  L4_92  = slider_positions(92, 4)   # OSC, PITCH, NOISE
@@ -93,9 +94,9 @@ SECTION_SLIDER_X = [S4_92, S4_92, S4_112, S4_92, S3_68]
 SECTION_LABEL_X  = [L4_92, L4_92, L4_112, L4_92, L3_68]
 
 # LED meter within lane
-LED_X = 432
+LED_X = 430
 LED_Y = 8
-LED_W = 52
+LED_W = 54
 LED_H = 6
 
 # ---------------------------------------------------------------------------
