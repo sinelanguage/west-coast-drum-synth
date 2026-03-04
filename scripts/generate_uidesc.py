@@ -11,7 +11,7 @@ import xml.etree.ElementTree as ET
 # Editor dimensions
 # ---------------------------------------------------------------------------
 EDITOR_W = 1024
-EDITOR_H = 480
+EDITOR_H = 488
 
 # ---------------------------------------------------------------------------
 # Margins / header
@@ -24,7 +24,7 @@ SUBTITLE_Y = 5
 
 # Global strip
 GLOBAL_Y = 16
-GLOBAL_H = 24
+GLOBAL_H = 32
 GLOBAL_W = EDITOR_W
 
 # ---------------------------------------------------------------------------
@@ -38,7 +38,7 @@ ROW_GAP = 1   # 1px line between rows
 COL0_X = 0
 COL1_X = LANE_W + COL_GAP  # 512
 
-LANE_START_Y = 41  # tight after global strip
+LANE_START_Y = 49  # after global strip + 1px separator
 ROW_Y = [LANE_START_Y + i * (LANE_H + ROW_GAP) for i in range(4)]
 # [41, 150, 259, 368]
 
@@ -57,8 +57,8 @@ SEC_START_X = 5
 
 # Section widths (expanded for wider 511px lanes)
 SEC_WIDTHS = [100, 100, 120, 100, 80]
-SEC_NAMES = ["OSC &amp; WAVESHAPE", "PITCH ENV", "TRANSIENT DESIGNER",
-             "NOISE DESIGNER", "OUTPUT STAGE"]
+SEC_NAMES = ["OSC &amp; WAVESHAPE", "PITCH ENV", "TRANSIENT",
+             "NOISE", "OUTPUT STAGE"]
 
 # Compute section X positions
 SEC_X = []
@@ -377,42 +377,42 @@ def build_global_strip():
                  f'background-color-draw-style="filled and stroked" '
                  f'class="CView" mouse-enabled="false" opacity="1" '
                  f'origin="0, 0" size="{ACCENT_W}, {gh}" transparent="false"/>')
-    lines.append(f'{ind(3)}{label_xml(9, 2, 50, 12, "GLOBAL", font="label_title", color="TextBright", bg="ModuleBg", align="left")}')
+    lines.append(f'{ind(3)}{label_xml(9, 4, 50, 12, "GLOBAL", font="label_title", color="TextBright", bg="ModuleBg", align="left")}')
 
     # CLOCK section (TMP, SWG) - tags 1, 2
-    lines.append(f'{ind(3)}{cview_open(64, 2, 62, 20, "StageOuter")}')
-    lines.append(f'{ind(4)}{section_title_label(2, 1, 58, "CLOCK")}')
-    lines.append(f'{ind(4)}{slider_xml(1, 12, 9, 6, 10, "vertical", wheel_inc="0.02", zoom="4")}')
-    lines.append(f'{ind(4)}{slider_xml(2, 36, 9, 6, 10, "vertical", wheel_inc="0.02", zoom="4")}')
+    lines.append(f'{ind(3)}{cview_open(64, 3, 62, 26, "StageOuter")}')
+    lines.append(f'{ind(4)}{section_title_label(2, 2, 58, "CLOCK")}')
+    lines.append(f'{ind(4)}{slider_xml(1, 12, 12, 6, 13, "vertical", wheel_inc="0.02", zoom="4")}')
+    lines.append(f'{ind(4)}{slider_xml(2, 36, 12, 6, 13, "vertical", wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(3)}{cview_close()}')
 
     # MASTER section (LVL) - tag 0
-    lines.append(f'{ind(3)}{cview_open(132, 2, 38, 20, "StageOuter")}')
-    lines.append(f'{ind(4)}{section_title_label(2, 1, 34, "MASTER")}')
-    lines.append(f'{ind(4)}{slider_xml(0, 15, 9, 6, 10, "vertical", wheel_inc="0.02", zoom="4")}')
+    lines.append(f'{ind(3)}{cview_open(132, 3, 38, 26, "StageOuter")}')
+    lines.append(f'{ind(4)}{section_title_label(2, 2, 34, "MASTER")}')
+    lines.append(f'{ind(4)}{slider_xml(0, 15, 12, 6, 13, "vertical", wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(3)}{cview_close()}')
 
     # BODY FILTER section (CUT, RES, ENV) - tags 7, 8, 9
-    lines.append(f'{ind(3)}{cview_open(176, 2, 82, 20, "StageOuter")}')
-    lines.append(f'{ind(4)}{section_title_label(2, 1, 78, "BODY FILTER")}')
-    lines.append(f'{ind(4)}{slider_xml(7, 12, 9, 6, 10, "vertical", wheel_inc="0.02", zoom="4")}')
-    lines.append(f'{ind(4)}{slider_xml(8, 34, 9, 6, 10, "vertical", wheel_inc="0.02", zoom="4")}')
-    lines.append(f'{ind(4)}{slider_xml(9, 56, 9, 6, 10, "vertical", wheel_inc="0.02", zoom="4")}')
+    lines.append(f'{ind(3)}{cview_open(176, 3, 82, 26, "StageOuter")}')
+    lines.append(f'{ind(4)}{section_title_label(2, 2, 78, "BODY FILTER")}')
+    lines.append(f'{ind(4)}{slider_xml(7, 12, 12, 6, 13, "vertical", wheel_inc="0.02", zoom="4")}')
+    lines.append(f'{ind(4)}{slider_xml(8, 34, 12, 6, 13, "vertical", wheel_inc="0.02", zoom="4")}')
+    lines.append(f'{ind(4)}{slider_xml(9, 56, 12, 6, 13, "vertical", wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(3)}{cview_close()}')
 
     # TRANSPORT section (RUN, FOLLOW, RANDOMIZE, Amount) - tags 3, 4, 6, 10
-    lines.append(f'{ind(3)}{cview_open(264, 2, 170, 20, "StageOuter")}')
-    lines.append(f'{ind(4)}{section_title_label(2, 1, 166, "TRANSPORT")}')
-    lines.append(f'{ind(4)}{button_xml(3, 4, 9, 30, 10, "RUN")}')
-    lines.append(f'{ind(4)}{button_xml(4, 38, 9, 50, 10, "FOLLOW")}')
-    lines.append(f'{ind(4)}{button_xml(6, 92, 9, 50, 10, "RANDOM")}')
-    lines.append(f'{ind(4)}{slider_xml(10, 148, 9, 6, 10, "vertical", wheel_inc="0.02", zoom="4")}')
+    lines.append(f'{ind(3)}{cview_open(264, 3, 170, 26, "StageOuter")}')
+    lines.append(f'{ind(4)}{section_title_label(2, 2, 166, "TRANSPORT")}')
+    lines.append(f'{ind(4)}{button_xml(3, 4, 12, 30, 13, "RUN")}')
+    lines.append(f'{ind(4)}{button_xml(4, 38, 12, 50, 13, "FOLLOW")}')
+    lines.append(f'{ind(4)}{button_xml(6, 92, 12, 50, 13, "RANDOM")}')
+    lines.append(f'{ind(4)}{slider_xml(10, 148, 12, 6, 13, "vertical", wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(3)}{cview_close()}')
 
     # PRESET section - tag 5
-    lines.append(f'{ind(3)}{cview_open(416, 2, 110, 20, "StageOuter")}')
-    lines.append(f'{ind(4)}{section_title_label(2, 1, 106, "PRESET")}')
-    lines.append(f'{ind(4)}{dropdown_xml(5, 6, 9, 98, 10)}')
+    lines.append(f'{ind(3)}{cview_open(440, 3, 110, 26, "StageOuter")}')
+    lines.append(f'{ind(4)}{section_title_label(2, 2, 106, "PRESET")}')
+    lines.append(f'{ind(4)}{dropdown_xml(5, 6, 12, 98, 13)}')
     lines.append(f'{ind(3)}{cview_close()}')
 
     lines.append(f'{ind(2)}{cview_close()}')
