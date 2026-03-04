@@ -86,12 +86,13 @@ def slider_positions(sec_w, n):
     lx = [s for s in sx]
     return sx, lx
 
-S4_100, L4_100 = slider_positions(100, 4)  # OSC, PITCH, NOISE
+S5_100, L5_100 = slider_positions(100, 5)  # OSC (5 sliders with Osc Mix)
+S4_100, L4_100 = slider_positions(100, 4)  # PITCH, NOISE
 S4_120, L4_120 = slider_positions(120, 4)  # TRANSIENT
 S3_80,  L3_80  = slider_positions(80, 3)   # OUTPUT
 
-SECTION_SLIDER_X = [S4_100, S4_100, S4_120, S4_100, S3_80]
-SECTION_LABEL_X  = [L4_100, L4_100, L4_120, L4_100, L3_80]
+SECTION_SLIDER_X = [S5_100, S4_100, S4_120, S4_100, S3_80]
+SECTION_LABEL_X  = [L5_100, L4_100, L4_120, L4_100, L3_80]
 
 # LED meter within lane (near right edge)
 LED_X = 449
@@ -116,6 +117,7 @@ def macro_tag(lane, offset):  return 300 + lane * LANE_MACRO_COUNT + offset
 def filter_tag(lane, offset): return 400 + lane * LANE_FILTER_COUNT + offset
 def led_tag(lane):            return 500 + lane
 def mute_tag(lane):           return 600 + lane
+def oscmix_tag(lane):         return 700 + lane
 
 LANE_NAMES = [
     ("DS1", "BD", "C"),
@@ -143,10 +145,10 @@ def section_tags(lane):
     m = lambda o: macro_tag(lane, o)
     f = lambda o: filter_tag(lane, o)
     return [
-        # OSC & WAVESHAPE: Tune, Decay, Fold, FM
-        ([c(0), c(1), c(2), c(3)],
-         ["PIT", "DEC", "FLD", "FM"],
-         [False, False, False, False]),
+        # OSC & WAVESHAPE: Tune, Decay, Fold, FM, OscMix
+        ([c(0), c(1), c(2), c(3), oscmix_tag(lane)],
+         ["PIT", "DEC", "FLD", "FM", "MIX"],
+         [False, False, False, False, False]),
         # PITCH ENV: PitchEnvAmt, PitchEnvDecay, OscCutoff, OscReso
         ([e(0), e(1), f(0), f(1)],
          ["PIT", "PDC", "OCF", "ORS"],
@@ -183,6 +185,7 @@ GLOBAL_TAG_NAMES = {
     0: "Master", 1: "InternalTempo", 2: "Swing",
     3: "Run", 4: "FollowHost", 5: "Preset", 6: "Randomize",
     7: "OscFilterCutoff", 8: "OscFilterResonance", 9: "OscFilterEnv",
+    10: "RandomizeAmount",
 }
 
 LANE_PREFIXES = ["Kick", "Snare", "Hat", "Perc", "PercB",
@@ -198,6 +201,9 @@ LED_NAMES = ["KickLed", "SnareLed", "HatLed", "PercALed", "PercA2Led",
 
 MUTE_NAMES = ["KickMute", "SnareMute", "HatMute", "PercAMute", "PercA2Mute",
               "PercBMute", "PercB2Mute", "RimShotMute", "ClapMute"]
+
+OSCMIX_NAMES = ["KickOscMix", "SnareOscMix", "HatOscMix", "PercAOscMix", "PercA2OscMix",
+                "PercBOscMix", "PercB2OscMix", "RimShotOscMix", "ClapOscMix"]
 
 # ---------------------------------------------------------------------------
 # XML generation helpers
@@ -394,12 +400,13 @@ def build_global_strip():
     lines.append(f'{ind(4)}{slider_xml(9, 56, 9, 6, 10, "vertical", wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(3)}{cview_close()}')
 
-    # TRANSPORT section (RUN, FOLLOW, RANDOMIZE) - tags 3, 4, 6
-    lines.append(f'{ind(3)}{cview_open(264, 2, 146, 20, "StageOuter")}')
-    lines.append(f'{ind(4)}{section_title_label(2, 1, 142, "TRANSPORT")}')
+    # TRANSPORT section (RUN, FOLLOW, RANDOMIZE, Amount) - tags 3, 4, 6, 10
+    lines.append(f'{ind(3)}{cview_open(264, 2, 170, 20, "StageOuter")}')
+    lines.append(f'{ind(4)}{section_title_label(2, 1, 166, "TRANSPORT")}')
     lines.append(f'{ind(4)}{button_xml(3, 4, 9, 30, 10, "RUN")}')
     lines.append(f'{ind(4)}{button_xml(4, 38, 9, 50, 10, "FOLLOW")}')
     lines.append(f'{ind(4)}{button_xml(6, 92, 9, 50, 10, "RANDOM")}')
+    lines.append(f'{ind(4)}{slider_xml(10, 148, 9, 6, 10, "vertical", wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(3)}{cview_close()}')
 
     # PRESET section - tag 5
@@ -439,6 +446,8 @@ def build_hidden_sliders():
                 idx += 1
             lines.append(f'{ind(2)}{hidden_slider(led_tag(lane), hx + idx % 10, hy + idx // 10)}')
             idx += 1
+            lines.append(f'{ind(2)}{hidden_slider(oscmix_tag(lane), hx + idx % 10, hy + idx // 10)}')
+            idx += 1
     return '\n'.join(lines)
 
 # ---------------------------------------------------------------------------
@@ -469,6 +478,8 @@ def build_control_tags():
         lines.append(f'{ind(2)}<control-tag name="{LED_NAMES[lane]}" tag="{led_tag(lane)}"/>')
     for lane in range(LANE_COUNT):
         lines.append(f'{ind(2)}<control-tag name="{MUTE_NAMES[lane]}" tag="{mute_tag(lane)}"/>')
+    for lane in range(LANE_COUNT):
+        lines.append(f'{ind(2)}<control-tag name="{OSCMIX_NAMES[lane]}" tag="{oscmix_tag(lane)}"/>')
     lines.append(f'{ind(1)}</control-tags>')
     return '\n'.join(lines)
 
