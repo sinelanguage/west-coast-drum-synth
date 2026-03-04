@@ -100,6 +100,15 @@ private:
   double transFilterLowState_ {0.0};
   double transFilterBandState_ {0.0};
 
+  // Anti-click crossfade on retrigger
+  int32_t antiClickSamples_ {0};
+  int32_t antiClickLength_ {0};
+  double antiClickPrevSample_ {0.0};
+
+  // DC blocker state
+  double dcX_ {0.0};
+  double dcY_ {0.0};
+
   uint32_t noiseState_ {0x9E3779B9U};
   bool active_ {false};
 };

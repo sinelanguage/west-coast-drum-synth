@@ -50,6 +50,19 @@ void DrumVoice::setSampleRate (double sampleRate)
 
 void DrumVoice::trigger (const LaneFrame& frame)
 {
+  // Store previous output for anti-click crossfade if voice was active
+  if (active_ && ampEnv_ > 0.001)
+  {
+    antiClickLength_ = std::max (32, static_cast<int32_t> (sampleRate_ * 0.0008));
+    antiClickSamples_ = antiClickLength_;
+  }
+  else
+  {
+    antiClickSamples_ = 0;
+    antiClickLength_ = 0;
+    antiClickPrevSample_ = 0.0;
+  }
+
   frame_ = frame;
   frame_.frequencyHz = std::clamp (frame_.frequencyHz, 8.0, 18000.0);
   frame_.oscLevel = std::clamp (frame_.oscLevel, 0.0, 2.0);
@@ -103,6 +116,18 @@ void DrumVoice::trigger (const LaneFrame& frame)
   noiseHpCoef_ = 1.0 - std::exp (-(kTwoPi * highCutoffHz) / sampleRate_);
   noiseLpCoef_ = std::clamp (noiseLpCoef_, 0.0, 1.0);
   noiseHpCoef_ = std::clamp (noiseHpCoef_, 0.0, 1.0);
+
+  // Clear filter states on trigger to prevent stale resonance
+  oscFilterLowState_ = 0.0;
+  oscFilterBandState_ = 0.0;
+  transFilterLowState_ = 0.0;
+  transFilterBandState_ = 0.0;
+  noiseResLowState_ = 0.0;
+  noiseResBandState_ = 0.0;
+
+  carrierPhase_ = 0.0;
+  modPhase_ = 0.0;
+  transientPhase_ = 0.0;
 
   ampEnv_ = 1.0;
   toneEnv_ = 1.0;
@@ -194,18 +219,26 @@ double DrumVoice::process ()
   const double noiseOut =
     resonantNoise * frame_.noiseAmount * frame_.noiseLevel * noiseContour * kNoiseBlendGain[character];
 
-  // --- SUMMING ---
-  const double noiseGainWeight = std::max (0.15, frame_.noiseLevel);
-  const double transientGainWeight = std::max (0.12, frame_.transientLevel);
-  const double componentPower =
-    std::max ((frame_.oscLevel * frame_.oscLevel) + (noiseGainWeight * noiseGainWeight) +
-                (transientGainWeight * transientGainWeight),
-              1e-6);
-  const double normalization = 1.0 / std::sqrt (componentPower);
+  // --- SUMMING (per-voice, no dynamic normalization) ---
+  const double drive = 1.0 + (frame_.driveAmount * 6.0);
+  const double rawMix = oscOut + noiseOut + transOut;
+  double sample = softClip (rawMix * drive) * frame_.outputLevel;
 
-  const double drive = 1.0 + (frame_.driveAmount * 8.0);
-  const double dryMix = (oscOut + noiseOut + transOut) * normalization;
-  const double sample = softClip (dryMix * drive) * frame_.outputLevel;
+  // Anti-click crossfade: blend previous tail with new attack
+  if (antiClickSamples_ > 0 && antiClickLength_ > 0)
+  {
+    const double fade = static_cast<double> (antiClickSamples_) / static_cast<double> (antiClickLength_);
+    sample = sample * (1.0 - fade) + antiClickPrevSample_ * fade;
+    antiClickPrevSample_ *= 0.92;
+    --antiClickSamples_;
+  }
+
+  // DC blocker (leaky integrator, ~5 Hz cutoff)
+  constexpr double kDcCoef = 0.9995;
+  const double dcIn = sample;
+  dcY_ = dcIn - dcX_ + kDcCoef * dcY_;
+  dcX_ = dcIn;
+  sample = dcY_;
 
   // --- ENVELOPE DECAY ---
   ampEnv_ *= ampDecayCoef_;
@@ -247,6 +280,11 @@ void DrumVoice::reset ()
   oscFilterBandState_ = 0.0;
   transFilterLowState_ = 0.0;
   transFilterBandState_ = 0.0;
+  antiClickSamples_ = 0;
+  antiClickLength_ = 0;
+  antiClickPrevSample_ = 0.0;
+  dcX_ = 0.0;
+  dcY_ = 0.0;
   active_ = false;
 }
 
@@ -273,13 +311,24 @@ double DrumVoice::wavefold (double x, double amount)
 double DrumVoice::processStateVariableLowpass (double input, double cutoffHz, double resonance, double& lowState,
                                                double& bandState)
 {
-  const double clippedCutoff = std::clamp (cutoffHz, 20.0, sampleRate_ * 0.47);
-  const double f = std::clamp ((2.0 * std::sin ((kPi * clippedCutoff) / sampleRate_)), 0.0, 1.0);
-  const double q = std::clamp (resonance, 0.0, 0.99);
+  const double maxCutoff = sampleRate_ * 0.43;
+  const double clippedCutoff = std::clamp (cutoffHz, 20.0, maxCutoff);
+  const double f = std::clamp (2.0 * std::sin (kPi * clippedCutoff / sampleRate_), 0.0, 0.95);
+  const double q = std::clamp (resonance, 0.0, 0.96);
   const double damping = 1.0 - q;
-  const double high = input - lowState - (damping * bandState);
-  bandState += f * high;
-  lowState += f * bandState;
+
+  // Two-pass (2x oversampled) for stability at high cutoffs
+  for (int pass = 0; pass < 2; ++pass)
+  {
+    const double high = input - lowState - (damping * bandState);
+    bandState += 0.5 * f * high;
+    lowState += 0.5 * f * bandState;
+  }
+
+  // Clamp filter states to prevent runaway
+  bandState = std::clamp (bandState, -8.0, 8.0);
+  lowState = std::clamp (lowState, -8.0, 8.0);
+
   return lowState;
 }
 

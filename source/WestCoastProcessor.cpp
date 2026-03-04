@@ -587,7 +587,8 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
   if (data.numOutputs == 0 || data.outputs == nullptr || data.numSamples <= 0)
     return kResultOk;
 
-  const double master = std::pow (clamp01 (getParam (kParamMaster)), 1.35) * 1.15;
+  const double masterGain = std::pow (clamp01 (getParam (kParamMaster)), 1.5);
+  constexpr double kBusHeadroom = 1.0 / 3.0;
   std::array<bool, kLaneCount> triggers {};
 
   auto render = [&] (auto** outChannels)
@@ -612,14 +613,11 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
 
       double frameL = 0.0;
       double frameR = 0.0;
-      int32 activeVoices = 0;
       for (int32 lane = 0; lane < kLaneCount; ++lane)
       {
         const bool muted = getParam (laneMuteParamID (lane)) > 0.5;
         if (muted || laneFrames_[lane].outputLevel < 1e-6)
           continue;
-        if (voices_[lane].isActive ())
-          ++activeVoices;
         const double sample = voices_[lane].process ();
         const double pan = std::clamp (laneFrames_[lane].pan, -1.0, 1.0);
         const double gainL = std::sqrt (0.5 * (1.0 - pan));
@@ -628,9 +626,8 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
         frameR += sample * gainR;
       }
 
-      const double voiceNorm = 1.0 / std::sqrt (static_cast<double> (std::max<int32> (activeVoices, 1)));
-      const double busL = softClip (frameL * voiceNorm * master);
-      const double busR = softClip (frameR * voiceNorm * master);
+      const double busL = softClip (frameL * kBusHeadroom * masterGain);
+      const double busR = softClip (frameR * kBusHeadroom * masterGain);
 
       left[sampleIndex] = static_cast<SampleType> (busL);
       right[sampleIndex] = static_cast<SampleType> (busR);
