@@ -42,6 +42,10 @@ private:
   std::array<DrumVoice, kLaneCount> voices_ {};
   StepSequencer sequencer_ {};
 
+  std::array<double, kLaneCount> laneLedState_ {};
+  std::array<int32, kLaneCount> laneLedFlashSamples_ {};
+  int32 ledFlashDurationSamples_ {2205};
+
   int32 loadedPreset_ {0};
   bool presetPending_ {true};
 };

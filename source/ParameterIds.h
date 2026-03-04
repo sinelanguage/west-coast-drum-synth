@@ -73,6 +73,8 @@ constexpr Vst::ParamID kLaneLedParamBase = 500;
 constexpr int32 kLaneLedParamCount = kLaneCount;
 constexpr Vst::ParamID kLaneMuteParamBase = 600;
 constexpr int32 kLaneMuteParamCount = kLaneCount;
+constexpr Vst::ParamID kLaneOscMixParamBase = 700;
+constexpr int32 kLaneOscMixParamCount = kLaneCount;
 
 constexpr Vst::ParamID kLaneCoreMaxParamId = kLaneParamBase + (kLaneCount * kLaneParamCount) - 1;
 constexpr Vst::ParamID kLaneExtraMaxParamId = kLaneExtraParamBase + (kLaneCount * kLaneExtraParamCount) - 1;
@@ -80,11 +82,13 @@ constexpr Vst::ParamID kLaneMacroMaxParamId = kLaneMacroParamBase + (kLaneCount 
 constexpr Vst::ParamID kLaneFilterMaxParamId = kLaneFilterParamBase + (kLaneCount * kLaneFilterParamCount) - 1;
 
 constexpr Vst::ParamID kLaneMuteMaxParamId = kLaneMuteParamBase + kLaneMuteParamCount - 1;
-constexpr Vst::ParamID kMaxParamId = kLaneMuteMaxParamId;
+constexpr Vst::ParamID kLaneOscMixMaxParamId = kLaneOscMixParamBase + kLaneOscMixParamCount - 1;
+constexpr Vst::ParamID kMaxParamId = kLaneOscMixMaxParamId;
 constexpr int32 kParameterStateSize = kMaxParamId + 1;
 constexpr int32 kTotalParameterCount =
   kParamGlobalCount + (kLaneCount * kLaneParamCount) + (kLaneCount * kLaneExtraParamCount) +
-  (kLaneCount * kLaneMacroParamCount) + (kLaneCount * kLaneFilterParamCount) + kLaneMuteParamCount;
+  (kLaneCount * kLaneMacroParamCount) + (kLaneCount * kLaneFilterParamCount) + kLaneMuteParamCount +
+  kLaneOscMixParamCount;
 
 inline constexpr Vst::ParamID laneParamID (int32 lane, LaneParamOffset offset)
 {
@@ -114,6 +118,11 @@ inline constexpr Vst::ParamID laneLedParamID (int32 lane)
 inline constexpr Vst::ParamID laneMuteParamID (int32 lane)
 {
   return kLaneMuteParamBase + lane;
+}
+
+inline constexpr Vst::ParamID laneOscMixParamID (int32 lane)
+{
+  return kLaneOscMixParamBase + lane;
 }
 
 inline constexpr bool isLaneLedParamID (Vst::ParamID paramId)
@@ -205,6 +214,8 @@ inline constexpr std::array<Vst::ParamID, kTotalParameterCount> allParameterIds 
   }
   for (int32 lane = 0; lane < kLaneCount; ++lane)
     ids[index++] = laneMuteParamID (lane);
+  for (int32 lane = 0; lane < kLaneCount; ++lane)
+    ids[index++] = laneOscMixParamID (lane);
   return ids;
 }
 

@@ -18,7 +18,8 @@ namespace Steinberg::WestCoastDrumSynth {
 
 namespace {
 
-constexpr uint32 kStateVersion = 6;
+constexpr uint32 kStateVersion = 7;
+constexpr uint32 kV6StateVersion = 6;
 constexpr uint32 kV5StateVersion = 5;
 constexpr uint32 kV4StateVersion = 4;
 constexpr uint32 kV3StateVersion = 3;
@@ -272,6 +273,12 @@ tresult PLUGIN_API WestCoastController::initialize (FUnknown* context)
   for (int32 lane = 0; lane < kLaneCount; ++lane)
     parameters.addParameter (makeRangeParam (laneMuteTitles[lane], laneMuteParamID (lane), "", 0.0, 1.0, 0.0));
 
+  const std::array<const char*, kLaneCount> laneOscMixTitles {
+    "Kick Osc Mix", "Snare Osc Mix", "Hat Osc Mix", "Perc A1 Osc Mix", "Perc A2 Osc Mix",
+    "Perc B1 Osc Mix", "Perc B2 Osc Mix", "RimShot Osc Mix", "Clap Osc Mix"};
+  for (int32 lane = 0; lane < kLaneCount; ++lane)
+    parameters.addParameter (makeRangeParam (laneOscMixTitles[lane], laneOscMixParamID (lane), "%", 0.0, 100.0, 100.0));
+
   return kResultOk;
 }
 
@@ -481,7 +488,7 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
 
   if (version == kV5StateVersion)
   {
-    constexpr int32 v5ParamCount = kTotalParameterCount - kLaneMuteParamCount - 1;
+    constexpr int32 v5ParamCount = kTotalParameterCount - kLaneMuteParamCount - kLaneOscMixParamCount - 1;
     for (int32 i = 0; i < v5ParamCount; ++i)
     {
       double value = 0.0;
@@ -492,6 +499,23 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
     setParamNormalized (kParamRandomizeAmount, 1.0);
     for (int32 lane = 0; lane < kLaneCount; ++lane)
       setParamNormalized (laneMuteParamID (lane), 0.0);
+    for (int32 lane = 0; lane < kLaneCount; ++lane)
+      setParamNormalized (laneOscMixParamID (lane), 1.0);
+    return kResultOk;
+  }
+
+  if (version == kV6StateVersion)
+  {
+    constexpr int32 v6ParamCount = kTotalParameterCount - kLaneOscMixParamCount;
+    for (int32 i = 0; i < v6ParamCount; ++i)
+    {
+      double value = 0.0;
+      if (!streamer.readDouble (value))
+        return kResultFalse;
+      setParamNormalized (allParameterIds ()[i], value);
+    }
+    for (int32 lane = 0; lane < kLaneCount; ++lane)
+      setParamNormalized (laneOscMixParamID (lane), 1.0);
     return kResultOk;
   }
 

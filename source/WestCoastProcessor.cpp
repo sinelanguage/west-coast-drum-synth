@@ -17,7 +17,8 @@ namespace Steinberg::WestCoastDrumSynth {
 
 namespace {
 
-constexpr uint32 kStateVersion = 6;
+constexpr uint32 kStateVersion = 7;
+constexpr uint32 kV6StateVersion = 6;
 constexpr uint32 kV5StateVersion = 5;
 constexpr uint32 kV4StateVersion = 4;
 constexpr uint32 kV3StateVersion = 3;
@@ -149,6 +150,8 @@ WestCoastProcessor::WestCoastProcessor ()
 {
   setControllerClass (kControllerUID);
   params_.fill (0.0);
+  laneLedState_.fill (-1.0);
+  laneLedFlashSamples_.fill (0);
 }
 
 FUnknown* WestCoastProcessor::createInstance (void*)
@@ -176,6 +179,9 @@ tresult PLUGIN_API WestCoastProcessor::initialize (FUnknown* context)
   setParam (kParamOscFilterCutoff, 0.20);
   setParam (kParamOscFilterResonance, 0.34);
   setParam (kParamOscFilterEnv, 0.46);
+
+  for (int32 lane = 0; lane < kLaneCount; ++lane)
+    setParam (laneOscMixParamID (lane), 1.0);
 
   loadPresetByIndex (0, nullptr);
   updateLaneFramesFromParameters ();
@@ -408,7 +414,7 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
 
   if (version == kV5StateVersion)
   {
-    constexpr int32 v5ParamCount = kTotalParameterCount - kLaneMuteParamCount - 1;
+    constexpr int32 v5ParamCount = kTotalParameterCount - kLaneMuteParamCount - kLaneOscMixParamCount - 1;
     for (int32 i = 0; i < v5ParamCount; ++i)
     {
       double normalized = 0.0;
@@ -419,6 +425,27 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
     setParam (kParamRandomizeAmount, 1.0);
     for (int32 lane = 0; lane < kLaneCount; ++lane)
       setParam (laneMuteParamID (lane), 0.0);
+    for (int32 lane = 0; lane < kLaneCount; ++lane)
+      setParam (laneOscMixParamID (lane), 1.0);
+    const auto& preset = getFactoryPresets ()[loadedPreset_];
+    sequencer_.setPattern (preset.pattern);
+    updateLaneFramesFromParameters ();
+    presetPending_ = false;
+    return kResultOk;
+  }
+
+  if (version == kV6StateVersion)
+  {
+    constexpr int32 v6ParamCount = kTotalParameterCount - kLaneOscMixParamCount;
+    for (int32 i = 0; i < v6ParamCount; ++i)
+    {
+      double normalized = 0.0;
+      if (!streamer.readDouble (normalized))
+        return kResultFalse;
+      setParam (allParameterIds ()[i], normalized);
+    }
+    for (int32 lane = 0; lane < kLaneCount; ++lane)
+      setParam (laneOscMixParamID (lane), 1.0);
     const auto& preset = getFactoryPresets ()[loadedPreset_];
     sequencer_.setPattern (preset.pattern);
     updateLaneFramesFromParameters ();
@@ -435,6 +462,12 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
     if (!streamer.readDouble (normalized))
       return kResultFalse;
     setParam (id, normalized);
+  }
+
+  for (int32 lane = 0; lane < kLaneCount; ++lane)
+  {
+    if (getParam (laneOscMixParamID (lane)) < 1e-6)
+      setParam (laneOscMixParamID (lane), 1.0);
   }
 
   const auto& preset = getFactoryPresets ()[loadedPreset_];
@@ -483,6 +516,7 @@ tresult PLUGIN_API WestCoastProcessor::setupProcessing (Vst::ProcessSetup& setup
   sequencer_.setSampleRate (setup.sampleRate);
   for (auto& voice : voices_)
     voice.setSampleRate (setup.sampleRate);
+  ledFlashDurationSamples_ = std::max<int32> (1, static_cast<int32> (std::lround (setup.sampleRate * 0.045)));
   return kResultOk;
 }
 
@@ -542,7 +576,10 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
       {
         const bool muted = getParam (laneMuteParamID (lane)) > 0.5;
         if (!muted && laneFrames_[lane].outputLevel > 1e-6)
+        {
           voices_[lane].trigger (laneFrames_[lane]);
+          laneLedFlashSamples_[lane] = ledFlashDurationSamples_;
+        }
       }
     }
   }
@@ -567,7 +604,10 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
       {
         const bool muted = getParam (laneMuteParamID (lane)) > 0.5;
         if (triggers[lane] && laneFrames_[lane].outputLevel > 1e-6 && !muted)
+        {
           voices_[lane].trigger (laneFrames_[lane]);
+          laneLedFlashSamples_[lane] = ledFlashDurationSamples_;
+        }
       }
 
       double frameL = 0.0;
@@ -594,6 +634,12 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
 
       left[sampleIndex] = static_cast<SampleType> (busL);
       right[sampleIndex] = static_cast<SampleType> (busR);
+
+      for (int32 lane = 0; lane < kLaneCount; ++lane)
+      {
+        if (laneLedFlashSamples_[lane] > 0)
+          --laneLedFlashSamples_[lane];
+      }
     }
   };
 
@@ -606,6 +652,19 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
 
   data.outputs[0].silenceFlags = 0;
 
+  if (data.outputParameterChanges)
+  {
+    for (int32 lane = 0; lane < kLaneCount; ++lane)
+    {
+      const double ledValue = laneLedFlashSamples_[lane] > 0 ? 1.0 : 0.0;
+      if (std::abs (laneLedState_[lane] - ledValue) > 0.5)
+      {
+        pushParamChange (data.outputParameterChanges, laneLedParamID (lane), ledValue);
+        laneLedState_[lane] = ledValue;
+      }
+    }
+  }
+
   return kResultOk;
 }
 
@@ -614,6 +673,8 @@ void WestCoastProcessor::resetEngine ()
   sequencer_.reset ();
   for (auto& voice : voices_)
     voice.reset ();
+  laneLedState_.fill (-1.0);
+  laneLedFlashSamples_.fill (0);
 }
 
 void WestCoastProcessor::loadPresetByIndex (int32 presetIndex, Vst::IParameterChanges* outputChanges)
@@ -689,6 +750,9 @@ void WestCoastProcessor::loadPresetByIndex (int32 presetIndex, Vst::IParameterCh
     pushParamChange (outputChanges, laneFilterParamID (lane, kLaneTransFilterCutoff), lanePreset.transFilterCutoff);
     pushParamChange (outputChanges, laneFilterParamID (lane, kLaneTransFilterRes), lanePreset.transFilterRes);
     pushParamChange (outputChanges, laneFilterParamID (lane, kLaneTransFilterEnv), lanePreset.transFilterEnv);
+
+    setParam (laneOscMixParamID (lane), 1.0);
+    pushParamChange (outputChanges, laneOscMixParamID (lane), 1.0);
   }
 
   sequencer_.setPattern (preset.pattern);
@@ -812,14 +876,16 @@ void WestCoastProcessor::performRandomization (Vst::IParameterChanges* outputCha
               blend (getParam (laneFilterParamID (lane, kLaneTransFilterEnv)), rnd (0.22, 0.55)));
   }
 
-  for (const auto id : allParameterIds ())
+  for (int32 lane = 0; lane < kLaneCount; ++lane)
   {
-    if (id != kParamRandomize && id != kParamPresetSelect && id != kParamRandomizeAmount &&
-        id != kParamMaster && id != kParamInternalTempo && id != kParamSwing &&
-        id != kParamRun && id != kParamFollowTransport && id < kLaneParamBase)
-      continue;
-    if (id >= kLaneParamBase && id <= kLaneFilterMaxParamId)
-      pushParamChange (outputChanges, id, getParam (id));
+    for (int32 p = 0; p < kLaneParamCount; ++p)
+      pushParamChange (outputChanges, laneParamID (lane, static_cast<LaneParamOffset> (p)), getParam (laneParamID (lane, static_cast<LaneParamOffset> (p))));
+    for (int32 p = 0; p < kLaneExtraParamCount; ++p)
+      pushParamChange (outputChanges, laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (p)), getParam (laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (p))));
+    for (int32 p = 0; p < kLaneMacroParamCount; ++p)
+      pushParamChange (outputChanges, laneMacroParamID (lane, static_cast<LaneMacroParamOffset> (p)), getParam (laneMacroParamID (lane, static_cast<LaneMacroParamOffset> (p))));
+    for (int32 p = 0; p < kLaneFilterParamCount; ++p)
+      pushParamChange (outputChanges, laneFilterParamID (lane, static_cast<LaneFilterParamOffset> (p)), getParam (laneFilterParamID (lane, static_cast<LaneFilterParamOffset> (p))));
   }
 }
 
@@ -889,6 +955,8 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
     const double level = getParam (laneParamID (lane, kLaneLevel));
     frame.outputLevel = std::pow (level, 1.05);
     frame.oscLevel = std::clamp ((0.40 + (std::pow (level, 0.80) * 1.25)) * kOscBalance[lane], 0.0, 2.0);
+    const double oscMix = getParam (laneOscMixParamID (lane));
+    frame.oscLevel *= oscMix;
 
     const double foldRaw = getParam (laneParamID (lane, kLaneFold));
     const double fmRaw = getParam (laneParamID (lane, kLaneFm));
