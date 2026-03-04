@@ -43,7 +43,7 @@ struct FactoryPreset {
   PatternGrid pattern {};
 };
 
-constexpr int32 kFactoryPresetCount = 5;
+constexpr int32 kFactoryPresetCount = 8;
 
 const std::array<FactoryPreset, kFactoryPresetCount>& getFactoryPresets ();
 

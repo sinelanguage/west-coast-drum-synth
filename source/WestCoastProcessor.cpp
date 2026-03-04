@@ -17,7 +17,8 @@ namespace Steinberg::WestCoastDrumSynth {
 
 namespace {
 
-constexpr uint32 kStateVersion = 5;
+constexpr uint32 kStateVersion = 6;
+constexpr uint32 kV5StateVersion = 5;
 constexpr uint32 kV4StateVersion = 4;
 constexpr uint32 kV3StateVersion = 3;
 constexpr int32 kV4LaneCount = 5;
@@ -171,6 +172,7 @@ tresult PLUGIN_API WestCoastProcessor::initialize (FUnknown* context)
   setParam (kParamFollowTransport, 0.0);
   setParam (kParamPresetSelect, 0.0);
   setParam (kParamRandomize, 0.0);
+  setParam (kParamRandomizeAmount, 1.0);
   setParam (kParamOscFilterCutoff, 0.20);
   setParam (kParamOscFilterResonance, 0.34);
   setParam (kParamOscFilterEnv, 0.46);
@@ -404,6 +406,26 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
     return kResultOk;
   }
 
+  if (version == kV5StateVersion)
+  {
+    constexpr int32 v5ParamCount = kTotalParameterCount - kLaneMuteParamCount - 1;
+    for (int32 i = 0; i < v5ParamCount; ++i)
+    {
+      double normalized = 0.0;
+      if (!streamer.readDouble (normalized))
+        return kResultFalse;
+      setParam (allParameterIds ()[i], normalized);
+    }
+    setParam (kParamRandomizeAmount, 1.0);
+    for (int32 lane = 0; lane < kLaneCount; ++lane)
+      setParam (laneMuteParamID (lane), 0.0);
+    const auto& preset = getFactoryPresets ()[loadedPreset_];
+    sequencer_.setPattern (preset.pattern);
+    updateLaneFramesFromParameters ();
+    presetPending_ = false;
+    return kResultOk;
+  }
+
   if (version != kStateVersion)
     return kResultFalse;
 
@@ -517,7 +539,11 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
 
       const int32 lane = laneForMidiPitch (event.noteOn.pitch);
       if (lane >= 0 && lane < kLaneCount)
-        voices_[lane].trigger (laneFrames_[lane]);
+      {
+        const bool muted = getParam (laneMuteParamID (lane)) > 0.5;
+        if (!muted && laneFrames_[lane].outputLevel > 1e-6)
+          voices_[lane].trigger (laneFrames_[lane]);
+      }
     }
   }
 
@@ -539,7 +565,8 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
       sequencer_.processSample (triggers);
       for (int32 lane = 0; lane < kLaneCount; ++lane)
       {
-        if (triggers[lane])
+        const bool muted = getParam (laneMuteParamID (lane)) > 0.5;
+        if (triggers[lane] && laneFrames_[lane].outputLevel > 1e-6 && !muted)
           voices_[lane].trigger (laneFrames_[lane]);
       }
 
@@ -548,6 +575,9 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
       int32 activeVoices = 0;
       for (int32 lane = 0; lane < kLaneCount; ++lane)
       {
+        const bool muted = getParam (laneMuteParamID (lane)) > 0.5;
+        if (muted || laneFrames_[lane].outputLevel < 1e-6)
+          continue;
         if (voices_[lane].isActive ())
           ++activeVoices;
         const double sample = voices_[lane].process ();
@@ -716,6 +746,10 @@ void WestCoastProcessor::performRandomization (Vst::IParameterChanges* outputCha
   if (!outputChanges)
     return;
 
+  const double amount = std::clamp (getParam (kParamRandomizeAmount), 0.0, 1.0);
+  if (amount < 1e-6)
+    return;
+
   std::random_device rd;
   std::mt19937 gen (rd ());
   const auto rnd = [&gen] (double lo, double hi) {
@@ -723,6 +757,9 @@ void WestCoastProcessor::performRandomization (Vst::IParameterChanges* outputCha
   };
   const auto jitter = [&rnd] (double center, double radius) {
     return clamp01 (center + rnd (-radius, radius));
+  };
+  const auto blend = [amount] (double current, double target) {
+    return clamp01 (current + amount * (target - current));
   };
 
   constexpr double decayJitter = 0.10;
@@ -733,40 +770,53 @@ void WestCoastProcessor::performRandomization (Vst::IParameterChanges* outputCha
     const double curNoiseDecay = getParam (laneExtraParamID (lane, kLaneNoiseDecay));
     const double curTransientDecay = getParam (laneMacroParamID (lane, kLaneTransientDecay));
 
-    setParam (laneParamID (lane, kLaneTune), rnd (0.32, 0.58));
-    setParam (laneParamID (lane, kLaneDecay), jitter (curDecay, decayJitter));
-    setParam (laneParamID (lane, kLaneFold), rnd (0.25, 0.75));
-    setParam (laneParamID (lane, kLaneFm), rnd (0.20, 0.65));
-    setParam (laneParamID (lane, kLaneNoise), rnd (0.15, 0.55));
-    setParam (laneParamID (lane, kLaneDrive), rnd (0.10, 0.45));
-    setParam (laneParamID (lane, kLaneLevel), rnd (0.55, 0.92));
-    setParam (laneParamID (lane, kLanePan), rnd (0.25, 0.75));
+    setParam (laneParamID (lane, kLaneTune), blend (getParam (laneParamID (lane, kLaneTune)), rnd (0.32, 0.58)));
+    setParam (laneParamID (lane, kLaneDecay), blend (curDecay, jitter (curDecay, decayJitter)));
+    setParam (laneParamID (lane, kLaneFold), blend (getParam (laneParamID (lane, kLaneFold)), rnd (0.25, 0.75)));
+    setParam (laneParamID (lane, kLaneFm), blend (getParam (laneParamID (lane, kLaneFm)), rnd (0.20, 0.65)));
+    setParam (laneParamID (lane, kLaneNoise), blend (getParam (laneParamID (lane, kLaneNoise)), rnd (0.15, 0.55)));
+    setParam (laneParamID (lane, kLaneDrive), blend (getParam (laneParamID (lane, kLaneDrive)), rnd (0.10, 0.45)));
+    setParam (laneParamID (lane, kLaneLevel), blend (getParam (laneParamID (lane, kLaneLevel)), rnd (0.55, 0.92)));
+    setParam (laneParamID (lane, kLanePan), blend (getParam (laneParamID (lane, kLanePan)), rnd (0.25, 0.75)));
 
-    setParam (laneExtraParamID (lane, kLanePitchEnvAmount), rnd (0.25, 0.75));
-    setParam (laneExtraParamID (lane, kLanePitchEnvDecay), jitter (curPitchEnvDecay, decayJitter));
-    setParam (laneExtraParamID (lane, kLaneTransientAttack), rnd (0.18, 0.55));
-    setParam (laneExtraParamID (lane, kLaneNoiseTone), rnd (0.35, 0.75));
-    setParam (laneExtraParamID (lane, kLaneNoiseDecay), jitter (curNoiseDecay, decayJitter));
-    setParam (laneExtraParamID (lane, kLaneSnap), rnd (0.20, 0.65));
+    setParam (laneExtraParamID (lane, kLanePitchEnvAmount),
+              blend (getParam (laneExtraParamID (lane, kLanePitchEnvAmount)), rnd (0.25, 0.75)));
+    setParam (laneExtraParamID (lane, kLanePitchEnvDecay), blend (curPitchEnvDecay, jitter (curPitchEnvDecay, decayJitter)));
+    setParam (laneExtraParamID (lane, kLaneTransientAttack),
+              blend (getParam (laneExtraParamID (lane, kLaneTransientAttack)), rnd (0.18, 0.55)));
+    setParam (laneExtraParamID (lane, kLaneNoiseTone),
+              blend (getParam (laneExtraParamID (lane, kLaneNoiseTone)), rnd (0.35, 0.75)));
+    setParam (laneExtraParamID (lane, kLaneNoiseDecay), blend (curNoiseDecay, jitter (curNoiseDecay, decayJitter)));
+    setParam (laneExtraParamID (lane, kLaneSnap),
+              blend (getParam (laneExtraParamID (lane, kLaneSnap)), rnd (0.20, 0.65)));
 
-    setParam (laneMacroParamID (lane, kLaneTransientDecay), jitter (curTransientDecay, decayJitter));
-    setParam (laneMacroParamID (lane, kLaneTransientMix), rnd (0.30, 0.70));
-    setParam (laneMacroParamID (lane, kLaneNoiseResonance), rnd (0.25, 0.65));
-    setParam (laneMacroParamID (lane, kLaneNoiseEnvAmount), rnd (0.35, 0.75));
+    setParam (laneMacroParamID (lane, kLaneTransientDecay), blend (curTransientDecay, jitter (curTransientDecay, decayJitter)));
+    setParam (laneMacroParamID (lane, kLaneTransientMix),
+              blend (getParam (laneMacroParamID (lane, kLaneTransientMix)), rnd (0.30, 0.70)));
+    setParam (laneMacroParamID (lane, kLaneNoiseResonance),
+              blend (getParam (laneMacroParamID (lane, kLaneNoiseResonance)), rnd (0.25, 0.65)));
+    setParam (laneMacroParamID (lane, kLaneNoiseEnvAmount),
+              blend (getParam (laneMacroParamID (lane, kLaneNoiseEnvAmount)), rnd (0.35, 0.75)));
 
-    setParam (laneFilterParamID (lane, kLaneOscFilterCutoff), rnd (0.50, 0.85));
-    setParam (laneFilterParamID (lane, kLaneOscFilterRes), rnd (0.02, 0.18));
-    setParam (laneFilterParamID (lane, kLaneOscFilterEnv), rnd (0.20, 0.55));
-    setParam (laneFilterParamID (lane, kLaneTransFilterCutoff), rnd (0.55, 0.88));
-    setParam (laneFilterParamID (lane, kLaneTransFilterRes), rnd (0.02, 0.12));
-    setParam (laneFilterParamID (lane, kLaneTransFilterEnv), rnd (0.22, 0.55));
+    setParam (laneFilterParamID (lane, kLaneOscFilterCutoff),
+              blend (getParam (laneFilterParamID (lane, kLaneOscFilterCutoff)), rnd (0.50, 0.85)));
+    setParam (laneFilterParamID (lane, kLaneOscFilterRes),
+              blend (getParam (laneFilterParamID (lane, kLaneOscFilterRes)), rnd (0.02, 0.18)));
+    setParam (laneFilterParamID (lane, kLaneOscFilterEnv),
+              blend (getParam (laneFilterParamID (lane, kLaneOscFilterEnv)), rnd (0.20, 0.55)));
+    setParam (laneFilterParamID (lane, kLaneTransFilterCutoff),
+              blend (getParam (laneFilterParamID (lane, kLaneTransFilterCutoff)), rnd (0.55, 0.88)));
+    setParam (laneFilterParamID (lane, kLaneTransFilterRes),
+              blend (getParam (laneFilterParamID (lane, kLaneTransFilterRes)), rnd (0.02, 0.12)));
+    setParam (laneFilterParamID (lane, kLaneTransFilterEnv),
+              blend (getParam (laneFilterParamID (lane, kLaneTransFilterEnv)), rnd (0.22, 0.55)));
   }
 
   for (const auto id : allParameterIds ())
   {
-    if (id != kParamRandomize && id != kParamPresetSelect && id != kParamMaster && id != kParamInternalTempo &&
-        id != kParamSwing && id != kParamRun && id != kParamFollowTransport &&
-        id < kLaneParamBase)
+    if (id != kParamRandomize && id != kParamPresetSelect && id != kParamRandomizeAmount &&
+        id != kParamMaster && id != kParamInternalTempo && id != kParamSwing &&
+        id != kParamRun && id != kParamFollowTransport && id < kLaneParamBase)
       continue;
     if (id >= kLaneParamBase && id <= kLaneFilterMaxParamId)
       pushParamChange (outputChanges, id, getParam (id));
@@ -811,6 +861,10 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
   // Wider tune travel for sub rumbles and bright metallic percussion.
   static constexpr std::array<double, kLaneCount> kPitchSemitoneRange {
     60.0, 52.0, 48.0, 60.0, 58.0, 62.0, 64.0, 56.0, 54.0};
+  // Low register (Kick, Snare, PercA): map 0-1 to lower 50% for warmer tones.
+  // High register (Hat, PercB, RimShot, Clap): map 0-1 to upper 50% for brighter but controlled.
+  static constexpr std::array<bool, kLaneCount> kLaneIsLowRegister {
+    true, true, false, true, true, false, false, false, false};
 
   const double oscFilterCutoffNorm = getParam (kParamOscFilterCutoff);
   const double oscFilterResNorm = getParam (kParamOscFilterResonance);
@@ -836,14 +890,17 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
     frame.outputLevel = std::pow (level, 1.05);
     frame.oscLevel = std::clamp ((0.40 + (std::pow (level, 0.80) * 1.25)) * kOscBalance[lane], 0.0, 2.0);
 
-    frame.foldAmount = getParam (laneParamID (lane, kLaneFold));
-    frame.fmAmount = getParam (laneParamID (lane, kLaneFm));
+    const double foldRaw = getParam (laneParamID (lane, kLaneFold));
+    const double fmRaw = getParam (laneParamID (lane, kLaneFm));
+    frame.foldAmount = kLaneIsLowRegister[lane] ? (foldRaw * 0.5) : (0.5 + foldRaw * 0.5);
+    frame.fmAmount = kLaneIsLowRegister[lane] ? (fmRaw * 0.5) : (0.5 + fmRaw * 0.5);
     frame.bodyFilterCutoffHz = std::clamp (globalOscCutoffHz * kOscCutoffScale[lane], 80.0, 18000.0);
     frame.bodyFilterResonance =
       std::clamp ((globalOscResonance + (frame.foldAmount * 0.12)) * kOscResScale[lane], 0.0, 0.98);
     frame.bodyFilterEnvAmount = std::clamp (globalOscEnv * kOscEnvScale[lane], 0.0, 2.5);
 
-    const double noise = getParam (laneParamID (lane, kLaneNoise));
+    const double noiseRaw = getParam (laneParamID (lane, kLaneNoise));
+    const double noise = kLaneIsLowRegister[lane] ? (noiseRaw * 0.5) : (0.5 + noiseRaw * 0.5);
     frame.noiseAmount = std::clamp (std::pow (noise, 0.82) * 1.35, 0.0, 2.5);
     frame.noiseLevel = std::clamp (std::pow (noise, 0.58) * kNoiseLevelScale[lane], 0.0, 2.5);
     frame.pitchEnvAmount = std::clamp (getParam (laneExtraParamID (lane, kLanePitchEnvAmount)) *
@@ -874,7 +931,8 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
                   0.0, 1.5);
     frame.snapAmount = std::clamp (getParam (laneExtraParamID (lane, kLaneSnap)) * kSnapScale[lane], 0.0, 1.0);
 
-    frame.driveAmount = getParam (laneParamID (lane, kLaneDrive));
+    const double driveRaw = getParam (laneParamID (lane, kLaneDrive));
+    frame.driveAmount = kLaneIsLowRegister[lane] ? (driveRaw * 0.5) : (0.5 + driveRaw * 0.5);
     frame.level = frame.outputLevel;
     frame.pan = (getParam (laneParamID (lane, kLanePan)) * 2.0) - 1.0;
 

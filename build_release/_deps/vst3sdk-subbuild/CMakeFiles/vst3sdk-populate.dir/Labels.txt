@@ -1,0 +1,14 @@
+# Target labels
+ vst3sdk-populate
+# Source files and their labels
+/workspace/build_release/_deps/vst3sdk-subbuild/CMakeFiles/vst3sdk-populate
+/workspace/build_release/_deps/vst3sdk-subbuild/CMakeFiles/vst3sdk-populate.rule
+/workspace/build_release/_deps/vst3sdk-subbuild/CMakeFiles/vst3sdk-populate-complete.rule
+/workspace/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-build.rule
+/workspace/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-configure.rule
+/workspace/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-download.rule
+/workspace/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-install.rule
+/workspace/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-mkdir.rule
+/workspace/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-patch.rule
+/workspace/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-test.rule
+/workspace/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-update.rule

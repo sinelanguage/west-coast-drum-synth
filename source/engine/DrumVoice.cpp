@@ -143,11 +143,14 @@ double DrumVoice::process ()
   const double dynamicFold = frame_.foldAmount * (1.2 + (1.2 * toneEnv_));
   body = wavefold (body, dynamicFold);
 
-  // Filters: wider cutoff range, stronger resonance and env modulation, +3dB gain
-  const double oscBaseCutoff = cutoffFromNormalized (frame_.oscFilterCutoff, 40.0, 20000.0);
-  const double oscEnvMod = oscBaseCutoff * frame_.oscFilterEnvAmount * toneEnv_ * 4.5;
+  // Filters: global body filter as base, per-lane osc filter as modifier; stronger resonance and env
+  const double oscBaseCutoff =
+    frame_.bodyFilterCutoffHz * (0.4 + 0.6 * frame_.oscFilterCutoff);
+  const double oscEnvMod =
+    oscBaseCutoff * frame_.bodyFilterEnvAmount * frame_.oscFilterEnvAmount * toneEnv_ * 4.5;
   const double oscCutoffHz = std::clamp (oscBaseCutoff + oscEnvMod, 20.0, sampleRate_ * 0.47);
-  const double oscResScaled = std::min (0.98, frame_.oscFilterResonance * 1.35);
+  const double oscResScaled =
+    std::min (0.98, (frame_.bodyFilterResonance * 0.5 + frame_.oscFilterResonance * 0.5) * 1.35);
   body = processStateVariableLowpass (body, oscCutoffHz, oscResScaled,
                                       oscFilterLowState_, oscFilterBandState_);
   const double oscGate = ampEnv_ * (0.38 + (0.72 * toneEnv_));

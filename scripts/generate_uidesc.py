@@ -115,6 +115,7 @@ def extra_tag(lane, offset):  return 200 + lane * LANE_EXTRA_COUNT + offset
 def macro_tag(lane, offset):  return 300 + lane * LANE_MACRO_COUNT + offset
 def filter_tag(lane, offset): return 400 + lane * LANE_FILTER_COUNT + offset
 def led_tag(lane):            return 500 + lane
+def mute_tag(lane):           return 600 + lane
 
 LANE_NAMES = [
     ("DS1", "BD", "C"),
@@ -165,13 +166,14 @@ def section_tags(lane):
     ]
 
 def hidden_tags(lane):
-    """Tags that need invisible 2x2 sliders (5 per lane)."""
+    """Tags that need invisible 2x2 sliders (5 per lane + mute)."""
     return [
         extra_tag(lane, 5),   # Snap
         macro_tag(lane, 3),   # NoiseEnvAmount
         filter_tag(lane, 2),  # OscFltEnv
         filter_tag(lane, 4),  # TransReso
         filter_tag(lane, 5),  # TransFltEnv
+        mute_tag(lane),       # Mute
     ]
 
 # ---------------------------------------------------------------------------
@@ -193,6 +195,9 @@ LED_SUFFIX = "Led"
 
 LED_NAMES = ["KickLed", "SnareLed", "HatLed", "PercALed", "PercA2Led",
              "PercBLed", "PercB2Led", "RimShotLed", "ClapLed"]
+
+MUTE_NAMES = ["KickMute", "SnareMute", "HatMute", "PercAMute", "PercA2Mute",
+              "PercBMute", "PercB2Mute", "RimShotMute", "ClapMute"]
 
 # ---------------------------------------------------------------------------
 # XML generation helpers
@@ -462,6 +467,8 @@ def build_control_tags():
             lines.append(f'{ind(2)}<control-tag name="{prefix}{suffix}" tag="{filter_tag(lane, off)}"/>')
     for lane in range(LANE_COUNT):
         lines.append(f'{ind(2)}<control-tag name="{LED_NAMES[lane]}" tag="{led_tag(lane)}"/>')
+    for lane in range(LANE_COUNT):
+        lines.append(f'{ind(2)}<control-tag name="{MUTE_NAMES[lane]}" tag="{mute_tag(lane)}"/>')
     lines.append(f'{ind(1)}</control-tags>')
     return '\n'.join(lines)
 

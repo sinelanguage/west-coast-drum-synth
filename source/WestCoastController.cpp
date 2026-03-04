@@ -18,7 +18,8 @@ namespace Steinberg::WestCoastDrumSynth {
 
 namespace {
 
-constexpr uint32 kStateVersion = 5;
+constexpr uint32 kStateVersion = 6;
+constexpr uint32 kV5StateVersion = 5;
 constexpr uint32 kV4StateVersion = 4;
 constexpr uint32 kV3StateVersion = 3;
 constexpr int32 kV4LaneCount = 5;
@@ -111,6 +112,7 @@ tresult PLUGIN_API WestCoastController::initialize (FUnknown* context)
   }
   parameters.addParameter (presetParam);
   parameters.addParameter (STR16 ("Randomize"), nullptr, 1, 0.0, Vst::ParameterInfo::kCanAutomate, kParamRandomize);
+  parameters.addParameter (makeRangeParam ("Randomize Amount", kParamRandomizeAmount, "%", 0.0, 100.0, 100.0));
 
   const std::array<std::array<const char*, kLaneParamCount>, kLaneCount> laneTitles {{
     {{"Kick Tune", "Kick Decay", "Kick Fold", "Kick FM", "Kick Noise Level", "Kick Drive", "Kick Output", "Kick Pan"}},
@@ -263,6 +265,12 @@ tresult PLUGIN_API WestCoastController::initialize (FUnknown* context)
     "Perc B1 Trigger LED", "Perc B2 Trigger LED", "RimShot Trigger LED", "Clap Trigger LED"};
   for (int32 lane = 0; lane < kLaneCount; ++lane)
     parameters.addParameter (makeRangeParam (laneLedTitles[lane], laneLedParamID (lane), "", 0.0, 1.0, 0.0));
+
+  const std::array<const char*, kLaneCount> laneMuteTitles {
+    "Kick Mute", "Snare Mute", "Hat Mute", "Perc A1 Mute", "Perc A2 Mute",
+    "Perc B1 Mute", "Perc B2 Mute", "RimShot Mute", "Clap Mute"};
+  for (int32 lane = 0; lane < kLaneCount; ++lane)
+    parameters.addParameter (makeRangeParam (laneMuteTitles[lane], laneMuteParamID (lane), "", 0.0, 1.0, 0.0));
 
   return kResultOk;
 }
@@ -468,6 +476,22 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
         setParamNormalized (laneFilterParamID (lane, static_cast<LaneFilterParamOffset> (p)),
                            kLaneFilterDefaults[lane][p]);
     }
+    return kResultOk;
+  }
+
+  if (version == kV5StateVersion)
+  {
+    constexpr int32 v5ParamCount = kTotalParameterCount - kLaneMuteParamCount - 1;
+    for (int32 i = 0; i < v5ParamCount; ++i)
+    {
+      double value = 0.0;
+      if (!streamer.readDouble (value))
+        return kResultFalse;
+      setParamNormalized (allParameterIds ()[i], value);
+    }
+    setParamNormalized (kParamRandomizeAmount, 1.0);
+    for (int32 lane = 0; lane < kLaneCount; ++lane)
+      setParamNormalized (laneMuteParamID (lane), 0.0);
     return kResultOk;
   }
 
