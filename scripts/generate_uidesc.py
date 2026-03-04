@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate WestCoastEditor.uidesc matching the mockup pixel-perfectly.
 
-Layout: 1024x530, 2-column x 4-row lane grid with compact global strip at top.
+Layout: 1024x480, 2-column x 4-row lane grid flush to edges.
 All positions and sizes are integer pixels for exact rendering.
 """
 
@@ -11,39 +11,39 @@ import xml.etree.ElementTree as ET
 # Editor dimensions
 # ---------------------------------------------------------------------------
 EDITOR_W = 1024
-EDITOR_H = 530
+EDITOR_H = 480
 
 # ---------------------------------------------------------------------------
 # Margins / header
 # ---------------------------------------------------------------------------
-LEFT_MARGIN = 12
-TITLE_X = 14
-TITLE_Y = 9
+LEFT_MARGIN = 0   # lanes flush to edges
+TITLE_X = 6
+TITLE_Y = 4
 SUBTITLE_X = 500
-SUBTITLE_Y = 10
+SUBTITLE_Y = 5
 
 # Global strip
-GLOBAL_Y = 24
-GLOBAL_H = 30
-GLOBAL_W = 1000
+GLOBAL_Y = 16
+GLOBAL_H = 24
+GLOBAL_W = EDITOR_W
 
 # ---------------------------------------------------------------------------
 # Lane grid
 # ---------------------------------------------------------------------------
-LANE_W = 494
+LANE_W = 511
 LANE_H = 108
-COL_GAP = 12
-ROW_GAP = 6
+COL_GAP = 1   # 1px line between columns
+ROW_GAP = 1   # 1px line between rows
 
-COL0_X = LEFT_MARGIN          # 12
-COL1_X = LEFT_MARGIN + LANE_W + COL_GAP  # 518
+COL0_X = 0
+COL1_X = LANE_W + COL_GAP  # 512
 
-LANE_START_Y = 60  # after global strip
+LANE_START_Y = 41  # tight after global strip
 ROW_Y = [LANE_START_Y + i * (LANE_H + ROW_GAP) for i in range(4)]
-# [60, 174, 288, 402]
+# [41, 150, 259, 368]
 
-SEP_Y = [ROW_Y[i] + LANE_H + 2 for i in range(3)]
-# [170, 284, 398]
+SEP_Y = [ROW_Y[i] + LANE_H for i in range(3)]
+# [149, 258, 367]
 
 # ---------------------------------------------------------------------------
 # Section layout inside a lane (all relative to lane origin)
@@ -53,10 +53,10 @@ SEC_Y = 18      # section box top within lane
 SEC_H = 82      # section box height
 SEC_GAP = 1     # 1px line between section boxes
 
-SEC_START_X = 7
+SEC_START_X = 5
 
-# Section widths (expanded to fill space freed by tighter gaps)
-SEC_WIDTHS = [96, 96, 116, 96, 72]
+# Section widths (expanded for wider 511px lanes)
+SEC_WIDTHS = [100, 100, 120, 100, 80]
 SEC_NAMES = ["OSC &amp; WAVESHAPE", "PITCH ENV", "TRANSIENT DESIGNER",
              "NOISE DESIGNER", "OUTPUT STAGE"]
 
@@ -86,15 +86,15 @@ def slider_positions(sec_w, n):
     lx = [s for s in sx]
     return sx, lx
 
-S4_96,  L4_96  = slider_positions(96, 4)   # OSC, PITCH, NOISE
-S4_116, L4_116 = slider_positions(116, 4)  # TRANSIENT
-S3_72,  L3_72  = slider_positions(72, 3)   # OUTPUT
+S4_100, L4_100 = slider_positions(100, 4)  # OSC, PITCH, NOISE
+S4_120, L4_120 = slider_positions(120, 4)  # TRANSIENT
+S3_80,  L3_80  = slider_positions(80, 3)   # OUTPUT
 
-SECTION_SLIDER_X = [S4_96, S4_96, S4_116, S4_96, S3_72]
-SECTION_LABEL_X  = [L4_96, L4_96, L4_116, L4_96, L3_72]
+SECTION_SLIDER_X = [S4_100, S4_100, S4_120, S4_100, S3_80]
+SECTION_LABEL_X  = [L4_100, L4_100, L4_120, L4_100, L3_80]
 
-# LED meter within lane
-LED_X = 430
+# LED meter within lane (near right edge)
+LED_X = 449
 LED_Y = 8
 LED_W = 54
 LED_H = 6
@@ -356,7 +356,7 @@ def build_lane(lane_idx, col, row):
 # ---------------------------------------------------------------------------
 def build_global_strip():
     lines = []
-    gx = LEFT_MARGIN
+    gx = 0
     gy = GLOBAL_Y
     gw = GLOBAL_W
     gh = GLOBAL_H
@@ -366,42 +366,41 @@ def build_global_strip():
                  f'background-color-draw-style="filled and stroked" '
                  f'class="CView" mouse-enabled="false" opacity="1" '
                  f'origin="0, 0" size="{ACCENT_W}, {gh}" transparent="false"/>')
-    lines.append(f'{ind(3)}{label_xml(9, 4, 50, 12, "GLOBAL", font="label_title", color="TextBright", bg="ModuleBg", align="left")}')
+    lines.append(f'{ind(3)}{label_xml(9, 2, 50, 12, "GLOBAL", font="label_title", color="TextBright", bg="ModuleBg", align="left")}')
 
     # CLOCK section (TMP, SWG) - tags 1, 2
-    cx = 64
-    lines.append(f'{ind(3)}{cview_open(cx, 3, 62, 24, "StageOuter")}')
+    lines.append(f'{ind(3)}{cview_open(64, 2, 62, 20, "StageOuter")}')
     lines.append(f'{ind(4)}{section_title_label(2, 1, 58, "CLOCK")}')
-    lines.append(f'{ind(4)}{slider_xml(1, 12, 10, 6, 12, "vertical", wheel_inc="0.02", zoom="4")}')
-    lines.append(f'{ind(4)}{slider_xml(2, 36, 10, 6, 12, "vertical", wheel_inc="0.02", zoom="4")}')
+    lines.append(f'{ind(4)}{slider_xml(1, 12, 9, 6, 10, "vertical", wheel_inc="0.02", zoom="4")}')
+    lines.append(f'{ind(4)}{slider_xml(2, 36, 9, 6, 10, "vertical", wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(3)}{cview_close()}')
 
     # MASTER section (LVL) - tag 0
-    lines.append(f'{ind(3)}{cview_open(132, 3, 38, 24, "StageOuter")}')
+    lines.append(f'{ind(3)}{cview_open(132, 2, 38, 20, "StageOuter")}')
     lines.append(f'{ind(4)}{section_title_label(2, 1, 34, "MASTER")}')
-    lines.append(f'{ind(4)}{slider_xml(0, 15, 10, 6, 12, "vertical", wheel_inc="0.02", zoom="4")}')
+    lines.append(f'{ind(4)}{slider_xml(0, 15, 9, 6, 10, "vertical", wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(3)}{cview_close()}')
 
     # BODY FILTER section (CUT, RES, ENV) - tags 7, 8, 9
-    lines.append(f'{ind(3)}{cview_open(176, 3, 82, 24, "StageOuter")}')
+    lines.append(f'{ind(3)}{cview_open(176, 2, 82, 20, "StageOuter")}')
     lines.append(f'{ind(4)}{section_title_label(2, 1, 78, "BODY FILTER")}')
-    lines.append(f'{ind(4)}{slider_xml(7, 12, 10, 6, 12, "vertical", wheel_inc="0.02", zoom="4")}')
-    lines.append(f'{ind(4)}{slider_xml(8, 34, 10, 6, 12, "vertical", wheel_inc="0.02", zoom="4")}')
-    lines.append(f'{ind(4)}{slider_xml(9, 56, 10, 6, 12, "vertical", wheel_inc="0.02", zoom="4")}')
+    lines.append(f'{ind(4)}{slider_xml(7, 12, 9, 6, 10, "vertical", wheel_inc="0.02", zoom="4")}')
+    lines.append(f'{ind(4)}{slider_xml(8, 34, 9, 6, 10, "vertical", wheel_inc="0.02", zoom="4")}')
+    lines.append(f'{ind(4)}{slider_xml(9, 56, 9, 6, 10, "vertical", wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(3)}{cview_close()}')
 
     # TRANSPORT section (RUN, FOLLOW, RANDOMIZE) - tags 3, 4, 6
-    lines.append(f'{ind(3)}{cview_open(264, 3, 146, 24, "StageOuter")}')
+    lines.append(f'{ind(3)}{cview_open(264, 2, 146, 20, "StageOuter")}')
     lines.append(f'{ind(4)}{section_title_label(2, 1, 142, "TRANSPORT")}')
-    lines.append(f'{ind(4)}{button_xml(3, 4, 11, 30, 12, "RUN")}')
-    lines.append(f'{ind(4)}{button_xml(4, 38, 11, 50, 12, "FOLLOW")}')
-    lines.append(f'{ind(4)}{button_xml(6, 92, 11, 50, 12, "RANDOM")}')
+    lines.append(f'{ind(4)}{button_xml(3, 4, 9, 30, 10, "RUN")}')
+    lines.append(f'{ind(4)}{button_xml(4, 38, 9, 50, 10, "FOLLOW")}')
+    lines.append(f'{ind(4)}{button_xml(6, 92, 9, 50, 10, "RANDOM")}')
     lines.append(f'{ind(3)}{cview_close()}')
 
     # PRESET section - tag 5
-    lines.append(f'{ind(3)}{cview_open(416, 3, 110, 24, "StageOuter")}')
+    lines.append(f'{ind(3)}{cview_open(416, 2, 110, 20, "StageOuter")}')
     lines.append(f'{ind(4)}{section_title_label(2, 1, 106, "PRESET")}')
-    lines.append(f'{ind(4)}{dropdown_xml(5, 6, 11, 98, 12)}')
+    lines.append(f'{ind(4)}{dropdown_xml(5, 6, 9, 98, 10)}')
     lines.append(f'{ind(3)}{cview_close()}')
 
     lines.append(f'{ind(2)}{cview_close()}')
@@ -521,12 +520,12 @@ def generate():
     parts.append(build_global_strip())
 
     # Separator line below global strip
-    sep_w = COL1_X + LANE_W - LEFT_MARGIN
-    parts.append(f'{ind(2)}{separator_line(LEFT_MARGIN, LANE_START_Y - 2, sep_w)}')
+    sep_w = EDITOR_W
+    parts.append(f'{ind(2)}{separator_line(0, LANE_START_Y - 1, sep_w)}')
 
     # Row separator lines between lane rows
     for sy in SEP_Y:
-        parts.append(f'{ind(2)}{separator_line(LEFT_MARGIN, sy, sep_w)}')
+        parts.append(f'{ind(2)}{separator_line(0, sy, sep_w)}')
 
     # Visible lanes (0-7)
     for vi in range(VISIBLE_LANES):
