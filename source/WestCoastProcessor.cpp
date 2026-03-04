@@ -149,8 +149,6 @@ WestCoastProcessor::WestCoastProcessor ()
 {
   setControllerClass (kControllerUID);
   params_.fill (0.0);
-  laneLedState_.fill (-1.0);
-  laneLedFlashSamples_.fill (0);
 }
 
 FUnknown* WestCoastProcessor::createInstance (void*)
@@ -485,7 +483,6 @@ tresult PLUGIN_API WestCoastProcessor::setupProcessing (Vst::ProcessSetup& setup
   sequencer_.setSampleRate (setup.sampleRate);
   for (auto& voice : voices_)
     voice.setSampleRate (setup.sampleRate);
-  ledFlashDurationSamples_ = std::max<int32> (1, static_cast<int32> (std::lround (setup.sampleRate * 0.045)));
   return kResultOk;
 }
 
@@ -545,7 +542,7 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
       {
         const bool muted = getParam (laneMuteParamID (lane)) > 0.5;
         if (!muted && laneFrames_[lane].outputLevel > 1e-6)
-      {
+        {
           voices_[lane].trigger (laneFrames_[lane]);
           laneLedFlashSamples_[lane] = ledFlashDurationSamples_;
         }
@@ -573,10 +570,7 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
       {
         const bool muted = getParam (laneMuteParamID (lane)) > 0.5;
         if (triggers[lane] && laneFrames_[lane].outputLevel > 1e-6 && !muted)
-        {
           voices_[lane].trigger (laneFrames_[lane]);
-          laneLedFlashSamples_[lane] = ledFlashDurationSamples_;
-        }
       }
 
       double frameL = 0.0;
@@ -603,12 +597,6 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
 
       left[sampleIndex] = static_cast<SampleType> (busL);
       right[sampleIndex] = static_cast<SampleType> (busR);
-
-      for (int32 lane = 0; lane < kLaneCount; ++lane)
-      {
-        if (laneLedFlashSamples_[lane] > 0)
-          --laneLedFlashSamples_[lane];
-      }
     }
   };
 
@@ -621,19 +609,6 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
 
   data.outputs[0].silenceFlags = 0;
 
-  if (data.outputParameterChanges)
-  {
-    for (int32 lane = 0; lane < kLaneCount; ++lane)
-    {
-      const double ledValue = laneLedFlashSamples_[lane] > 0 ? 1.0 : 0.0;
-      if (std::abs (laneLedState_[lane] - ledValue) > 0.5)
-      {
-        pushParamChange (data.outputParameterChanges, laneLedParamID (lane), ledValue);
-        laneLedState_[lane] = ledValue;
-      }
-    }
-  }
-
   return kResultOk;
 }
 
@@ -642,8 +617,6 @@ void WestCoastProcessor::resetEngine ()
   sequencer_.reset ();
   for (auto& voice : voices_)
     voice.reset ();
-  laneLedState_.fill (-1.0);
-  laneLedFlashSamples_.fill (0);
 }
 
 void WestCoastProcessor::loadPresetByIndex (int32 presetIndex, Vst::IParameterChanges* outputChanges)

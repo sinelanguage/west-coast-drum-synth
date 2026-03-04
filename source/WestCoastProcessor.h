@@ -40,13 +40,10 @@ private:
   std::array<double, kParameterStateSize> params_ {};
   std::array<LaneFrame, kLaneCount> laneFrames_ {};
   std::array<DrumVoice, kLaneCount> voices_ {};
-  std::array<double, kLaneCount> laneLedState_ {};
-  std::array<int32, kLaneCount> laneLedFlashSamples_ {};
   StepSequencer sequencer_ {};
 
   int32 loadedPreset_ {0};
   bool presetPending_ {true};
-  int32 ledFlashDurationSamples_ {2205}; // 50 ms default at 44.1 kHz
 };
 
 } // namespace Steinberg::WestCoastDrumSynth
