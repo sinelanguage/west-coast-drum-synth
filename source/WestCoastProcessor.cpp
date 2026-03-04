@@ -542,10 +542,7 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
       {
         const bool muted = getParam (laneMuteParamID (lane)) > 0.5;
         if (!muted && laneFrames_[lane].outputLevel > 1e-6)
-        {
           voices_[lane].trigger (laneFrames_[lane]);
-          laneLedFlashSamples_[lane] = ledFlashDurationSamples_;
-        }
       }
     }
   }
