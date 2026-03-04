@@ -21,6 +21,7 @@ enum ParameterId : Vst::ParamID {
   kParamOscFilterCutoff,
   kParamOscFilterResonance,
   kParamOscFilterEnv,
+  kParamRandomizeAmount,
   kParamGlobalCount
 };
 
@@ -70,17 +71,20 @@ constexpr Vst::ParamID kLaneMacroParamBase = 300;
 constexpr Vst::ParamID kLaneFilterParamBase = 400;
 constexpr Vst::ParamID kLaneLedParamBase = 500;
 constexpr int32 kLaneLedParamCount = kLaneCount;
+constexpr Vst::ParamID kLaneMuteParamBase = 600;
+constexpr int32 kLaneMuteParamCount = kLaneCount;
 
 constexpr Vst::ParamID kLaneCoreMaxParamId = kLaneParamBase + (kLaneCount * kLaneParamCount) - 1;
 constexpr Vst::ParamID kLaneExtraMaxParamId = kLaneExtraParamBase + (kLaneCount * kLaneExtraParamCount) - 1;
 constexpr Vst::ParamID kLaneMacroMaxParamId = kLaneMacroParamBase + (kLaneCount * kLaneMacroParamCount) - 1;
 constexpr Vst::ParamID kLaneFilterMaxParamId = kLaneFilterParamBase + (kLaneCount * kLaneFilterParamCount) - 1;
 
-constexpr Vst::ParamID kMaxParamId = kLaneFilterMaxParamId;
+constexpr Vst::ParamID kLaneMuteMaxParamId = kLaneMuteParamBase + kLaneMuteParamCount - 1;
+constexpr Vst::ParamID kMaxParamId = kLaneMuteMaxParamId;
 constexpr int32 kParameterStateSize = kMaxParamId + 1;
 constexpr int32 kTotalParameterCount =
   kParamGlobalCount + (kLaneCount * kLaneParamCount) + (kLaneCount * kLaneExtraParamCount) +
-  (kLaneCount * kLaneMacroParamCount) + (kLaneCount * kLaneFilterParamCount);
+  (kLaneCount * kLaneMacroParamCount) + (kLaneCount * kLaneFilterParamCount) + kLaneMuteParamCount;
 
 inline constexpr Vst::ParamID laneParamID (int32 lane, LaneParamOffset offset)
 {
@@ -105,6 +109,11 @@ inline constexpr Vst::ParamID laneFilterParamID (int32 lane, LaneFilterParamOffs
 inline constexpr Vst::ParamID laneLedParamID (int32 lane)
 {
   return kLaneLedParamBase + lane;
+}
+
+inline constexpr Vst::ParamID laneMuteParamID (int32 lane)
+{
+  return kLaneMuteParamBase + lane;
 }
 
 inline constexpr bool isLaneLedParamID (Vst::ParamID paramId)
@@ -194,6 +203,8 @@ inline constexpr std::array<Vst::ParamID, kTotalParameterCount> allParameterIds 
     for (int32 param = 0; param < kLaneFilterParamCount; ++param)
       ids[index++] = laneFilterParamID (lane, static_cast<LaneFilterParamOffset> (param));
   }
+  for (int32 lane = 0; lane < kLaneCount; ++lane)
+    ids[index++] = laneMuteParamID (lane);
   return ids;
 }
 
