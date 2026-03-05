@@ -11,7 +11,7 @@ import xml.etree.ElementTree as ET
 # Editor dimensions
 # ---------------------------------------------------------------------------
 EDITOR_W = 1032   # 510 + 12 + 510 for original column spacing
-EDITOR_H = 498   # GLOBAL_H increased by 10
+EDITOR_H = 513   # GLOBAL_H 57 (75% of SEC_H)
 
 # ---------------------------------------------------------------------------
 # Margins / header
@@ -22,12 +22,10 @@ TITLE_Y = 4
 SUBTITLE_X = 500
 SUBTITLE_Y = 5
 
-# Global strip (taller for better proportions, bottom padding)
+# Global strip (height = 75% of SEC_H, flush right)
 GLOBAL_Y = 16
-GLOBAL_H = 42
+GLOBAL_H = 57   # 75% of instrument section height (SEC_H=76)
 GLOBAL_W = EDITOR_W
-GLOBAL_SEC_H = 36   # section box height (was 26; adds bottom padding)
-GLOBAL_SLIDER_H = 20   # vertical slider height (was 13)
 
 # ---------------------------------------------------------------------------
 # Lane grid (lane width = content width, no black space)
@@ -53,6 +51,13 @@ SEP_Y = [ROW_Y[i] + LANE_H for i in range(3)]
 ACCENT_W = 3
 SEC_Y = 18      # section box top within lane
 SEC_H = 76      # section box height (bottom padding 3px to match top)
+
+# Global strip section layout (no grey backgrounds)
+GLOBAL_SEC_H = GLOBAL_H - 6   # section content (3px top/bottom padding)
+GLOBAL_SLIDER_H = 20
+GLOBAL_RIGHT_MARGIN = 8
+GLOBAL_SECTION_GAP = 8
+GLOBAL_SEC_W = [62, 38, 82, 170, 110]  # CLOCK, MASTER, BODY FILTER, TRANSPORT, PRESET
 
 # Uniform L/R padding (8px) for all parameter groups; scalable
 SEC_GROUP_MARGIN = 5
@@ -254,6 +259,12 @@ def cview_open(x, y, w, h, bg_color):
         f'origin="{x}, {y}" size="{w}, {h}" transparent="false">'
     )
 
+def cview_open_transparent(x, y, w, h):
+    return (
+        f'<view class="CViewContainer" mouse-enabled="true" opacity="1" '
+        f'origin="{x}, {y}" size="{w}, {h}" transparent="true">'
+    )
+
 def cview_close():
     return '</view>'
 
@@ -388,27 +399,35 @@ def build_global_strip():
     gh = GLOBAL_H
 
     lines.append(f'{ind(2)}{cview_open(gx, gy, gw, gh, "ModuleBg")}')
-    lines.append(f'{ind(3)}<view background-color="AccentRed" '
-                 f'background-color-draw-style="filled and stroked" '
-                 f'class="CView" mouse-enabled="false" opacity="1" '
-                 f'origin="0, 0" size="{ACCENT_W}, {gh}" transparent="false"/>')
-    lines.append(f'{ind(3)}{label_xml(9, 4, 50, 12, "GLOBAL", font="label_title", color="TextBright", bg="ModuleBg", align="left")}')
+
+    # Flush-right layout: compute x from right edge (no grey section backgrounds)
+    x = EDITOR_W - GLOBAL_RIGHT_MARGIN
+    sec_w_list = GLOBAL_SEC_W
+    for i in range(len(sec_w_list) - 1, -1, -1):
+        x -= sec_w_list[i]
+        if i < len(sec_w_list) - 1:
+            x -= GLOBAL_SECTION_GAP
+    # x is now left edge of CLOCK; build left to right
+    g_sec_x = [x]
+    for i in range(len(sec_w_list) - 1):
+        g_sec_x.append(g_sec_x[-1] + sec_w_list[i] + GLOBAL_SECTION_GAP)
+    # g_sec_x = [CLOCK, MASTER, BODY FILTER, TRANSPORT, PRESET]
 
     # CLOCK section (TMP, SWG) - tags 1, 2
-    lines.append(f'{ind(3)}{cview_open(64, 3, 62, GLOBAL_SEC_H, "StageOuter")}')
+    lines.append(f'{ind(3)}{cview_open_transparent(g_sec_x[0], 3, 62, GLOBAL_SEC_H)}')
     lines.append(f'{ind(4)}{section_title_label(2, 2, 58, "CLOCK")}')
     lines.append(f'{ind(4)}{slider_xml(1, 12, 12, 7, GLOBAL_SLIDER_H, "vertical", wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(4)}{slider_xml(2, 36, 12, 7, GLOBAL_SLIDER_H, "vertical", wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(3)}{cview_close()}')
 
     # MASTER section (LVL) - tag 0
-    lines.append(f'{ind(3)}{cview_open(132, 3, 38, GLOBAL_SEC_H, "StageOuter")}')
+    lines.append(f'{ind(3)}{cview_open_transparent(g_sec_x[1], 3, 38, GLOBAL_SEC_H)}')
     lines.append(f'{ind(4)}{section_title_label(2, 2, 34, "MASTER")}')
     lines.append(f'{ind(4)}{slider_xml(0, 15, 12, 7, GLOBAL_SLIDER_H, "vertical", wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(3)}{cview_close()}')
 
     # BODY FILTER section (CUT, RES, ENV) - tags 7, 8, 9
-    lines.append(f'{ind(3)}{cview_open(176, 3, 82, GLOBAL_SEC_H, "StageOuter")}')
+    lines.append(f'{ind(3)}{cview_open_transparent(g_sec_x[2], 3, 82, GLOBAL_SEC_H)}')
     lines.append(f'{ind(4)}{section_title_label(2, 2, 78, "BODY FILTER")}')
     lines.append(f'{ind(4)}{slider_xml(7, 12, 12, 7, GLOBAL_SLIDER_H, "vertical", wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(4)}{slider_xml(8, 34, 12, 7, GLOBAL_SLIDER_H, "vertical", wheel_inc="0.02", zoom="4")}')
@@ -416,7 +435,7 @@ def build_global_strip():
     lines.append(f'{ind(3)}{cview_close()}')
 
     # TRANSPORT + MORPH section - tags 3, 4, 6, 10
-    lines.append(f'{ind(3)}{cview_open(264, 3, 170, GLOBAL_SEC_H, "StageOuter")}')
+    lines.append(f'{ind(3)}{cview_open_transparent(g_sec_x[3], 3, 170, GLOBAL_SEC_H)}')
     lines.append(f'{ind(4)}{section_title_label(2, 2, 166, "TRANSPORT")}')
     lines.append(f'{ind(4)}{button_xml(3, 4, 12, 30, 14, "RUN")}')
     lines.append(f'{ind(4)}{button_xml(4, 38, 12, 50, 14, "FOLLOW")}')
@@ -425,7 +444,7 @@ def build_global_strip():
     lines.append(f'{ind(3)}{cview_close()}')
 
     # PRESET section - tag 5
-    lines.append(f'{ind(3)}{cview_open(440, 3, 110, GLOBAL_SEC_H, "StageOuter")}')
+    lines.append(f'{ind(3)}{cview_open_transparent(g_sec_x[4], 3, 110, GLOBAL_SEC_H)}')
     lines.append(f'{ind(4)}{section_title_label(2, 2, 106, "PRESET")}')
     lines.append(f'{ind(4)}{dropdown_xml(5, 6, 12, 98, 14)}')
     lines.append(f'{ind(3)}{cview_close()}')
