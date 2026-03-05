@@ -20,10 +20,10 @@
     <color name="ButtonFrame" rgba="#71767dff"/>
   </colors>
 
-  <template background-color="Backdrop" background-color-draw-style="filled and stroked" class="CViewContainer" mouse-enabled="true" name="Editor" opacity="1" origin="0, 0" size="1024, 498" transparent="false" wants-focus="false">
+  <template background-color="Backdrop" background-color-draw-style="filled and stroked" class="CViewContainer" mouse-enabled="true" name="Editor" opacity="1" origin="0, 0" size="1032, 498" transparent="false" wants-focus="false">
     <view back-color="Backdrop" background-offset="0, 0" class="CTextLabel" font="label_title" font-antialias="true" font-color="TextBright" frame-width="0" mouse-enabled="false" opacity="1" origin="6, 4" size="100, 14" style-no-frame="true" text-alignment="left" title="WSDS-F416" transparent="true"/>
     <view back-color="Backdrop" background-offset="0, 0" class="CTextLabel" font="label_micro" font-antialias="true" font-color="TextSubtle" frame-width="0" mouse-enabled="false" opacity="1" origin="500, 5" size="76, 10" style-no-frame="true" text-alignment="center" title="0011011010" transparent="true"/>
-    <view background-color="ModuleBg" background-color-draw-style="filled and stroked" class="CViewContainer" mouse-enabled="true" opacity="1" origin="0, 16" size="1024, 42" transparent="false">
+    <view background-color="ModuleBg" background-color-draw-style="filled and stroked" class="CViewContainer" mouse-enabled="true" opacity="1" origin="0, 16" size="1032, 42" transparent="false">
       <view background-color="AccentRed" background-color-draw-style="filled and stroked" class="CView" mouse-enabled="false" opacity="1" origin="0, 0" size="3, 42" transparent="false"/>
       <view back-color="ModuleBg" background-offset="0, 0" class="CTextLabel" font="label_title" font-antialias="true" font-color="TextBright" frame-width="0" mouse-enabled="false" opacity="1" origin="9, 4" size="50, 12" style-no-frame="true" text-alignment="left" title="GLOBAL" transparent="true"/>
       <view background-color="StageOuter" background-color-draw-style="filled and stroked" class="CViewContainer" mouse-enabled="true" opacity="1" origin="64, 3" size="62, 36" transparent="false">
@@ -53,10 +53,10 @@
         <view back-color="ButtonBase" background-offset="0, 0" class="COptionMenu" control-tag="5" default-value="0" font="label_micro" font-antialias="true" font-color="TextBright" frame-color="ButtonFrame" frame-width="1" max-value="4" menu-check-style="true" menu-popup-style="true" min-value="0" mouse-enabled="true" opacity="1" origin="6, 12" round-rect-radius="2" size="98, 14" style-round-rect="true" text-alignment="center" transparent="false"/>
       </view>
     </view>
-    <view background-color="RowLine" background-color-draw-style="filled and stroked" class="CView" mouse-enabled="false" opacity="1" origin="0, 58" size="1024, 1" transparent="false"/>
-    <view background-color="RowLine" background-color-draw-style="filled and stroked" class="CView" mouse-enabled="false" opacity="1" origin="0, 167" size="1024, 1" transparent="false"/>
-    <view background-color="RowLine" background-color-draw-style="filled and stroked" class="CView" mouse-enabled="false" opacity="1" origin="0, 276" size="1024, 1" transparent="false"/>
-    <view background-color="RowLine" background-color-draw-style="filled and stroked" class="CView" mouse-enabled="false" opacity="1" origin="0, 385" size="1024, 1" transparent="false"/>
+    <view background-color="RowLine" background-color-draw-style="filled and stroked" class="CView" mouse-enabled="false" opacity="1" origin="0, 58" size="1032, 1" transparent="false"/>
+    <view background-color="RowLine" background-color-draw-style="filled and stroked" class="CView" mouse-enabled="false" opacity="1" origin="0, 167" size="1032, 1" transparent="false"/>
+    <view background-color="RowLine" background-color-draw-style="filled and stroked" class="CView" mouse-enabled="false" opacity="1" origin="0, 276" size="1032, 1" transparent="false"/>
+    <view background-color="RowLine" background-color-draw-style="filled and stroked" class="CView" mouse-enabled="false" opacity="1" origin="0, 385" size="1032, 1" transparent="false"/>
     <view background-color="RowLine" background-color-draw-style="filled and stroked" class="CView" mouse-enabled="false" opacity="1" origin="510, 59" size="1, 439" transparent="false"/>
     <view background-color="ModuleBg" background-color-draw-style="filled and stroked" class="CViewContainer" mouse-enabled="true" opacity="1" origin="0, 59" size="510, 108" transparent="false">
       <view background-color="AccentRed" background-color-draw-style="filled and stroked" class="CView" mouse-enabled="false" opacity="1" origin="0, 0" size="3, 108" transparent="false"/>
@@ -306,7 +306,7 @@
         <view back-color="StageOuter" background-offset="0, 0" class="CTextLabel" font="label_micro" font-antialias="true" font-color="TextBright" frame-width="0" mouse-enabled="false" opacity="1" origin="49, 63" size="16, 10" style-no-frame="true" text-alignment="center" title="PAN" transparent="true"/>
       </view>
     </view>
-    <view background-color="ModuleBg" background-color-draw-style="filled and stroked" class="CViewContainer" mouse-enabled="true" opacity="1" origin="511, 59" size="510, 108" transparent="false">
+    <view background-color="ModuleBg" background-color-draw-style="filled and stroked" class="CViewContainer" mouse-enabled="true" opacity="1" origin="522, 59" size="510, 108" transparent="false">
       <view background-color="AccentRed" background-color-draw-style="filled and stroked" class="CView" mouse-enabled="false" opacity="1" origin="0, 0" size="3, 108" transparent="false"/>
       <view back-color="ModuleBg" background-offset="0, 0" class="CTextLabel" font="label_title" font-antialias="true" font-color="TextBright" frame-width="0" mouse-enabled="false" opacity="1" origin="9, 5" size="24, 12" style-no-frame="true" text-alignment="left" title="DS5" transparent="true"/>
       <view back-color="ModuleBg" background-offset="0, 0" class="CTextLabel" font="label_title" font-antialias="true" font-color="AccentRed" frame-width="0" mouse-enabled="false" opacity="1" origin="34, 5" size="24, 12" style-no-frame="true" text-alignment="left" title="HT" transparent="true"/>
@@ -368,7 +368,7 @@
         <view back-color="StageOuter" background-offset="0, 0" class="CTextLabel" font="label_micro" font-antialias="true" font-color="TextBright" frame-width="0" mouse-enabled="false" opacity="1" origin="49, 63" size="16, 10" style-no-frame="true" text-alignment="center" title="PAN" transparent="true"/>
       </view>
     </view>
-    <view background-color="ModuleBg" background-color-draw-style="filled and stroked" class="CViewContainer" mouse-enabled="true" opacity="1" origin="511, 168" size="510, 108" transparent="false">
+    <view background-color="ModuleBg" background-color-draw-style="filled and stroked" class="CViewContainer" mouse-enabled="true" opacity="1" origin="522, 168" size="510, 108" transparent="false">
       <view background-color="AccentRed" background-color-draw-style="filled and stroked" class="CView" mouse-enabled="false" opacity="1" origin="0, 0" size="3, 108" transparent="false"/>
       <view back-color="ModuleBg" background-offset="0, 0" class="CTextLabel" font="label_title" font-antialias="true" font-color="TextBright" frame-width="0" mouse-enabled="false" opacity="1" origin="9, 5" size="24, 12" style-no-frame="true" text-alignment="left" title="DS6" transparent="true"/>
       <view back-color="ModuleBg" background-offset="0, 0" class="CTextLabel" font="label_title" font-antialias="true" font-color="AccentRed" frame-width="0" mouse-enabled="false" opacity="1" origin="34, 5" size="24, 12" style-no-frame="true" text-alignment="left" title="RS" transparent="true"/>
@@ -430,7 +430,7 @@
         <view back-color="StageOuter" background-offset="0, 0" class="CTextLabel" font="label_micro" font-antialias="true" font-color="TextBright" frame-width="0" mouse-enabled="false" opacity="1" origin="49, 63" size="16, 10" style-no-frame="true" text-alignment="center" title="PAN" transparent="true"/>
       </view>
     </view>
-    <view background-color="ModuleBg" background-color-draw-style="filled and stroked" class="CViewContainer" mouse-enabled="true" opacity="1" origin="511, 277" size="510, 108" transparent="false">
+    <view background-color="ModuleBg" background-color-draw-style="filled and stroked" class="CViewContainer" mouse-enabled="true" opacity="1" origin="522, 277" size="510, 108" transparent="false">
       <view background-color="AccentRed" background-color-draw-style="filled and stroked" class="CView" mouse-enabled="false" opacity="1" origin="0, 0" size="3, 108" transparent="false"/>
       <view back-color="ModuleBg" background-offset="0, 0" class="CTextLabel" font="label_title" font-antialias="true" font-color="TextBright" frame-width="0" mouse-enabled="false" opacity="1" origin="9, 5" size="24, 12" style-no-frame="true" text-alignment="left" title="DS7" transparent="true"/>
       <view back-color="ModuleBg" background-offset="0, 0" class="CTextLabel" font="label_title" font-antialias="true" font-color="AccentRed" frame-width="0" mouse-enabled="false" opacity="1" origin="34, 5" size="24, 12" style-no-frame="true" text-alignment="left" title="CP" transparent="true"/>
@@ -492,7 +492,7 @@
         <view back-color="StageOuter" background-offset="0, 0" class="CTextLabel" font="label_micro" font-antialias="true" font-color="TextBright" frame-width="0" mouse-enabled="false" opacity="1" origin="49, 63" size="16, 10" style-no-frame="true" text-alignment="center" title="PAN" transparent="true"/>
       </view>
     </view>
-    <view background-color="ModuleBg" background-color-draw-style="filled and stroked" class="CViewContainer" mouse-enabled="true" opacity="1" origin="511, 386" size="510, 108" transparent="false">
+    <view background-color="ModuleBg" background-color-draw-style="filled and stroked" class="CViewContainer" mouse-enabled="true" opacity="1" origin="522, 386" size="510, 108" transparent="false">
       <view background-color="AccentRed" background-color-draw-style="filled and stroked" class="CView" mouse-enabled="false" opacity="1" origin="0, 0" size="3, 108" transparent="false"/>
       <view back-color="ModuleBg" background-offset="0, 0" class="CTextLabel" font="label_title" font-antialias="true" font-color="TextBright" frame-width="0" mouse-enabled="false" opacity="1" origin="9, 5" size="24, 12" style-no-frame="true" text-alignment="left" title="DS8" transparent="true"/>
       <view back-color="ModuleBg" background-offset="0, 0" class="CTextLabel" font="label_title" font-antialias="true" font-color="AccentRed" frame-width="0" mouse-enabled="false" opacity="1" origin="34, 5" size="24, 12" style-no-frame="true" text-alignment="left" title="HH" transparent="true"/>

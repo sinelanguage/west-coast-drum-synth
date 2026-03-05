@@ -10,7 +10,7 @@ import xml.etree.ElementTree as ET
 # ---------------------------------------------------------------------------
 # Editor dimensions
 # ---------------------------------------------------------------------------
-EDITOR_W = 1024
+EDITOR_W = 1032   # 510 + 12 + 510 for original column spacing
 EDITOR_H = 498   # GLOBAL_H increased by 10
 
 # ---------------------------------------------------------------------------
@@ -34,7 +34,7 @@ GLOBAL_SLIDER_H = 20   # vertical slider height (was 13)
 # ---------------------------------------------------------------------------
 LANE_W = 510   # matches section content end (5+114+5+97+5+97+5+97+5+80)
 LANE_H = 108
-COL_GAP = 1   # 1px divider between columns
+COL_GAP = 12   # original space between left and right groups of 4
 ROW_GAP = 1   # 1px divider between rows
 
 COL0_X = 0
