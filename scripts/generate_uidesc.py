@@ -285,14 +285,15 @@ def led_slider(tag, x, y, w, h):
         f'wheel-inc-value="0" zoom-factor="2"/>'
     )
 
-def button_xml(tag, x, y, w, h, title):
+def button_xml(tag, x, y, w, h, title, *, kick=False):
+    kick_attr = ' style-kick="true"' if kick else ''
     return (
         f'<view back-color="ButtonBase" background-offset="0, 0" '
         f'class="CTextButton" control-tag="{tag}" default-value="0" '
         f'font="label_micro" font-antialias="true" font-color="TextBright" '
         f'frame-color="ButtonFrame" frame-width="1" max-value="1" min-value="0" '
         f'mouse-enabled="true" opacity="1" origin="{x}, {y}" round-rect-radius="2" '
-        f'size="{w}, {h}" style-round-rect="true" title="{title}" transparent="false"/>'
+        f'size="{w}, {h}" style-round-rect="true"{kick_attr} title="{title}" transparent="false"/>'
     )
 
 def dropdown_xml(tag, x, y, w, h):
@@ -405,7 +406,7 @@ def build_global_strip():
     lines.append(f'{ind(4)}{section_title_label(2, 2, 166, "TRANSPORT")}')
     lines.append(f'{ind(4)}{button_xml(3, 4, 12, 30, 13, "RUN")}')
     lines.append(f'{ind(4)}{button_xml(4, 38, 12, 50, 13, "FOLLOW")}')
-    lines.append(f'{ind(4)}{button_xml(6, 92, 12, 50, 13, "RANDOM")}')
+    lines.append(f'{ind(4)}{button_xml(6, 92, 12, 50, 13, "RANDOM", kick=True)}')
     lines.append(f'{ind(4)}{slider_xml(10, 148, 12, 6, 13, "vertical", wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(3)}{cview_close()}')
 

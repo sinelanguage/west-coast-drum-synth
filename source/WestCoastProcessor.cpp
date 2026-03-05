@@ -804,9 +804,6 @@ void WestCoastProcessor::processParameterChanges (Vst::IParameterChanges* change
 
 void WestCoastProcessor::performRandomization (Vst::IParameterChanges* outputChanges)
 {
-  if (!outputChanges)
-    return;
-
   const double amount = std::clamp (getParam (kParamRandomizeAmount), 0.0, 1.0);
   if (amount < 1e-6)
     return;
