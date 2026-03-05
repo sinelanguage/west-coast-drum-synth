@@ -7,6 +7,7 @@
 #include "public.sdk/source/vst/vstaudioeffect.h"
 
 #include <array>
+#include <random>
 
 namespace Steinberg::WestCoastDrumSynth {
 
@@ -48,6 +49,7 @@ private:
 
   int32 loadedPreset_ {0};
   bool presetPending_ {true};
+  std::mt19937 rng_ {std::random_device {}()};
 };
 
 } // namespace Steinberg::WestCoastDrumSynth

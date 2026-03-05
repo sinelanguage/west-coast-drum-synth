@@ -12,6 +12,7 @@
 #include <cmath>
 #include <random>
 #include <type_traits>
+#include <vector>
 
 namespace Steinberg::WestCoastDrumSynth {
 
@@ -560,6 +561,11 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
   if (followTransport && hostProjectTimeValid && hostPlaying)
     sequencer_.syncToHost (hostPpq, hostPlaying);
 
+  struct MidiTrigger {
+    int32 sampleOffset;
+    int32 lane;
+  };
+  std::vector<MidiTrigger> midiTriggers;
   if (data.inputEvents)
   {
     const int32 eventCount = data.inputEvents->getEventCount ();
@@ -574,12 +580,8 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
       const int32 lane = laneForMidiPitch (event.noteOn.pitch);
       if (lane >= 0 && lane < kLaneCount)
       {
-        const bool muted = getParam (laneMuteParamID (lane)) > 0.5;
-        if (!muted && laneFrames_[lane].outputLevel > 1e-6)
-        {
-          voices_[lane].trigger (laneFrames_[lane]);
-          laneLedFlashSamples_[lane] = ledFlashDurationSamples_;
-        }
+        const int32 offset = std::clamp (event.sampleOffset, 0, data.numSamples - 1);
+        midiTriggers.push_back ({offset, lane});
       }
     }
   }
@@ -600,6 +602,20 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
 
     for (int32 sampleIndex = 0; sampleIndex < data.numSamples; ++sampleIndex)
     {
+      for (const auto& mt : midiTriggers)
+      {
+        if (mt.sampleOffset == sampleIndex)
+        {
+          const int32 lane = mt.lane;
+          const bool muted = getParam (laneMuteParamID (lane)) > 0.5;
+          if (!muted && laneFrames_[lane].outputLevel > 1e-6)
+          {
+            voices_[lane].trigger (laneFrames_[lane]);
+            laneLedFlashSamples_[lane] = ledFlashDurationSamples_;
+          }
+        }
+      }
+
       sequencer_.processSample (triggers);
       for (int32 lane = 0; lane < kLaneCount; ++lane)
       {
@@ -780,7 +796,31 @@ void WestCoastProcessor::processParameterChanges (Vst::IParameterChanges* change
       continue;
 
     const auto paramId = queue->getParameterId ();
-    setParam (paramId, value);
+
+    if (paramId == kParamRandomize && value > 0.5 && getParam (kParamRandomize) <= 0.5)
+    {
+      const double amount = std::abs (getParam (kParamRandomizeAmount) - 0.5) * 2.0;
+      std::uniform_real_distribution<double> dist (-1.0, 1.0);
+      for (const auto id : allParameterIds ())
+      {
+        if (id == kParamRandomize || id == kParamRandomizeAmount || id == kParamPresetSelect ||
+            id == kParamRun || id == kParamFollowTransport || isLaneLedParamID (id))
+          continue;
+        if (id >= kLaneMuteParamBase && id <= kLaneMuteMaxParamId)
+          continue;
+        const double delta = dist (rng_) * amount * 0.35;
+        setParam (id, clamp01 (getParam (id) + delta));
+        if (outputChanges)
+          pushParamChange (outputChanges, id, getParam (id));
+      }
+      setParam (kParamRandomize, 0.0);
+      if (outputChanges)
+        pushParamChange (outputChanges, kParamRandomize, 0.0);
+    }
+    else
+    {
+      setParam (paramId, value);
+    }
 
     if (paramId == kParamPresetSelect)
     {
@@ -944,9 +984,6 @@ double WestCoastProcessor::getParam (Vst::ParamID id) const
 double WestCoastProcessor::getMorphedParam (Vst::ParamID id) const
 {
   double base = getParam (id);
-  const bool morphOn = getParam (kParamRandomize) > 0.5;
-  if (!morphOn)
-    return base;
   const double morphSlider = getParam (kParamRandomizeAmount);
   const double offset = (morphSlider - 0.5);
   return clamp01 (base + offset);
