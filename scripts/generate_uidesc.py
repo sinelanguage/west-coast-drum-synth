@@ -57,7 +57,7 @@ GLOBAL_SEC_H = GLOBAL_H - 6   # section content (3px top/bottom padding)
 GLOBAL_SLIDER_H = 20
 GLOBAL_RIGHT_MARGIN = 8
 GLOBAL_SECTION_GAP = 8
-GLOBAL_SEC_W = [62, 38, 82, 170, 110]  # CLOCK, MASTER, BODY FILTER, TRANSPORT, PRESET
+GLOBAL_SEC_W = [38, 82, 50, 110]  # MASTER, BODY FILTER, MORPH (slider only), PRESET
 
 # Uniform L/R padding (8px) for all parameter groups; scalable
 SEC_GROUP_MARGIN = 5
@@ -411,40 +411,30 @@ def build_global_strip():
     g_sec_x = [x]
     for i in range(len(sec_w_list) - 1):
         g_sec_x.append(g_sec_x[-1] + sec_w_list[i] + GLOBAL_SECTION_GAP)
-    # g_sec_x = [CLOCK, MASTER, BODY FILTER, TRANSPORT, PRESET]
-
-    # CLOCK section (TMP, SWG) - tags 1, 2
-    lines.append(f'{ind(3)}{cview_open_transparent(g_sec_x[0], 3, 62, GLOBAL_SEC_H)}')
-    lines.append(f'{ind(4)}{section_title_label(2, 2, 58, "CLOCK")}')
-    lines.append(f'{ind(4)}{slider_xml(1, 12, 12, 7, GLOBAL_SLIDER_H, "vertical", wheel_inc="0.02", zoom="4")}')
-    lines.append(f'{ind(4)}{slider_xml(2, 36, 12, 7, GLOBAL_SLIDER_H, "vertical", wheel_inc="0.02", zoom="4")}')
-    lines.append(f'{ind(3)}{cview_close()}')
+    # g_sec_x = [MASTER, BODY FILTER, MORPH, PRESET]
 
     # MASTER section (LVL) - tag 0
-    lines.append(f'{ind(3)}{cview_open_transparent(g_sec_x[1], 3, 38, GLOBAL_SEC_H)}')
+    lines.append(f'{ind(3)}{cview_open_transparent(g_sec_x[0], 3, 38, GLOBAL_SEC_H)}')
     lines.append(f'{ind(4)}{section_title_label(2, 2, 34, "MASTER")}')
     lines.append(f'{ind(4)}{slider_xml(0, 15, 12, 7, GLOBAL_SLIDER_H, "vertical", wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(3)}{cview_close()}')
 
     # BODY FILTER section (CUT, RES, ENV) - tags 7, 8, 9
-    lines.append(f'{ind(3)}{cview_open_transparent(g_sec_x[2], 3, 82, GLOBAL_SEC_H)}')
+    lines.append(f'{ind(3)}{cview_open_transparent(g_sec_x[1], 3, 82, GLOBAL_SEC_H)}')
     lines.append(f'{ind(4)}{section_title_label(2, 2, 78, "BODY FILTER")}')
     lines.append(f'{ind(4)}{slider_xml(7, 12, 12, 7, GLOBAL_SLIDER_H, "vertical", wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(4)}{slider_xml(8, 34, 12, 7, GLOBAL_SLIDER_H, "vertical", wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(4)}{slider_xml(9, 56, 12, 7, GLOBAL_SLIDER_H, "vertical", wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(3)}{cview_close()}')
 
-    # TRANSPORT + MORPH section - tags 3, 4, 6, 10
-    lines.append(f'{ind(3)}{cview_open_transparent(g_sec_x[3], 3, 170, GLOBAL_SEC_H)}')
-    lines.append(f'{ind(4)}{section_title_label(2, 2, 166, "TRANSPORT")}')
-    lines.append(f'{ind(4)}{button_xml(3, 4, 12, 30, 14, "RUN")}')
-    lines.append(f'{ind(4)}{button_xml(4, 38, 12, 50, 14, "FOLLOW")}')
-    lines.append(f'{ind(4)}{button_xml(6, 92, 12, 42, 14, "MORPH")}')
-    lines.append(f'{ind(4)}{slider_xml(10, 140, 12, 26, 14, "horizontal", from_center=True, wheel_inc="0.02", zoom="4")}')
+    # MORPH section (slider only) - tag 10
+    lines.append(f'{ind(3)}{cview_open_transparent(g_sec_x[2], 3, 50, GLOBAL_SEC_H)}')
+    lines.append(f'{ind(4)}{section_title_label(2, 2, 46, "MORPH")}')
+    lines.append(f'{ind(4)}{slider_xml(10, 12, 12, 26, 14, "horizontal", from_center=True, wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(3)}{cview_close()}')
 
     # PRESET section - tag 5
-    lines.append(f'{ind(3)}{cview_open_transparent(g_sec_x[4], 3, 110, GLOBAL_SEC_H)}')
+    lines.append(f'{ind(3)}{cview_open_transparent(g_sec_x[3], 3, 110, GLOBAL_SEC_H)}')
     lines.append(f'{ind(4)}{section_title_label(2, 2, 106, "PRESET")}')
     lines.append(f'{ind(4)}{dropdown_xml(5, 6, 12, 98, 14)}')
     lines.append(f'{ind(3)}{cview_close()}')
@@ -459,6 +449,10 @@ def build_hidden_sliders():
     lines = []
     hx, hy = 990, 2
     idx = 0
+    # Hidden global params: Clock (1,2), Run (3), Follow (4), Morph button (6)
+    for tag in [1, 2, 3, 4, 6]:
+        lines.append(f'{ind(2)}{hidden_slider(tag, hx + idx % 10, hy + idx // 10)}')
+        idx += 1
     for lane in range(LANE_COUNT):
         for tag in hidden_tags(lane):
             lines.append(f'{ind(2)}{hidden_slider(tag, hx + idx % 10, hy + idx // 10)}')
