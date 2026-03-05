@@ -244,7 +244,7 @@ def label_xml(x, y, w, h, text, font="label_micro", color="TextDim",
     )
 
 def section_title_label(x, y, w, text):
-    return label_xml(x, y, w, SEC_TITLE_H, text, color="TextSubtle")
+    return label_xml(x, y, w, SEC_TITLE_H, text, color="TextBright")
 
 def cview_open(x, y, w, h, bg_color):
     return (
@@ -370,7 +370,7 @@ def build_lane(lane_idx, col, row):
             sx_j = slider_xs[j]
             lx_j = label_xs[j]
             lines.append(f'{ind(4)}{slider_xml(tag, sx_j, SLIDER_TOP, SLIDER_W, SLIDER_H, "vertical", from_center=fc)}')
-            lines.append(f'{ind(4)}{label_xml(lx_j, LABEL_TOP, LABEL_W, LABEL_H, lbl)}')
+            lines.append(f'{ind(4)}{label_xml(lx_j, LABEL_TOP, LABEL_W, LABEL_H, lbl, color="TextBright")}')
 
         lines.append(f'{ind(3)}{cview_close()}')
 
