@@ -11,7 +11,7 @@ import xml.etree.ElementTree as ET
 # Editor dimensions
 # ---------------------------------------------------------------------------
 EDITOR_W = 1024
-EDITOR_H = 488
+EDITOR_H = 498   # GLOBAL_H increased by 10
 
 # ---------------------------------------------------------------------------
 # Margins / header
@@ -22,10 +22,12 @@ TITLE_Y = 4
 SUBTITLE_X = 500
 SUBTITLE_Y = 5
 
-# Global strip
+# Global strip (taller for better proportions, bottom padding)
 GLOBAL_Y = 16
-GLOBAL_H = 32
+GLOBAL_H = 42
 GLOBAL_W = EDITOR_W
+GLOBAL_SEC_H = 36   # section box height (was 26; adds bottom padding)
+GLOBAL_SLIDER_H = 20   # vertical slider height (was 13)
 
 # ---------------------------------------------------------------------------
 # Lane grid (lane width = content width, no black space)
@@ -38,7 +40,7 @@ ROW_GAP = 1   # 1px divider between rows
 COL0_X = 0
 COL1_X = LANE_W + COL_GAP  # 512
 
-LANE_START_Y = 49  # after global strip + 1px separator
+LANE_START_Y = GLOBAL_Y + GLOBAL_H + 1  # after global strip + 1px separator
 ROW_Y = [LANE_START_Y + i * (LANE_H + ROW_GAP) for i in range(4)]
 # [41, 150, 259, 368]
 
@@ -393,39 +395,39 @@ def build_global_strip():
     lines.append(f'{ind(3)}{label_xml(9, 4, 50, 12, "GLOBAL", font="label_title", color="TextBright", bg="ModuleBg", align="left")}')
 
     # CLOCK section (TMP, SWG) - tags 1, 2
-    lines.append(f'{ind(3)}{cview_open(64, 3, 62, 26, "StageOuter")}')
+    lines.append(f'{ind(3)}{cview_open(64, 3, 62, GLOBAL_SEC_H, "StageOuter")}')
     lines.append(f'{ind(4)}{section_title_label(2, 2, 58, "CLOCK")}')
-    lines.append(f'{ind(4)}{slider_xml(1, 12, 12, 6, 13, "vertical", wheel_inc="0.02", zoom="4")}')
-    lines.append(f'{ind(4)}{slider_xml(2, 36, 12, 6, 13, "vertical", wheel_inc="0.02", zoom="4")}')
+    lines.append(f'{ind(4)}{slider_xml(1, 12, 12, 7, GLOBAL_SLIDER_H, "vertical", wheel_inc="0.02", zoom="4")}')
+    lines.append(f'{ind(4)}{slider_xml(2, 36, 12, 7, GLOBAL_SLIDER_H, "vertical", wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(3)}{cview_close()}')
 
     # MASTER section (LVL) - tag 0
-    lines.append(f'{ind(3)}{cview_open(132, 3, 38, 26, "StageOuter")}')
+    lines.append(f'{ind(3)}{cview_open(132, 3, 38, GLOBAL_SEC_H, "StageOuter")}')
     lines.append(f'{ind(4)}{section_title_label(2, 2, 34, "MASTER")}')
-    lines.append(f'{ind(4)}{slider_xml(0, 15, 12, 6, 13, "vertical", wheel_inc="0.02", zoom="4")}')
+    lines.append(f'{ind(4)}{slider_xml(0, 15, 12, 7, GLOBAL_SLIDER_H, "vertical", wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(3)}{cview_close()}')
 
     # BODY FILTER section (CUT, RES, ENV) - tags 7, 8, 9
-    lines.append(f'{ind(3)}{cview_open(176, 3, 82, 26, "StageOuter")}')
+    lines.append(f'{ind(3)}{cview_open(176, 3, 82, GLOBAL_SEC_H, "StageOuter")}')
     lines.append(f'{ind(4)}{section_title_label(2, 2, 78, "BODY FILTER")}')
-    lines.append(f'{ind(4)}{slider_xml(7, 12, 12, 6, 13, "vertical", wheel_inc="0.02", zoom="4")}')
-    lines.append(f'{ind(4)}{slider_xml(8, 34, 12, 6, 13, "vertical", wheel_inc="0.02", zoom="4")}')
-    lines.append(f'{ind(4)}{slider_xml(9, 56, 12, 6, 13, "vertical", wheel_inc="0.02", zoom="4")}')
+    lines.append(f'{ind(4)}{slider_xml(7, 12, 12, 7, GLOBAL_SLIDER_H, "vertical", wheel_inc="0.02", zoom="4")}')
+    lines.append(f'{ind(4)}{slider_xml(8, 34, 12, 7, GLOBAL_SLIDER_H, "vertical", wheel_inc="0.02", zoom="4")}')
+    lines.append(f'{ind(4)}{slider_xml(9, 56, 12, 7, GLOBAL_SLIDER_H, "vertical", wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(3)}{cview_close()}')
 
     # TRANSPORT + MORPH section - tags 3, 4, 6, 10
-    lines.append(f'{ind(3)}{cview_open(264, 3, 170, 26, "StageOuter")}')
+    lines.append(f'{ind(3)}{cview_open(264, 3, 170, GLOBAL_SEC_H, "StageOuter")}')
     lines.append(f'{ind(4)}{section_title_label(2, 2, 166, "TRANSPORT")}')
-    lines.append(f'{ind(4)}{button_xml(3, 4, 12, 30, 13, "RUN")}')
-    lines.append(f'{ind(4)}{button_xml(4, 38, 12, 50, 13, "FOLLOW")}')
-    lines.append(f'{ind(4)}{button_xml(6, 92, 12, 42, 13, "MORPH")}')
-    lines.append(f'{ind(4)}{slider_xml(10, 140, 12, 26, 13, "horizontal", from_center=True, wheel_inc="0.02", zoom="4")}')
+    lines.append(f'{ind(4)}{button_xml(3, 4, 12, 30, 14, "RUN")}')
+    lines.append(f'{ind(4)}{button_xml(4, 38, 12, 50, 14, "FOLLOW")}')
+    lines.append(f'{ind(4)}{button_xml(6, 92, 12, 42, 14, "MORPH")}')
+    lines.append(f'{ind(4)}{slider_xml(10, 140, 12, 26, 14, "horizontal", from_center=True, wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(3)}{cview_close()}')
 
     # PRESET section - tag 5
-    lines.append(f'{ind(3)}{cview_open(440, 3, 110, 26, "StageOuter")}')
+    lines.append(f'{ind(3)}{cview_open(440, 3, 110, GLOBAL_SEC_H, "StageOuter")}')
     lines.append(f'{ind(4)}{section_title_label(2, 2, 106, "PRESET")}')
-    lines.append(f'{ind(4)}{dropdown_xml(5, 6, 12, 98, 13)}')
+    lines.append(f'{ind(4)}{dropdown_xml(5, 6, 12, 98, 14)}')
     lines.append(f'{ind(3)}{cview_close()}')
 
     lines.append(f'{ind(2)}{cview_close()}')
