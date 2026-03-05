@@ -32,8 +32,8 @@ GLOBAL_W = EDITOR_W
 # ---------------------------------------------------------------------------
 LANE_W = 511
 LANE_H = 108
-COL_GAP = 1   # 1px line between columns
-ROW_GAP = 1   # 1px line between rows
+COL_GAP = 1   # 1px divider between columns
+ROW_GAP = 1   # 1px divider between rows
 
 COL0_X = 0
 COL1_X = LANE_W + COL_GAP  # 512
@@ -51,12 +51,15 @@ SEP_Y = [ROW_Y[i] + LANE_H for i in range(3)]
 ACCENT_W = 3
 SEC_Y = 18      # section box top within lane
 SEC_H = 82      # section box height
-SEC_GAP = 1     # 1px line between section boxes
 
-SEC_START_X = 5
+# Uniform margin for all parameter groups (matches first OSC group); scalable
+SEC_GROUP_MARGIN = 5
+SEC_GAP = SEC_GROUP_MARGIN   # same margin between section boxes
+SEC_START_X = SEC_GROUP_MARGIN
 
-# Section widths (expanded for wider 511px lanes)
-SEC_WIDTHS = [100, 100, 120, 100, 80]
+# Section widths: scaled so all groups have identical margin; content ends before LED
+# Proportional to [100,100,120,100,80] to fit in (LED_X - left - 4*gap - right)
+SEC_WIDTHS = [84, 84, 100, 84, 67]
 SEC_NAMES = ["OSC &amp; WAVESHAPE", "PITCH ENV", "TRANSIENT",
              "NOISE", "OUTPUT STAGE"]
 
@@ -86,13 +89,13 @@ def slider_positions(sec_w, n):
     lx = [s for s in sx]
     return sx, lx
 
-S5_100, L5_100 = slider_positions(100, 5)  # OSC (5 sliders with Osc Mix)
-S4_100, L4_100 = slider_positions(100, 4)  # PITCH, NOISE
-S4_120, L4_120 = slider_positions(120, 4)  # TRANSIENT
-S3_80,  L3_80  = slider_positions(80, 3)   # OUTPUT
+S5_84, L5_84 = slider_positions(84, 5)   # OSC (5 sliders with Osc Mix)
+S4_84, L4_84 = slider_positions(84, 4)   # PITCH, NOISE
+S4_100, L4_100 = slider_positions(100, 4)  # TRANSIENT
+S3_67, L3_67 = slider_positions(67, 3)   # OUTPUT
 
-SECTION_SLIDER_X = [S5_100, S4_100, S4_120, S4_100, S3_80]
-SECTION_LABEL_X  = [L5_100, L4_100, L4_120, L4_100, L3_80]
+SECTION_SLIDER_X = [S5_84, S4_84, S4_100, S4_84, S3_67]
+SECTION_LABEL_X  = [L5_84, L4_84, L4_100, L4_84, L3_67]
 
 # LED meter within lane (near right edge)
 LED_X = 449
@@ -254,11 +257,21 @@ def cview_close():
     return '</view>'
 
 def separator_line(x, y, w):
+    """Horizontal 1px divider line."""
     return (
         f'<view background-color="RowLine" '
         f'background-color-draw-style="filled and stroked" '
         f'class="CView" mouse-enabled="false" opacity="1" '
         f'origin="{x}, {y}" size="{w}, 1" transparent="false"/>'
+    )
+
+def separator_line_vertical(x, y, h):
+    """Vertical 1px divider line."""
+    return (
+        f'<view background-color="RowLine" '
+        f'background-color-draw-style="filled and stroked" '
+        f'class="CView" mouse-enabled="false" opacity="1" '
+        f'origin="{x}, {y}" size="1, {h}" transparent="false"/>'
     )
 
 def hidden_slider(tag, x, y):
@@ -496,14 +509,14 @@ def generate():
 
     # Fonts
     parts.append(f'{ind(1)}<fonts>')
-    parts.append(f'{ind(2)}<font name="label_title" font-name="Arial Narrow" '
-                 f'alternative-font-names="Helvetica Neue Condensed,Helvetica Neue,Nimbus Sans Narrow,Arial" '
+    parts.append(f'{ind(2)}<font name="label_title" font-name="SF Pro Condensed" '
+                 f'alternative-font-names="SF Compact,Helvetica Neue Condensed,Helvetica Neue,Nimbus Sans Narrow,Arial" '
                  f'size="10" bold="true" italic="false"/>')
-    parts.append(f'{ind(2)}<font name="label_tiny" font-name="Arial Narrow" '
-                 f'alternative-font-names="Helvetica Neue Condensed,Helvetica Neue,Nimbus Sans Narrow,Arial" '
+    parts.append(f'{ind(2)}<font name="label_tiny" font-name="SF Pro Condensed" '
+                 f'alternative-font-names="SF Compact,Helvetica Neue Condensed,Helvetica Neue,Nimbus Sans Narrow,Arial" '
                  f'size="8" bold="false" italic="false"/>')
-    parts.append(f'{ind(2)}<font name="label_micro" font-name="Arial Narrow" '
-                 f'alternative-font-names="Helvetica Neue Condensed,Helvetica Neue,Nimbus Sans Narrow,Arial" '
+    parts.append(f'{ind(2)}<font name="label_micro" font-name="SF Pro Condensed" '
+                 f'alternative-font-names="SF Compact,Helvetica Neue Condensed,Helvetica Neue,Nimbus Sans Narrow,Arial" '
                  f'size="7" bold="false" italic="false"/>')
     parts.append(f'{ind(1)}</fonts>')
 
@@ -512,9 +525,9 @@ def generate():
     colors = [
         ("Backdrop", "#000000ff"), ("ModuleBg", "#04070bff"),
         ("StageOuter", "#4a4d53ff"), ("BarTrack", "#2c2f36ff"),
-        ("BarFill", "#d3d5d8ff"), ("TextBright", "#f5f6f7ff"),
+        ("BarFill", "#d3d5d8ff"), ("TextBright", "#ffffffff"),
         ("TextDim", "#a6abb2ff"), ("TextSubtle", "#bcc1c6aa"),
-        ("AccentRed", "#81222dff"), ("RowLine", "#1f242aff"),
+        ("AccentRed", "#81222dff"), ("RowLine", "#424242ff"),
         ("ButtonBase", "#252a30ff"), ("ButtonFrame", "#71767dff"),
     ]
     for name, rgba in colors:
@@ -545,6 +558,11 @@ def generate():
     # Row separator lines between lane rows
     for sy in SEP_Y:
         parts.append(f'{ind(2)}{separator_line(0, sy, sep_w)}')
+
+    # Vertical 1px divider between left and right instrument columns
+    col_divider_x = LANE_W
+    col_divider_h = EDITOR_H - LANE_START_Y
+    parts.append(f'{ind(2)}{separator_line_vertical(col_divider_x, LANE_START_Y, col_divider_h)}')
 
     # Visible lanes (0-7)
     for vi in range(VISIBLE_LANES):
