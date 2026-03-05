@@ -52,7 +52,7 @@ SEP_Y = [ROW_Y[i] + LANE_H for i in range(3)]
 # ---------------------------------------------------------------------------
 ACCENT_W = 3
 SEC_Y = 18      # section box top within lane
-SEC_H = 82      # section box height
+SEC_H = 76      # section box height (bottom padding 3px to match top)
 
 # Uniform L/R padding (8px) for all parameter groups; scalable
 SEC_GROUP_MARGIN = 5
