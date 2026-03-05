@@ -57,7 +57,7 @@ GLOBAL_SEC_H = GLOBAL_H - 6   # section content (3px top/bottom padding)
 GLOBAL_SLIDER_H = 20
 GLOBAL_RIGHT_MARGIN = 8
 GLOBAL_SECTION_GAP = 8
-GLOBAL_SEC_W = [38, 82, 50, 110]  # MASTER, BODY FILTER, MORPH (slider only), PRESET
+GLOBAL_SEC_W = [38, 82, 76, 110]  # MASTER, BODY FILTER, MORPH (slider only), PRESET
 
 # Uniform L/R padding (8px) for all parameter groups; scalable
 SEC_GROUP_MARGIN = 5
@@ -428,9 +428,9 @@ def build_global_strip():
     lines.append(f'{ind(3)}{cview_close()}')
 
     # MORPH section (slider only) - tag 10
-    lines.append(f'{ind(3)}{cview_open_transparent(g_sec_x[2], 3, 50, GLOBAL_SEC_H)}')
-    lines.append(f'{ind(4)}{section_title_label(2, 2, 46, "MORPH")}')
-    lines.append(f'{ind(4)}{slider_xml(10, 12, 12, 26, 14, "horizontal", from_center=True, wheel_inc="0.02", zoom="4")}')
+    lines.append(f'{ind(3)}{cview_open_transparent(g_sec_x[2], 3, 76, GLOBAL_SEC_H)}')
+    lines.append(f'{ind(4)}{section_title_label(2, 2, 72, "MORPH")}')
+    lines.append(f'{ind(4)}{slider_xml(10, 12, 12, 52, 14, "horizontal", from_center=True, wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(3)}{cview_close()}')
 
     # PRESET section - tag 5
