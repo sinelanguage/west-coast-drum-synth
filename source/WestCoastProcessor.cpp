@@ -897,9 +897,9 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
   static constexpr std::array<double, kLaneCount> kTransientAttackScale {
     1.0, 0.92, 0.74, 0.90, 0.88, 0.92, 0.90, 0.95, 0.88};
   static constexpr std::array<double, kLaneCount> kTransientDecayScale {
-    1.0, 1.16, 0.68, 1.05, 1.02, 0.94, 0.90, 0.85, 0.78};
+    1.4, 1.16, 0.68, 1.3, 1.25, 0.94, 0.90, 0.85, 0.78};
   static constexpr std::array<double, kLaneCount> kTransientLevelScale {
-    1.0, 1.10, 0.88, 1.00, 0.98, 1.02, 1.00, 1.08, 1.12};
+    1.35, 1.10, 0.88, 1.25, 1.20, 1.02, 1.00, 1.08, 1.12};
   static constexpr std::array<double, kLaneCount> kNoiseLevelScale {
     1.05, 2.05, 1.65, 1.35, 1.38, 1.42, 1.45, 1.55, 1.75};
   static constexpr std::array<double, kLaneCount> kNoiseDecayScale {

@@ -30,11 +30,12 @@ inline double softClip (double x)
 
 // Indexed by LaneCharacter: Kick, Snare, Hat, PercA, PercB, RimShot, Clap
 constexpr std::array<double, 7> kPitchSemitoneSpan {66.0, 20.0, 8.0, 36.0, 32.0, 18.0, 14.0};
-constexpr std::array<double, 7> kTransientBaseHz {1700.0, 2500.0, 7000.0, 900.0, 4500.0, 3500.0, 2200.0};
+constexpr std::array<double, 7> kTransientBaseHz {3200.0, 2500.0, 7000.0, 2200.0, 4500.0, 3500.0, 2200.0};
 constexpr std::array<double, 7> kNoiseBlendGain {0.85, 1.25, 1.45, 1.10, 1.15, 1.30, 1.45};
 constexpr std::array<double, 7> kBodyGain {1.05, 0.84, 0.42, 1.02, 0.96, 0.92, 0.88};
 constexpr std::array<double, 7> kFmScale {1.0, 0.85, 0.40, 0.92, 0.88, 0.65, 0.45};
-constexpr std::array<double, 7> kNoiseTransientBlend {0.40, 0.68, 0.38, 0.52, 0.58, 0.72, 0.55};
+constexpr std::array<double, 7> kNoiseTransientBlend {0.62, 0.68, 0.38, 0.65, 0.58, 0.72, 0.55};
+constexpr std::array<double, 7> kTransientGainBoost {1.65, 1.0, 1.0, 1.45, 1.35, 1.0, 1.0};
 
 inline double cutoffFromNormalized (double normalized, double minHz, double maxHz)
 {
@@ -154,7 +155,8 @@ double DrumVoice::process ()
 
   modPhase_ += (kTwoPi * modFrequency) / sampleRate_;
   carrierPhase_ += (kTwoPi * carrierFrequency) / sampleRate_;
-  transientPhase_ += (kTwoPi * kTransientBaseHz[character] * (0.85 + (frame_.transientAmount * 0.8))) / sampleRate_;
+  const double transFreqSweep = 0.7 + (frame_.transientAmount * 1.5);
+  transientPhase_ += (kTwoPi * kTransientBaseHz[character] * transFreqSweep) / sampleRate_;
   modPhase_ = wrapPhase (modPhase_);
   carrierPhase_ = wrapPhase (carrierPhase_);
   transientPhase_ = wrapPhase (transientPhase_);
@@ -188,15 +190,16 @@ double DrumVoice::process ()
     std::clamp ((frame_.transientMix * 0.65) + (frame_.snapAmount * kNoiseTransientBlend[character]), 0.0, 1.0);
   const double transientCore = (transientOsc * (1.0 - transientBlend)) + (transientNoise * transientBlend);
 
-  const double transBaseCutoff = cutoffFromNormalized (frame_.transFilterCutoff, 200.0, 20000.0);
-  const double transEnvMod = transBaseCutoff * frame_.transFilterEnvAmount * transientEnv_ * 3.5;
-  const double transCutoffHz = std::clamp (transBaseCutoff + transEnvMod, 20.0, sampleRate_ * 0.47);
-  const double transResScaled = std::min (0.98, frame_.transFilterResonance * 1.35);
+  const double transBaseCutoff = cutoffFromNormalized (frame_.transFilterCutoff, 800.0, 20000.0);
+  const double transEnvMod = transBaseCutoff * frame_.transFilterEnvAmount * transientEnv_ * 4.0;
+  const double transCutoffHz = std::clamp (transBaseCutoff + transEnvMod, 400.0, sampleRate_ * 0.43);
+  const double transResScaled = std::min (0.96, frame_.transFilterResonance * 1.35);
   const double filteredTransient = processStateVariableLowpass (transientCore, transCutoffHz,
                                                                 transResScaled,
                                                                 transFilterLowState_, transFilterBandState_);
 
-  const double transientGain = (0.35 + (frame_.transientAmount * 1.2)) * frame_.transientLevel;
+  const double transientGain =
+    (0.5 + (frame_.transientAmount * 1.5)) * frame_.transientLevel * kTransientGainBoost[character];
   const double transOut = filteredTransient * transientEnv_ * transientGain;
 
   // --- NOISE PATH ---
