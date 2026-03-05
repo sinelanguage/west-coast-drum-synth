@@ -175,7 +175,7 @@ tresult PLUGIN_API WestCoastProcessor::initialize (FUnknown* context)
   setParam (kParamFollowTransport, 0.0);
   setParam (kParamPresetSelect, 0.0);
   setParam (kParamRandomize, 0.0);
-  setParam (kParamRandomizeAmount, 1.0);
+  setParam (kParamRandomizeAmount, 0.5);
   setParam (kParamOscFilterCutoff, 0.20);
   setParam (kParamOscFilterResonance, 0.34);
   setParam (kParamOscFilterEnv, 0.46);
@@ -787,100 +787,12 @@ void WestCoastProcessor::processParameterChanges (Vst::IParameterChanges* change
       loadedPreset_ = presetIndexFromNormalized (value);
       presetPending_ = true;
     }
-    else if (paramId == kParamRandomize && value > 0.5)
-    {
-      performRandomization (outputChanges);
-      setParam (kParamRandomize, 0.0);
-      if (outputChanges)
-        pushParamChange (outputChanges, kParamRandomize, 0.0);
-    }
   }
 
   updateLaneFramesFromParameters ();
 
   if (presetPending_ && outputChanges)
     pushParamChange (outputChanges, kParamPresetSelect, getParam (kParamPresetSelect));
-}
-
-void WestCoastProcessor::performRandomization (Vst::IParameterChanges* outputChanges)
-{
-  const double amount = std::clamp (getParam (kParamRandomizeAmount), 0.0, 1.0);
-  if (amount < 1e-6)
-    return;
-
-  std::random_device rd;
-  std::mt19937 gen (rd ());
-  const auto rnd = [&gen] (double lo, double hi) {
-    return std::uniform_real_distribution<double> (lo, hi) (gen);
-  };
-  const auto jitter = [&rnd] (double center, double radius) {
-    return clamp01 (center + rnd (-radius, radius));
-  };
-  const auto blend = [amount] (double current, double target) {
-    return clamp01 (current + amount * (target - current));
-  };
-
-  constexpr double decayJitter = 0.10;
-  for (int32 lane = 0; lane < kLaneCount; ++lane)
-  {
-    const double curDecay = getParam (laneParamID (lane, kLaneDecay));
-    const double curPitchEnvDecay = getParam (laneExtraParamID (lane, kLanePitchEnvDecay));
-    const double curNoiseDecay = getParam (laneExtraParamID (lane, kLaneNoiseDecay));
-    const double curTransientDecay = getParam (laneMacroParamID (lane, kLaneTransientDecay));
-
-    setParam (laneParamID (lane, kLaneTune), blend (getParam (laneParamID (lane, kLaneTune)), rnd (0.32, 0.58)));
-    setParam (laneParamID (lane, kLaneDecay), blend (curDecay, jitter (curDecay, decayJitter)));
-    setParam (laneParamID (lane, kLaneFold), blend (getParam (laneParamID (lane, kLaneFold)), rnd (0.25, 0.75)));
-    setParam (laneParamID (lane, kLaneFm), blend (getParam (laneParamID (lane, kLaneFm)), rnd (0.20, 0.65)));
-    setParam (laneParamID (lane, kLaneNoise), blend (getParam (laneParamID (lane, kLaneNoise)), rnd (0.15, 0.55)));
-    setParam (laneParamID (lane, kLaneDrive), blend (getParam (laneParamID (lane, kLaneDrive)), rnd (0.10, 0.45)));
-    setParam (laneParamID (lane, kLaneLevel), blend (getParam (laneParamID (lane, kLaneLevel)), rnd (0.55, 0.92)));
-    setParam (laneParamID (lane, kLanePan), blend (getParam (laneParamID (lane, kLanePan)), rnd (0.25, 0.75)));
-
-    setParam (laneExtraParamID (lane, kLanePitchEnvAmount),
-              blend (getParam (laneExtraParamID (lane, kLanePitchEnvAmount)), rnd (0.25, 0.75)));
-    setParam (laneExtraParamID (lane, kLanePitchEnvDecay), blend (curPitchEnvDecay, jitter (curPitchEnvDecay, decayJitter)));
-    setParam (laneExtraParamID (lane, kLaneTransientAttack),
-              blend (getParam (laneExtraParamID (lane, kLaneTransientAttack)), rnd (0.18, 0.55)));
-    setParam (laneExtraParamID (lane, kLaneNoiseTone),
-              blend (getParam (laneExtraParamID (lane, kLaneNoiseTone)), rnd (0.35, 0.75)));
-    setParam (laneExtraParamID (lane, kLaneNoiseDecay), blend (curNoiseDecay, jitter (curNoiseDecay, decayJitter)));
-    setParam (laneExtraParamID (lane, kLaneSnap),
-              blend (getParam (laneExtraParamID (lane, kLaneSnap)), rnd (0.20, 0.65)));
-
-    setParam (laneMacroParamID (lane, kLaneTransientDecay), blend (curTransientDecay, jitter (curTransientDecay, decayJitter)));
-    setParam (laneMacroParamID (lane, kLaneTransientMix),
-              blend (getParam (laneMacroParamID (lane, kLaneTransientMix)), rnd (0.30, 0.70)));
-    setParam (laneMacroParamID (lane, kLaneNoiseResonance),
-              blend (getParam (laneMacroParamID (lane, kLaneNoiseResonance)), rnd (0.25, 0.65)));
-    setParam (laneMacroParamID (lane, kLaneNoiseEnvAmount),
-              blend (getParam (laneMacroParamID (lane, kLaneNoiseEnvAmount)), rnd (0.35, 0.75)));
-
-    setParam (laneFilterParamID (lane, kLaneOscFilterCutoff),
-              blend (getParam (laneFilterParamID (lane, kLaneOscFilterCutoff)), rnd (0.50, 0.85)));
-    setParam (laneFilterParamID (lane, kLaneOscFilterRes),
-              blend (getParam (laneFilterParamID (lane, kLaneOscFilterRes)), rnd (0.02, 0.18)));
-    setParam (laneFilterParamID (lane, kLaneOscFilterEnv),
-              blend (getParam (laneFilterParamID (lane, kLaneOscFilterEnv)), rnd (0.20, 0.55)));
-    setParam (laneFilterParamID (lane, kLaneTransFilterCutoff),
-              blend (getParam (laneFilterParamID (lane, kLaneTransFilterCutoff)), rnd (0.55, 0.88)));
-    setParam (laneFilterParamID (lane, kLaneTransFilterRes),
-              blend (getParam (laneFilterParamID (lane, kLaneTransFilterRes)), rnd (0.02, 0.12)));
-    setParam (laneFilterParamID (lane, kLaneTransFilterEnv),
-              blend (getParam (laneFilterParamID (lane, kLaneTransFilterEnv)), rnd (0.22, 0.55)));
-  }
-
-  for (int32 lane = 0; lane < kLaneCount; ++lane)
-  {
-    for (int32 p = 0; p < kLaneParamCount; ++p)
-      pushParamChange (outputChanges, laneParamID (lane, static_cast<LaneParamOffset> (p)), getParam (laneParamID (lane, static_cast<LaneParamOffset> (p))));
-    for (int32 p = 0; p < kLaneExtraParamCount; ++p)
-      pushParamChange (outputChanges, laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (p)), getParam (laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (p))));
-    for (int32 p = 0; p < kLaneMacroParamCount; ++p)
-      pushParamChange (outputChanges, laneMacroParamID (lane, static_cast<LaneMacroParamOffset> (p)), getParam (laneMacroParamID (lane, static_cast<LaneMacroParamOffset> (p))));
-    for (int32 p = 0; p < kLaneFilterParamCount; ++p)
-      pushParamChange (outputChanges, laneFilterParamID (lane, static_cast<LaneFilterParamOffset> (p)), getParam (laneFilterParamID (lane, static_cast<LaneFilterParamOffset> (p))));
-  }
 }
 
 void WestCoastProcessor::updateLaneFramesFromParameters ()
@@ -938,22 +850,22 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
     LaneFrame frame {};
     frame.character = kLaneCharacters[lane];
 
-    const double tune = getParam (laneParamID (lane, kLaneTune));
+    const double tune = getMorphedParam (laneParamID (lane, kLaneTune));
     const double semitoneRange = kPitchSemitoneRange[lane];
     const double semitones = (tune * 2.0 - 1.0) * semitoneRange;
     frame.frequencyHz = kBaseFrequencies[lane] * std::pow (2.0, semitones / 12.0);
     frame.frequencyHz = std::clamp (frame.frequencyHz, 8.0, 20000.0);
 
-    const double decay = getParam (laneParamID (lane, kLaneDecay));
+    const double decay = getMorphedParam (laneParamID (lane, kLaneDecay));
     frame.decaySeconds = 0.02 + (decay * decay * 1.95);
-    const double level = getParam (laneParamID (lane, kLaneLevel));
+    const double level = getMorphedParam (laneParamID (lane, kLaneLevel));
     frame.outputLevel = std::pow (level, 1.05);
     frame.oscLevel = std::clamp ((0.40 + (std::pow (level, 0.80) * 1.25)) * kOscBalance[lane], 0.0, 2.0);
-    const double oscMix = getParam (laneOscMixParamID (lane));
+    const double oscMix = getMorphedParam (laneOscMixParamID (lane));
     frame.oscLevel *= oscMix;
 
-    const double foldRaw = getParam (laneParamID (lane, kLaneFold));
-    const double fmRaw = getParam (laneParamID (lane, kLaneFm));
+    const double foldRaw = getMorphedParam (laneParamID (lane, kLaneFold));
+    const double fmRaw = getMorphedParam (laneParamID (lane, kLaneFm));
     frame.foldAmount = kLaneIsLowRegister[lane] ? (foldRaw * 0.5) : (0.5 + foldRaw * 0.5);
     frame.fmAmount = kLaneIsLowRegister[lane] ? (fmRaw * 0.5) : (0.5 + fmRaw * 0.5);
     frame.bodyFilterCutoffHz = std::clamp (globalOscCutoffHz * kOscCutoffScale[lane], 80.0, 18000.0);
@@ -961,49 +873,49 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
       std::clamp ((globalOscResonance + (frame.foldAmount * 0.12)) * kOscResScale[lane], 0.0, 0.98);
     frame.bodyFilterEnvAmount = std::clamp (globalOscEnv * kOscEnvScale[lane], 0.0, 2.5);
 
-    const double noiseRaw = getParam (laneParamID (lane, kLaneNoise));
+    const double noiseRaw = getMorphedParam (laneParamID (lane, kLaneNoise));
     const double noise = kLaneIsLowRegister[lane] ? (noiseRaw * 0.5) : (0.5 + noiseRaw * 0.5);
     frame.noiseAmount = std::clamp (std::pow (noise, 0.82) * 1.35, 0.0, 2.5);
     frame.noiseLevel = std::clamp (std::pow (noise, 0.58) * kNoiseLevelScale[lane], 0.0, 2.5);
-    frame.pitchEnvAmount = std::clamp (getParam (laneExtraParamID (lane, kLanePitchEnvAmount)) *
+    frame.pitchEnvAmount = std::clamp (getMorphedParam (laneExtraParamID (lane, kLanePitchEnvAmount)) *
                                          kPitchEnvScale[lane],
                                        0.0, 1.0);
-    const double pitchDecay = getParam (laneExtraParamID (lane, kLanePitchEnvDecay));
+    const double pitchDecay = getMorphedParam (laneExtraParamID (lane, kLanePitchEnvDecay));
     frame.pitchEnvDecaySeconds = 0.006 + (pitchDecay * pitchDecay * 0.55);
-    frame.transientAmount = std::clamp (std::pow (getParam (laneExtraParamID (lane, kLaneTransientAttack)), 0.72) *
+    frame.transientAmount = std::clamp (std::pow (getMorphedParam (laneExtraParamID (lane, kLaneTransientAttack)), 0.72) *
                                           kTransientAttackScale[lane],
                                         0.0, 1.0);
-    const double transientDecay = getParam (laneMacroParamID (lane, kLaneTransientDecay));
+    const double transientDecay = getMorphedParam (laneMacroParamID (lane, kLaneTransientDecay));
     frame.transientDecaySeconds =
       std::clamp ((0.003 + (transientDecay * transientDecay * 0.46)) * kTransientDecayScale[lane], 0.0015, 0.5);
-    const double transientLevel = getParam (laneMacroParamID (lane, kLaneTransientMix));
+    const double transientLevel = getMorphedParam (laneMacroParamID (lane, kLaneTransientMix));
     frame.transientLevel =
       std::clamp ((0.18 + (std::pow (transientLevel, 0.74) * 1.65)) * kTransientLevelScale[lane], 0.0, 2.5);
     frame.transientMix = std::clamp (0.18 + (transientLevel * 1.05), 0.0, 1.4);
-    const double noiseTone = getParam (laneExtraParamID (lane, kLaneNoiseTone));
+    const double noiseTone = getMorphedParam (laneExtraParamID (lane, kLaneNoiseTone));
     frame.noiseTone = (noiseTone * 2.0) - 1.0;
     frame.noiseFilterCutoffHz = 220.0 + (std::pow (noiseTone, 1.40) * 16000.0);
-    const double noiseDecay = getParam (laneExtraParamID (lane, kLaneNoiseDecay));
+    const double noiseDecay = getMorphedParam (laneExtraParamID (lane, kLaneNoiseDecay));
     frame.noiseDecaySeconds = (0.008 + (noiseDecay * noiseDecay * 1.3));
     frame.noiseResonance =
-      std::clamp ((0.05 + (getParam (laneMacroParamID (lane, kLaneNoiseResonance)) * 0.90)) * kNoiseResScale[lane],
+      std::clamp ((0.05 + (getMorphedParam (laneMacroParamID (lane, kLaneNoiseResonance)) * 0.90)) * kNoiseResScale[lane],
                   0.0, 0.98);
     frame.noiseEnvAmount =
-      std::clamp ((0.18 + (getParam (laneMacroParamID (lane, kLaneNoiseEnvAmount)) * 1.25)) * kNoiseEnvScale[lane],
+      std::clamp ((0.18 + (getMorphedParam (laneMacroParamID (lane, kLaneNoiseEnvAmount)) * 1.25)) * kNoiseEnvScale[lane],
                   0.0, 1.5);
-    frame.snapAmount = std::clamp (getParam (laneExtraParamID (lane, kLaneSnap)) * kSnapScale[lane], 0.0, 1.0);
+    frame.snapAmount = std::clamp (getMorphedParam (laneExtraParamID (lane, kLaneSnap)) * kSnapScale[lane], 0.0, 1.0);
 
-    const double driveRaw = getParam (laneParamID (lane, kLaneDrive));
+    const double driveRaw = getMorphedParam (laneParamID (lane, kLaneDrive));
     frame.driveAmount = kLaneIsLowRegister[lane] ? (driveRaw * 0.5) : (0.5 + driveRaw * 0.5);
     frame.level = frame.outputLevel;
-    frame.pan = (getParam (laneParamID (lane, kLanePan)) * 2.0) - 1.0;
+    frame.pan = (getMorphedParam (laneParamID (lane, kLanePan)) * 2.0) - 1.0;
 
-    frame.oscFilterCutoff = getParam (laneFilterParamID (lane, kLaneOscFilterCutoff));
-    frame.oscFilterResonance = std::clamp (getParam (laneFilterParamID (lane, kLaneOscFilterRes)), 0.0, 1.0);
-    frame.oscFilterEnvAmount = getParam (laneFilterParamID (lane, kLaneOscFilterEnv));
-    frame.transFilterCutoff = getParam (laneFilterParamID (lane, kLaneTransFilterCutoff));
-    frame.transFilterResonance = std::clamp (getParam (laneFilterParamID (lane, kLaneTransFilterRes)), 0.0, 1.0);
-    frame.transFilterEnvAmount = getParam (laneFilterParamID (lane, kLaneTransFilterEnv));
+    frame.oscFilterCutoff = getMorphedParam (laneFilterParamID (lane, kLaneOscFilterCutoff));
+    frame.oscFilterResonance = std::clamp (getMorphedParam (laneFilterParamID (lane, kLaneOscFilterRes)), 0.0, 1.0);
+    frame.oscFilterEnvAmount = getMorphedParam (laneFilterParamID (lane, kLaneOscFilterEnv));
+    frame.transFilterCutoff = getMorphedParam (laneFilterParamID (lane, kLaneTransFilterCutoff));
+    frame.transFilterResonance = std::clamp (getMorphedParam (laneFilterParamID (lane, kLaneTransFilterRes)), 0.0, 1.0);
+    frame.transFilterEnvAmount = getMorphedParam (laneFilterParamID (lane, kLaneTransFilterEnv));
 
     laneFrames_[lane] = frame;
   }
@@ -1027,6 +939,17 @@ double WestCoastProcessor::getParam (Vst::ParamID id) const
   if (id >= static_cast<Vst::ParamID> (kParameterStateSize))
     return 0.0;
   return params_[id];
+}
+
+double WestCoastProcessor::getMorphedParam (Vst::ParamID id) const
+{
+  double base = getParam (id);
+  const bool morphOn = getParam (kParamRandomize) > 0.5;
+  if (!morphOn)
+    return base;
+  const double morphSlider = getParam (kParamRandomizeAmount);
+  const double offset = (morphSlider - 0.5);
+  return clamp01 (base + offset);
 }
 
 void WestCoastProcessor::setParam (Vst::ParamID id, double normalizedValue)

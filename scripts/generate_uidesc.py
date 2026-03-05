@@ -401,13 +401,13 @@ def build_global_strip():
     lines.append(f'{ind(4)}{slider_xml(9, 56, 12, 6, 13, "vertical", wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(3)}{cview_close()}')
 
-    # TRANSPORT section (RUN, FOLLOW, RANDOMIZE, Amount) - tags 3, 4, 6, 10
+    # TRANSPORT + MORPH section - tags 3, 4, 6, 10
     lines.append(f'{ind(3)}{cview_open(264, 3, 170, 26, "StageOuter")}')
     lines.append(f'{ind(4)}{section_title_label(2, 2, 166, "TRANSPORT")}')
     lines.append(f'{ind(4)}{button_xml(3, 4, 12, 30, 13, "RUN")}')
     lines.append(f'{ind(4)}{button_xml(4, 38, 12, 50, 13, "FOLLOW")}')
-    lines.append(f'{ind(4)}{button_xml(6, 92, 12, 50, 13, "RANDOM", kick=True)}')
-    lines.append(f'{ind(4)}{slider_xml(10, 148, 12, 6, 13, "vertical", wheel_inc="0.02", zoom="4")}')
+    lines.append(f'{ind(4)}{button_xml(6, 92, 12, 42, 13, "MORPH")}')
+    lines.append(f'{ind(4)}{slider_xml(10, 140, 12, 26, 13, "horizontal", from_center=True, wheel_inc="0.02", zoom="4")}')
     lines.append(f'{ind(3)}{cview_close()}')
 
     # PRESET section - tag 5
