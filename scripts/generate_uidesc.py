@@ -28,9 +28,9 @@ GLOBAL_H = 32
 GLOBAL_W = EDITOR_W
 
 # ---------------------------------------------------------------------------
-# Lane grid
+# Lane grid (lane width = content width, no black space)
 # ---------------------------------------------------------------------------
-LANE_W = 511
+LANE_W = 510   # matches section content end (5+114+5+97+5+97+5+97+5+80)
 LANE_H = 108
 COL_GAP = 1   # 1px divider between columns
 ROW_GAP = 1   # 1px divider between rows
@@ -52,14 +52,14 @@ ACCENT_W = 3
 SEC_Y = 18      # section box top within lane
 SEC_H = 82      # section box height
 
-# Uniform margin for all parameter groups (matches first OSC group); scalable
+# Uniform L/R padding (8px) for all parameter groups; scalable
 SEC_GROUP_MARGIN = 5
-SEC_GAP = SEC_GROUP_MARGIN   # same margin between section boxes
+SEC_GAP = SEC_GROUP_MARGIN
 SEC_START_X = SEC_GROUP_MARGIN
 
-# Section widths: scaled so all groups have identical margin; content ends before LED
-# Proportional to [100,100,120,100,80] to fit in (LED_X - left - 4*gap - right)
-SEC_WIDTHS = [84, 84, 100, 84, 67]
+# Section widths (uniform ~15px L/R padding inside each section): uniform inner margin for all; expand to fill lane (no black space)
+# OSC: 5 sliders; PITCH/TRANSIENT/NOISE: 4 sliders; OUTPUT: 3 sliders
+SEC_WIDTHS = [114, 97, 97, 97, 80]
 SEC_NAMES = ["OSC &amp; WAVESHAPE", "PITCH ENV", "TRANSIENT",
              "NOISE", "OUTPUT STAGE"]
 
@@ -89,13 +89,12 @@ def slider_positions(sec_w, n):
     lx = [s for s in sx]
     return sx, lx
 
-S5_84, L5_84 = slider_positions(84, 5)   # OSC (5 sliders with Osc Mix)
-S4_84, L4_84 = slider_positions(84, 4)   # PITCH, NOISE
-S4_100, L4_100 = slider_positions(100, 4)  # TRANSIENT
-S3_67, L3_67 = slider_positions(67, 3)   # OUTPUT
+S5_114, L5_114 = slider_positions(114, 5)   # OSC (5 sliders with Osc Mix)
+S4_97, L4_97 = slider_positions(97, 4)   # PITCH, TRANSIENT, NOISE
+S3_80, L3_80 = slider_positions(80, 3)   # OUTPUT
 
-SECTION_SLIDER_X = [S5_84, S4_84, S4_100, S4_84, S3_67]
-SECTION_LABEL_X  = [L5_84, L4_84, L4_100, L4_84, L3_67]
+SECTION_SLIDER_X = [S5_114, S4_97, S4_97, S4_97, S3_80]
+SECTION_LABEL_X  = [L5_114, L4_97, L4_97, L4_97, L3_80]
 
 # LED meter within lane (near right edge)
 LED_X = 449
@@ -527,7 +526,7 @@ def generate():
         ("StageOuter", "#4a4d53ff"), ("BarTrack", "#2c2f36ff"),
         ("BarFill", "#d3d5d8ff"), ("TextBright", "#ffffffff"),
         ("TextDim", "#a6abb2ff"), ("TextSubtle", "#bcc1c6aa"),
-        ("AccentRed", "#81222dff"), ("RowLine", "#424242ff"),
+        ("AccentRed", "#81222dff"), ("RowLine", "#606060ff"),
         ("ButtonBase", "#252a30ff"), ("ButtonFrame", "#71767dff"),
     ]
     for name, rgba in colors:
