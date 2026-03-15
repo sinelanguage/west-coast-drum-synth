@@ -70,6 +70,21 @@ inline double clamp01 (double x)
   return std::clamp (x, 0.0, 1.0);
 }
 
+inline double responseCurve (double x, double exponent)
+{
+  return std::pow (clamp01 (x), exponent);
+}
+
+inline double responseRange (double x, double minimum, double maximum, double exponent)
+{
+  return minimum + (responseCurve (x, exponent) * (maximum - minimum));
+}
+
+inline double signedPow (double x, double exponent)
+{
+  return std::copysign (std::pow (std::abs (x), exponent), x);
+}
+
 inline double softClip (double x)
 {
   constexpr double kSoftClipDrive = 1.4;
@@ -870,11 +885,10 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
     1.24, 1.02, 0.58, 0.92, 0.90, 0.88, 0.86, 0.82, 0.78};
   static constexpr std::array<double, kLaneCount> kOscBalance {
     1.0, 0.92, 0.76, 0.94, 0.92, 0.90, 0.88, 0.86, 0.82};
-  // Wider tune travel for sub rumbles and bright metallic percussion.
+  // Keep enough travel for sound design, but narrow the most extreme tuning
+  // swings so small moves land on more usable drum fundamentals.
   static constexpr std::array<double, kLaneCount> kPitchSemitoneRange {
-    60.0, 52.0, 48.0, 60.0, 58.0, 62.0, 64.0, 56.0, 54.0};
-  // Low register (Kick, Snare, PercA): map 0-1 to lower 50% for warmer tones.
-  // High register (Hat, PercB, RimShot, Clap): map 0-1 to upper 50% for brighter but controlled.
+    30.0, 24.0, 18.0, 28.0, 26.0, 22.0, 20.0, 16.0, 14.0};
   static constexpr std::array<bool, kLaneCount> kLaneIsLowRegister {
     true, true, false, true, true, false, false, false, false};
 
@@ -906,23 +920,29 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
 
     const double foldRaw = getMorphedParam (laneParamID (lane, kLaneFold));
     const double fmRaw = getMorphedParam (laneParamID (lane, kLaneFm));
-    frame.foldAmount = kLaneIsLowRegister[lane] ? (foldRaw * 0.5) : (0.5 + foldRaw * 0.5);
-    frame.fmAmount = kLaneIsLowRegister[lane] ? (fmRaw * 0.5) : (0.5 + fmRaw * 0.5);
+    const double foldMin = kLaneIsLowRegister[lane] ? 0.0 : 0.18;
+    const double foldMax = kLaneIsLowRegister[lane] ? 0.42 : 0.82;
+    const double fmMin = kLaneIsLowRegister[lane] ? 0.0 : 0.15;
+    const double fmMax = kLaneIsLowRegister[lane] ? 0.38 : 0.78;
+    frame.foldAmount = responseRange (foldRaw, foldMin, foldMax, 1.6);
+    frame.fmAmount = responseRange (fmRaw, fmMin, fmMax, 1.7);
     frame.bodyFilterCutoffHz = std::clamp (globalOscCutoffHz * kOscCutoffScale[lane], 80.0, 18000.0);
     frame.bodyFilterResonance =
       std::clamp ((globalOscResonance + (frame.foldAmount * 0.12)) * kOscResScale[lane], 0.0, 0.98);
     frame.bodyFilterEnvAmount = std::clamp (globalOscEnv * kOscEnvScale[lane], 0.0, 2.5);
 
     const double noiseRaw = getMorphedParam (laneParamID (lane, kLaneNoise));
-    const double noise = kLaneIsLowRegister[lane] ? (noiseRaw * 0.5) : (0.5 + noiseRaw * 0.5);
-    frame.noiseAmount = std::clamp (std::pow (noise, 0.82) * 1.35, 0.0, 2.5);
-    frame.noiseLevel = std::clamp (std::pow (noise, 0.58) * kNoiseLevelScale[lane], 0.0, 2.5);
+    const double noiseMin = kLaneIsLowRegister[lane] ? 0.0 : 0.12;
+    const double noiseMax = kLaneIsLowRegister[lane] ? 0.40 : 0.80;
+    const double noise = responseRange (noiseRaw, noiseMin, noiseMax, 1.55);
+    frame.noiseAmount = std::clamp (std::pow (noise, 1.10) * 1.10, 0.0, 2.5);
+    frame.noiseLevel = std::clamp (std::pow (noise, 1.18) * kNoiseLevelScale[lane], 0.0, 2.5);
     frame.pitchEnvAmount = std::clamp (getMorphedParam (laneExtraParamID (lane, kLanePitchEnvAmount)) *
                                          kPitchEnvScale[lane],
-                                       0.0, 1.0);
+                                        0.0, 1.0);
     const double pitchDecay = getMorphedParam (laneExtraParamID (lane, kLanePitchEnvDecay));
     frame.pitchEnvDecaySeconds = 0.006 + (pitchDecay * pitchDecay * 0.55);
-    frame.transientAmount = std::clamp (std::pow (getMorphedParam (laneExtraParamID (lane, kLaneTransientAttack)), 0.72) *
+    frame.transientAmount = std::clamp (std::pow (getMorphedParam (laneExtraParamID (lane, kLaneTransientAttack)), 1.10) *
                                           kTransientAttackScale[lane],
                                         0.0, 1.0);
     const double transientDecay = getMorphedParam (laneMacroParamID (lane, kLaneTransientDecay));
@@ -930,11 +950,11 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
       std::clamp ((0.003 + (transientDecay * transientDecay * 0.46)) * kTransientDecayScale[lane], 0.0015, 0.5);
     const double transientLevel = getMorphedParam (laneMacroParamID (lane, kLaneTransientMix));
     frame.transientLevel =
-      std::clamp ((0.18 + (std::pow (transientLevel, 0.74) * 1.65)) * kTransientLevelScale[lane], 0.0, 2.5);
+      std::clamp ((0.18 + (std::pow (transientLevel, 1.08) * 1.45)) * kTransientLevelScale[lane], 0.0, 2.5);
     frame.transientMix = std::clamp (0.18 + (transientLevel * 1.05), 0.0, 1.4);
     const double noiseTone = getMorphedParam (laneExtraParamID (lane, kLaneNoiseTone));
     frame.noiseTone = (noiseTone * 2.0) - 1.0;
-    frame.noiseFilterCutoffHz = 220.0 + (std::pow (noiseTone, 1.40) * 16000.0);
+    frame.noiseFilterCutoffHz = 6200.0 + (signedPow (frame.noiseTone, 1.40) * 6000.0);
     const double noiseDecay = getMorphedParam (laneExtraParamID (lane, kLaneNoiseDecay));
     frame.noiseDecaySeconds = (0.008 + (noiseDecay * noiseDecay * 1.3));
     frame.noiseResonance =
@@ -946,7 +966,9 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
     frame.snapAmount = std::clamp (getMorphedParam (laneExtraParamID (lane, kLaneSnap)) * kSnapScale[lane], 0.0, 1.0);
 
     const double driveRaw = getMorphedParam (laneParamID (lane, kLaneDrive));
-    frame.driveAmount = kLaneIsLowRegister[lane] ? (driveRaw * 0.5) : (0.5 + driveRaw * 0.5);
+    const double driveMin = kLaneIsLowRegister[lane] ? 0.0 : 0.12;
+    const double driveMax = kLaneIsLowRegister[lane] ? 0.36 : 0.70;
+    frame.driveAmount = responseRange (driveRaw, driveMin, driveMax, 1.75);
     frame.level = frame.outputLevel;
     frame.pan = (getMorphedParam (laneParamID (lane, kLanePan)) * 2.0) - 1.0;
 
