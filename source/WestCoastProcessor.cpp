@@ -80,11 +80,6 @@ inline double responseRange (double x, double minimum, double maximum, double ex
   return minimum + (responseCurve (x, exponent) * (maximum - minimum));
 }
 
-inline double signedPow (double x, double exponent)
-{
-  return std::copysign (std::pow (std::abs (x), exponent), x);
-}
-
 inline double softClip (double x)
 {
   constexpr double kSoftClipDrive = 1.4;
@@ -954,7 +949,7 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
     frame.transientMix = std::clamp (0.18 + (transientLevel * 1.05), 0.0, 1.4);
     const double noiseTone = getMorphedParam (laneExtraParamID (lane, kLaneNoiseTone));
     frame.noiseTone = (noiseTone * 2.0) - 1.0;
-    frame.noiseFilterCutoffHz = 6200.0 + (signedPow (frame.noiseTone, 1.40) * 6000.0);
+    frame.noiseFilterCutoffHz = 220.0 + (std::pow (noiseTone, 1.40) * 16000.0);
     const double noiseDecay = getMorphedParam (laneExtraParamID (lane, kLaneNoiseDecay));
     frame.noiseDecaySeconds = (0.008 + (noiseDecay * noiseDecay * 1.3));
     frame.noiseResonance =
