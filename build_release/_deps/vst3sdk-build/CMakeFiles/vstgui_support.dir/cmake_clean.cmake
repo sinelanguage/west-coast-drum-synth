@@ -1,8 +1,6 @@
 file(REMOVE_RECURSE
   "../../lib/Release/libvstgui_support.a"
   "../../lib/Release/libvstgui_support.pdb"
-  "CMakeFiles/vstgui_support.dir/public.sdk/source/vst/vstgui_linux_runloop_support.cpp.o"
-  "CMakeFiles/vstgui_support.dir/public.sdk/source/vst/vstgui_linux_runloop_support.cpp.o.d"
   "CMakeFiles/vstgui_support.dir/public.sdk/source/vst/vstguieditor.cpp.o"
   "CMakeFiles/vstgui_support.dir/public.sdk/source/vst/vstguieditor.cpp.o.d"
   "CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3editor.cpp.o"

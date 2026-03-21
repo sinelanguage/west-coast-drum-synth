@@ -1,8 +1,8 @@
 file(REMOVE_RECURSE
-  "../../../../../../VST3/Release/again-sample-accurate.vst3/Contents/x86_64-linux/again-sample-accurate.pdb"
-  "../../../../../../VST3/Release/again-sample-accurate.vst3/Contents/x86_64-linux/again-sample-accurate.so"
-  "CMakeFiles/again-sample-accurate.dir/__/__/__/source/main/linuxmain.cpp.o"
-  "CMakeFiles/again-sample-accurate.dir/__/__/__/source/main/linuxmain.cpp.o.d"
+  "../../../../../../VST3/Release/again-sample-accurate.vst3/Contents/MacOS/again-sample-accurate"
+  "../../../../../../VST3/Release/again-sample-accurate.vst3/Contents/MacOS/again-sample-accurate.pdb"
+  "CMakeFiles/again-sample-accurate.dir/__/__/__/source/main/macmain.cpp.o"
+  "CMakeFiles/again-sample-accurate.dir/__/__/__/source/main/macmain.cpp.o.d"
   "CMakeFiles/again-sample-accurate.dir/__/__/__/source/vst/utility/test/rttransfertest.cpp.o"
   "CMakeFiles/again-sample-accurate.dir/__/__/__/source/vst/utility/test/rttransfertest.cpp.o.d"
   "CMakeFiles/again-sample-accurate.dir/__/__/__/source/vst/utility/test/sampleaccuratetest.cpp.o"

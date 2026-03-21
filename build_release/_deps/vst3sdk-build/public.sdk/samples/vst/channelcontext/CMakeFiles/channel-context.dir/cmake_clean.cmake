@@ -1,8 +1,8 @@
 file(REMOVE_RECURSE
-  "../../../../../../VST3/Release/channel-context.vst3/Contents/x86_64-linux/channel-context.pdb"
-  "../../../../../../VST3/Release/channel-context.vst3/Contents/x86_64-linux/channel-context.so"
-  "CMakeFiles/channel-context.dir/__/__/__/source/main/linuxmain.cpp.o"
-  "CMakeFiles/channel-context.dir/__/__/__/source/main/linuxmain.cpp.o.d"
+  "../../../../../../VST3/Release/channel-context.vst3/Contents/MacOS/channel-context"
+  "../../../../../../VST3/Release/channel-context.vst3/Contents/MacOS/channel-context.pdb"
+  "CMakeFiles/channel-context.dir/__/__/__/source/main/macmain.cpp.o"
+  "CMakeFiles/channel-context.dir/__/__/__/source/main/macmain.cpp.o.d"
   "CMakeFiles/channel-context.dir/source/plug.cpp.o"
   "CMakeFiles/channel-context.dir/source/plug.cpp.o.d"
   "CMakeFiles/channel-context.dir/source/plugcontroller.cpp.o"

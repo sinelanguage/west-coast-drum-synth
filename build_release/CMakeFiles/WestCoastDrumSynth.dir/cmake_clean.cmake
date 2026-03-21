@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/WestCoastDrumSynth.dir/_deps/vst3sdk-src/public.sdk/source/main/linuxmain.cpp.o"
-  "CMakeFiles/WestCoastDrumSynth.dir/_deps/vst3sdk-src/public.sdk/source/main/linuxmain.cpp.o.d"
+  "CMakeFiles/WestCoastDrumSynth.dir/_deps/vst3sdk-src/public.sdk/source/main/macmain.cpp.o"
+  "CMakeFiles/WestCoastDrumSynth.dir/_deps/vst3sdk-src/public.sdk/source/main/macmain.cpp.o.d"
   "CMakeFiles/WestCoastDrumSynth.dir/source/WestCoastController.cpp.o"
   "CMakeFiles/WestCoastDrumSynth.dir/source/WestCoastController.cpp.o.d"
   "CMakeFiles/WestCoastDrumSynth.dir/source/WestCoastProcessor.cpp.o"
@@ -13,9 +13,9 @@ file(REMOVE_RECURSE
   "CMakeFiles/WestCoastDrumSynth.dir/source/factory.cpp.o.d"
   "CMakeFiles/WestCoastDrumSynth.dir/source/presets/FactoryPresets.cpp.o"
   "CMakeFiles/WestCoastDrumSynth.dir/source/presets/FactoryPresets.cpp.o.d"
+  "VST3/Release/WestCoastDrumSynth.vst3/Contents/MacOS/WestCoastDrumSynth"
+  "VST3/Release/WestCoastDrumSynth.vst3/Contents/MacOS/WestCoastDrumSynth.pdb"
   "VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/WestCoastEditor.uidesc"
-  "VST3/Release/WestCoastDrumSynth.vst3/Contents/x86_64-linux/WestCoastDrumSynth.pdb"
-  "VST3/Release/WestCoastDrumSynth.vst3/Contents/x86_64-linux/WestCoastDrumSynth.so"
 )
 
 # Per-language clean rules from dependency scanning.

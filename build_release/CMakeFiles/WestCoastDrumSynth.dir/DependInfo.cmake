@@ -8,13 +8,13 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/workspace/build_release/_deps/vst3sdk-src/public.sdk/source/main/linuxmain.cpp" "CMakeFiles/WestCoastDrumSynth.dir/_deps/vst3sdk-src/public.sdk/source/main/linuxmain.cpp.o" "gcc" "CMakeFiles/WestCoastDrumSynth.dir/_deps/vst3sdk-src/public.sdk/source/main/linuxmain.cpp.o.d"
-  "/workspace/source/WestCoastController.cpp" "CMakeFiles/WestCoastDrumSynth.dir/source/WestCoastController.cpp.o" "gcc" "CMakeFiles/WestCoastDrumSynth.dir/source/WestCoastController.cpp.o.d"
-  "/workspace/source/WestCoastProcessor.cpp" "CMakeFiles/WestCoastDrumSynth.dir/source/WestCoastProcessor.cpp.o" "gcc" "CMakeFiles/WestCoastDrumSynth.dir/source/WestCoastProcessor.cpp.o.d"
-  "/workspace/source/engine/DrumVoice.cpp" "CMakeFiles/WestCoastDrumSynth.dir/source/engine/DrumVoice.cpp.o" "gcc" "CMakeFiles/WestCoastDrumSynth.dir/source/engine/DrumVoice.cpp.o.d"
-  "/workspace/source/engine/StepSequencer.cpp" "CMakeFiles/WestCoastDrumSynth.dir/source/engine/StepSequencer.cpp.o" "gcc" "CMakeFiles/WestCoastDrumSynth.dir/source/engine/StepSequencer.cpp.o.d"
-  "/workspace/source/factory.cpp" "CMakeFiles/WestCoastDrumSynth.dir/source/factory.cpp.o" "gcc" "CMakeFiles/WestCoastDrumSynth.dir/source/factory.cpp.o.d"
-  "/workspace/source/presets/FactoryPresets.cpp" "CMakeFiles/WestCoastDrumSynth.dir/source/presets/FactoryPresets.cpp.o" "gcc" "CMakeFiles/WestCoastDrumSynth.dir/source/presets/FactoryPresets.cpp.o.d"
+  "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/main/macmain.cpp" "CMakeFiles/WestCoastDrumSynth.dir/_deps/vst3sdk-src/public.sdk/source/main/macmain.cpp.o" "gcc" "CMakeFiles/WestCoastDrumSynth.dir/_deps/vst3sdk-src/public.sdk/source/main/macmain.cpp.o.d"
+  "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/source/WestCoastController.cpp" "CMakeFiles/WestCoastDrumSynth.dir/source/WestCoastController.cpp.o" "gcc" "CMakeFiles/WestCoastDrumSynth.dir/source/WestCoastController.cpp.o.d"
+  "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/source/WestCoastProcessor.cpp" "CMakeFiles/WestCoastDrumSynth.dir/source/WestCoastProcessor.cpp.o" "gcc" "CMakeFiles/WestCoastDrumSynth.dir/source/WestCoastProcessor.cpp.o.d"
+  "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/source/engine/DrumVoice.cpp" "CMakeFiles/WestCoastDrumSynth.dir/source/engine/DrumVoice.cpp.o" "gcc" "CMakeFiles/WestCoastDrumSynth.dir/source/engine/DrumVoice.cpp.o.d"
+  "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/source/engine/StepSequencer.cpp" "CMakeFiles/WestCoastDrumSynth.dir/source/engine/StepSequencer.cpp.o" "gcc" "CMakeFiles/WestCoastDrumSynth.dir/source/engine/StepSequencer.cpp.o.d"
+  "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/source/factory.cpp" "CMakeFiles/WestCoastDrumSynth.dir/source/factory.cpp.o" "gcc" "CMakeFiles/WestCoastDrumSynth.dir/source/factory.cpp.o.d"
+  "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/source/presets/FactoryPresets.cpp" "CMakeFiles/WestCoastDrumSynth.dir/source/presets/FactoryPresets.cpp.o" "gcc" "CMakeFiles/WestCoastDrumSynth.dir/source/presets/FactoryPresets.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

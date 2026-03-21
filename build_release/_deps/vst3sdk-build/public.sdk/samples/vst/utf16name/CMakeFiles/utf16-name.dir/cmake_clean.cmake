@@ -1,8 +1,8 @@
 file(REMOVE_RECURSE
-  "../../../../../../VST3/Release/utf16-name.vst3/Contents/x86_64-linux/utf16-name.pdb"
-  "../../../../../../VST3/Release/utf16-name.vst3/Contents/x86_64-linux/utf16-name.so"
-  "CMakeFiles/utf16-name.dir/__/__/__/source/main/linuxmain.cpp.o"
-  "CMakeFiles/utf16-name.dir/__/__/__/source/main/linuxmain.cpp.o.d"
+  "../../../../../../VST3/Release/utf16-name.vst3/Contents/MacOS/utf16-name"
+  "../../../../../../VST3/Release/utf16-name.vst3/Contents/MacOS/utf16-name.pdb"
+  "CMakeFiles/utf16-name.dir/__/__/__/source/main/macmain.cpp.o"
+  "CMakeFiles/utf16-name.dir/__/__/__/source/main/macmain.cpp.o.d"
   "CMakeFiles/utf16-name.dir/source/utf16namecontroller.cpp.o"
   "CMakeFiles/utf16-name.dir/source/utf16namecontroller.cpp.o.d"
   "CMakeFiles/utf16-name.dir/source/utf16nameentry.cpp.o"

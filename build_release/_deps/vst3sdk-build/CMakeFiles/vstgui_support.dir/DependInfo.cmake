@@ -8,11 +8,10 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/workspace/build_release/_deps/vst3sdk-src/public.sdk/source/vst/vstgui_linux_runloop_support.cpp" "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/public.sdk/source/vst/vstgui_linux_runloop_support.cpp.o" "gcc" "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/public.sdk/source/vst/vstgui_linux_runloop_support.cpp.o.d"
-  "/workspace/build_release/_deps/vst3sdk-src/public.sdk/source/vst/vstguieditor.cpp" "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/public.sdk/source/vst/vstguieditor.cpp.o" "gcc" "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/public.sdk/source/vst/vstguieditor.cpp.o.d"
-  "/workspace/build_release/_deps/vst3sdk-src/vstgui4/vstgui/plugin-bindings/vst3editor.cpp" "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3editor.cpp.o" "gcc" "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3editor.cpp.o.d"
-  "/workspace/build_release/_deps/vst3sdk-src/vstgui4/vstgui/plugin-bindings/vst3groupcontroller.cpp" "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3groupcontroller.cpp.o" "gcc" "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3groupcontroller.cpp.o.d"
-  "/workspace/build_release/_deps/vst3sdk-src/vstgui4/vstgui/plugin-bindings/vst3padcontroller.cpp" "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3padcontroller.cpp.o" "gcc" "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3padcontroller.cpp.o.d"
+  "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/vstguieditor.cpp" "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/public.sdk/source/vst/vstguieditor.cpp.o" "gcc" "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/public.sdk/source/vst/vstguieditor.cpp.o.d"
+  "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4/vstgui/plugin-bindings/vst3editor.cpp" "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3editor.cpp.o" "gcc" "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3editor.cpp.o.d"
+  "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4/vstgui/plugin-bindings/vst3groupcontroller.cpp" "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3groupcontroller.cpp.o" "gcc" "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3groupcontroller.cpp.o.d"
+  "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4/vstgui/plugin-bindings/vst3padcontroller.cpp" "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3padcontroller.cpp.o" "gcc" "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3padcontroller.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

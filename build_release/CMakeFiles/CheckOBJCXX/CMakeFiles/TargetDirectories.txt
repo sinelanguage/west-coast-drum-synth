@@ -1,2 +1,2 @@
-/workspace/build_release/CMakeFiles/CheckOBJCXX/CMakeFiles/edit_cache.dir
-/workspace/build_release/CMakeFiles/CheckOBJCXX/CMakeFiles/rebuild_cache.dir
+/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/CMakeFiles/CheckOBJCXX/CMakeFiles/edit_cache.dir
+/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/CMakeFiles/CheckOBJCXX/CMakeFiles/rebuild_cache.dir

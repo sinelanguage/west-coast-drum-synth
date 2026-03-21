@@ -2,37 +2,37 @@
 	"sources" : 
 	[
 		{
-			"file" : "/workspace/build_release/_deps/vst3sdk-subbuild/CMakeFiles/vst3sdk-populate"
+			"file" : "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-subbuild/CMakeFiles/vst3sdk-populate"
 		},
 		{
-			"file" : "/workspace/build_release/_deps/vst3sdk-subbuild/CMakeFiles/vst3sdk-populate.rule"
+			"file" : "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-subbuild/CMakeFiles/vst3sdk-populate.rule"
 		},
 		{
-			"file" : "/workspace/build_release/_deps/vst3sdk-subbuild/CMakeFiles/vst3sdk-populate-complete.rule"
+			"file" : "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-subbuild/CMakeFiles/vst3sdk-populate-complete.rule"
 		},
 		{
-			"file" : "/workspace/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-build.rule"
+			"file" : "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-build.rule"
 		},
 		{
-			"file" : "/workspace/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-configure.rule"
+			"file" : "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-configure.rule"
 		},
 		{
-			"file" : "/workspace/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-download.rule"
+			"file" : "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-download.rule"
 		},
 		{
-			"file" : "/workspace/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-install.rule"
+			"file" : "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-install.rule"
 		},
 		{
-			"file" : "/workspace/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-mkdir.rule"
+			"file" : "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-mkdir.rule"
 		},
 		{
-			"file" : "/workspace/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-patch.rule"
+			"file" : "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-patch.rule"
 		},
 		{
-			"file" : "/workspace/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-test.rule"
+			"file" : "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-test.rule"
 		},
 		{
-			"file" : "/workspace/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-update.rule"
+			"file" : "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-subbuild/vst3sdk-populate-prefix/src/vst3sdk-populate-stamp/vst3sdk-populate-update.rule"
 		}
 	],
 	"target" : 

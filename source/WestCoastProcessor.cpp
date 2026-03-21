@@ -1057,6 +1057,12 @@ double WestCoastProcessor::getParam (Vst::ParamID id) const
 double WestCoastProcessor::getMorphedParam (Vst::ParamID id) const
 {
   double base = getParam (id);
+  if (id >= kLaneParamBase && id <= kLaneCoreMaxParamId)
+  {
+    const int32 offset = laneOffsetFromParamID (id);
+    if (offset == kLaneDrive || offset == kLaneLevel || offset == kLanePan)
+      return base;
+  }
   const double morphSlider = getParam (kParamRandomizeAmount);
   const double offset = (morphSlider - 0.5);
   return clamp01 (base + offset);

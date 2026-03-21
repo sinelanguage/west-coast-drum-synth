@@ -2,6 +2,6 @@
 
 #pragma clang system_header
 #ifdef __cplusplus
-#include "/workspace/build_release/_deps/vst3sdk-src/vstgui4/vstgui/lib/cviewcontainer.h"
-#include "/workspace/build_release/_deps/vst3sdk-src/vstgui4/vstgui/lib/cdrawcontext.h"
+#include "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4/vstgui/lib/cviewcontainer.h"
+#include "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4/vstgui/lib/cdrawcontext.h"
 #endif // __cplusplus

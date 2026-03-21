@@ -9,16 +9,16 @@ file(REMOVE_RECURSE
   "CMakeFiles/vstgui_standalone.dir/source/genericalertbox.cpp.o.d"
   "CMakeFiles/vstgui_standalone.dir/source/helpers/value.cpp.o"
   "CMakeFiles/vstgui_standalone.dir/source/helpers/value.cpp.o.d"
-  "CMakeFiles/vstgui_standalone.dir/source/platform/gdk/gdkapplication.cpp.o"
-  "CMakeFiles/vstgui_standalone.dir/source/platform/gdk/gdkapplication.cpp.o.d"
-  "CMakeFiles/vstgui_standalone.dir/source/platform/gdk/gdkcommondirectories.cpp.o"
-  "CMakeFiles/vstgui_standalone.dir/source/platform/gdk/gdkcommondirectories.cpp.o.d"
-  "CMakeFiles/vstgui_standalone.dir/source/platform/gdk/gdkpreference.cpp.o"
-  "CMakeFiles/vstgui_standalone.dir/source/platform/gdk/gdkpreference.cpp.o.d"
-  "CMakeFiles/vstgui_standalone.dir/source/platform/gdk/gdkrunloop.cpp.o"
-  "CMakeFiles/vstgui_standalone.dir/source/platform/gdk/gdkrunloop.cpp.o.d"
-  "CMakeFiles/vstgui_standalone.dir/source/platform/gdk/gdkwindow.cpp.o"
-  "CMakeFiles/vstgui_standalone.dir/source/platform/gdk/gdkwindow.cpp.o.d"
+  "CMakeFiles/vstgui_standalone.dir/source/platform/mac/VSTGUICommand.mm.o"
+  "CMakeFiles/vstgui_standalone.dir/source/platform/mac/VSTGUICommand.mm.o.d"
+  "CMakeFiles/vstgui_standalone.dir/source/platform/mac/macapplication.mm.o"
+  "CMakeFiles/vstgui_standalone.dir/source/platform/mac/macapplication.mm.o.d"
+  "CMakeFiles/vstgui_standalone.dir/source/platform/mac/maccommondirectories.mm.o"
+  "CMakeFiles/vstgui_standalone.dir/source/platform/mac/maccommondirectories.mm.o.d"
+  "CMakeFiles/vstgui_standalone.dir/source/platform/mac/macpreference.mm.o"
+  "CMakeFiles/vstgui_standalone.dir/source/platform/mac/macpreference.mm.o.d"
+  "CMakeFiles/vstgui_standalone.dir/source/platform/mac/macwindow.mm.o"
+  "CMakeFiles/vstgui_standalone.dir/source/platform/mac/macwindow.mm.o.d"
   "CMakeFiles/vstgui_standalone.dir/source/shareduiresources.cpp.o"
   "CMakeFiles/vstgui_standalone.dir/source/shareduiresources.cpp.o.d"
   "CMakeFiles/vstgui_standalone.dir/source/uidescriptionwindowcontroller.cpp.o"
@@ -28,6 +28,6 @@ file(REMOVE_RECURSE
 )
 
 # Per-language clean rules from dependency scanning.
-foreach(lang C CXX)
+foreach(lang CXX OBJCXX)
   include(CMakeFiles/vstgui_standalone.dir/cmake_clean_${lang}.cmake OPTIONAL)
 endforeach()

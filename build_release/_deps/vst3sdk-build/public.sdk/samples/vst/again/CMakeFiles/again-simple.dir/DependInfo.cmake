@@ -8,9 +8,9 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/workspace/build_release/_deps/vst3sdk-src/public.sdk/source/main/linuxmain.cpp" "_deps/vst3sdk-build/public.sdk/samples/vst/again/CMakeFiles/again-simple.dir/__/__/__/source/main/linuxmain.cpp.o" "gcc" "_deps/vst3sdk-build/public.sdk/samples/vst/again/CMakeFiles/again-simple.dir/__/__/__/source/main/linuxmain.cpp.o.d"
-  "/workspace/build_release/_deps/vst3sdk-src/public.sdk/source/vst/vstsinglecomponenteffect.cpp" "_deps/vst3sdk-build/public.sdk/samples/vst/again/CMakeFiles/again-simple.dir/__/__/__/source/vst/vstsinglecomponenteffect.cpp.o" "gcc" "_deps/vst3sdk-build/public.sdk/samples/vst/again/CMakeFiles/again-simple.dir/__/__/__/source/vst/vstsinglecomponenteffect.cpp.o.d"
-  "/workspace/build_release/_deps/vst3sdk-src/public.sdk/samples/vst/again/source/againsimple.cpp" "_deps/vst3sdk-build/public.sdk/samples/vst/again/CMakeFiles/again-simple.dir/source/againsimple.cpp.o" "gcc" "_deps/vst3sdk-build/public.sdk/samples/vst/again/CMakeFiles/again-simple.dir/source/againsimple.cpp.o.d"
+  "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/main/macmain.cpp" "_deps/vst3sdk-build/public.sdk/samples/vst/again/CMakeFiles/again-simple.dir/__/__/__/source/main/macmain.cpp.o" "gcc" "_deps/vst3sdk-build/public.sdk/samples/vst/again/CMakeFiles/again-simple.dir/__/__/__/source/main/macmain.cpp.o.d"
+  "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/vstsinglecomponenteffect.cpp" "_deps/vst3sdk-build/public.sdk/samples/vst/again/CMakeFiles/again-simple.dir/__/__/__/source/vst/vstsinglecomponenteffect.cpp.o" "gcc" "_deps/vst3sdk-build/public.sdk/samples/vst/again/CMakeFiles/again-simple.dir/__/__/__/source/vst/vstsinglecomponenteffect.cpp.o.d"
+  "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/samples/vst/again/source/againsimple.cpp" "_deps/vst3sdk-build/public.sdk/samples/vst/again/CMakeFiles/again-simple.dir/source/againsimple.cpp.o" "gcc" "_deps/vst3sdk-build/public.sdk/samples/vst/again/CMakeFiles/again-simple.dir/source/againsimple.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

@@ -1,8 +1,8 @@
 file(REMOVE_RECURSE
-  "../../../../../../VST3/Release/remap-paramid.vst3/Contents/x86_64-linux/remap-paramid.pdb"
-  "../../../../../../VST3/Release/remap-paramid.vst3/Contents/x86_64-linux/remap-paramid.so"
-  "CMakeFiles/remap-paramid.dir/__/__/__/source/main/linuxmain.cpp.o"
-  "CMakeFiles/remap-paramid.dir/__/__/__/source/main/linuxmain.cpp.o.d"
+  "../../../../../../VST3/Release/remap-paramid.vst3/Contents/MacOS/remap-paramid"
+  "../../../../../../VST3/Release/remap-paramid.vst3/Contents/MacOS/remap-paramid.pdb"
+  "CMakeFiles/remap-paramid.dir/__/__/__/source/main/macmain.cpp.o"
+  "CMakeFiles/remap-paramid.dir/__/__/__/source/main/macmain.cpp.o.d"
   "CMakeFiles/remap-paramid.dir/source/remapparamidcontroller.cpp.o"
   "CMakeFiles/remap-paramid.dir/source/remapparamidcontroller.cpp.o.d"
   "CMakeFiles/remap-paramid.dir/source/remapparamidentry.cpp.o"

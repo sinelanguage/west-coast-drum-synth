@@ -5,8 +5,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/validator.dir/__/__/__/source/common/memorystream.cpp.o.d"
   "CMakeFiles/validator.dir/__/__/__/source/main/moduleinit.cpp.o"
   "CMakeFiles/validator.dir/__/__/__/source/main/moduleinit.cpp.o.d"
-  "CMakeFiles/validator.dir/__/__/__/source/vst/hosting/module_linux.cpp.o"
-  "CMakeFiles/validator.dir/__/__/__/source/vst/hosting/module_linux.cpp.o.d"
+  "CMakeFiles/validator.dir/__/__/__/source/vst/hosting/module_mac.mm.o"
+  "CMakeFiles/validator.dir/__/__/__/source/vst/hosting/module_mac.mm.o.d"
   "CMakeFiles/validator.dir/__/__/__/source/vst/hosting/plugprovider.cpp.o"
   "CMakeFiles/validator.dir/__/__/__/source/vst/hosting/plugprovider.cpp.o.d"
   "CMakeFiles/validator.dir/__/__/__/source/vst/hosting/test/connectionproxytest.cpp.o"
@@ -104,6 +104,6 @@ file(REMOVE_RECURSE
 )
 
 # Per-language clean rules from dependency scanning.
-foreach(lang CXX)
+foreach(lang CXX OBJCXX)
   include(CMakeFiles/validator.dir/cmake_clean_${lang}.cmake OPTIONAL)
 endforeach()

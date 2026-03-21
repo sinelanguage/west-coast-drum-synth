@@ -2,8 +2,8 @@
 
 #pragma clang system_header
 #ifdef __cplusplus
-#include "/workspace/build_release/_deps/vst3sdk-src/vstgui4/vstgui/uidescription/icontroller.h"
-#include "/workspace/build_release/_deps/vst3sdk-src/vstgui4/vstgui/uidescription/uiattributes.h"
-#include "/workspace/build_release/_deps/vst3sdk-src/vstgui4/vstgui/uidescription/iviewcreator.h"
-#include "/workspace/build_release/_deps/vst3sdk-src/vstgui4/vstgui/uidescription/uidescription.h"
+#include "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4/vstgui/uidescription/icontroller.h"
+#include "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4/vstgui/uidescription/uiattributes.h"
+#include "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4/vstgui/uidescription/iviewcreator.h"
+#include "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4/vstgui/uidescription/uidescription.h"
 #endif // __cplusplus
