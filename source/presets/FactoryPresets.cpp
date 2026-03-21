@@ -27,25 +27,44 @@ const std::array<FactoryPreset, kFactoryPresetCount>& getFactoryPresets ()
       0.82, 0.56, 0.09,
       {{
         lane (0.38, 0.38, 0.42, 0.35, 0.22, 0.20, 0.92, 0.47, 0.75, 0.18, 0.35, 0.45, 0.22, 0.25, 0.22, 0.45, 0.12, 0.42,  0.68, 0.08, 0.38, 0.72, 0.05, 0.30),
+
+
         lane (0.48, 0.32, 0.55, 0.50, 0.45, 0.18, 0.78, 0.55, 0.42, 0.20, 0.28, 0.58, 0.25, 0.35, 0.25, 0.48, 0.15, 0.45,  0.70, 0.10, 0.35, 0.74, 0.06, 0.38),
+
+
         lane (0.42, 0.22, 0.65, 0.35, 0.55, 0.12, 0.68, 0.30, 0.25, 0.15, 0.22, 0.72, 0.18, 0.55, 0.20, 0.55, 0.20, 0.48,  0.78, 0.05, 0.22, 0.82, 0.04, 0.28),
+
+
         lane (0.35, 0.35, 0.58, 0.42, 0.35, 0.18, 0.72, 0.55, 0.45, 0.22, 0.38, 0.50, 0.28, 0.30, 0.28, 0.45, 0.18, 0.42,  0.68, 0.10, 0.35, 0.74, 0.06, 0.38),
+
+
         lane (0.40, 0.32, 0.60, 0.45, 0.38, 0.20, 0.70, 0.58, 0.42, 0.20, 0.40, 0.52, 0.26, 0.38, 0.26, 0.48, 0.20, 0.45,  0.72, 0.09, 0.36, 0.76, 0.06, 0.40),
+
+
         lane (0.45, 0.30, 0.62, 0.48, 0.40, 0.22, 0.68, 0.62, 0.44, 0.22, 0.42, 0.54, 0.24, 0.40, 0.24, 0.50, 0.22, 0.46,  0.72, 0.10, 0.34, 0.76, 0.07, 0.40),
-        lane (0.48, 0.28, 0.65, 0.50, 0.42, 0.24, 0.66, 0.68, 0.46, 0.20, 0.44, 0.56, 0.22, 0.42, 0.22, 0.52, 0.24, 0.48,  0.70, 0.12, 0.32, 0.74, 0.08, 0.42),
-        lane (0.42, 0.32, 0.52, 0.40, 0.48, 0.22, 0.76, 0.55, 0.45, 0.22, 0.45, 0.62, 0.38, 0.65, 0.42, 0.55, 0.42, 0.55,  0.66, 0.14, 0.38, 0.70, 0.10, 0.45),
+
+
         lane (0.38, 0.35, 0.55, 0.35, 0.50, 0.26, 0.80, 0.50, 0.38, 0.25, 0.48, 0.68, 0.42, 0.58, 0.45, 0.60, 0.45, 0.60,  0.64, 0.16, 0.40, 0.68, 0.12, 0.48),
+
+
+        lane (0.42, 0.32, 0.52, 0.40, 0.48, 0.22, 0.76, 0.55, 0.45, 0.22, 0.45, 0.62, 0.38, 0.65, 0.42, 0.55, 0.42, 0.55,  0.66, 0.14, 0.38, 0.70, 0.10, 0.45),
       }},
       {{
         {{true, false, false, false, true, false, false, false, true, false, true, false, true, false, false, false}},
+
         {{false, false, true, false, false, true, false, false, false, false, true, false, false, true, false, false}},
+
         {{true, true, true, true, true, false, true, true, true, true, true, false, true, true, true, false}},
+
         {{false, false, false, true, false, true, false, false, true, false, false, true, false, true, false, false}},
+
         {{false, true, false, false, false, false, true, false, false, true, false, false, false, false, true, false}},
+
         {{false, false, false, true, false, true, false, false, true, false, false, true, false, true, false, false}},
-        {{false, true, false, false, false, false, true, false, false, true, false, false, false, false, true, false}},
-        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
+
         {{false, false, false, false, true, false, false, false, true, false, false, true, false, false, false, true}},
+
+        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
       }},
     },
     FactoryPreset {
@@ -53,25 +72,44 @@ const std::array<FactoryPreset, kFactoryPresetCount>& getFactoryPresets ()
       0.78, 0.64, 0.17,
       {{
         lane (0.36, 0.42, 0.48, 0.40, 0.28, 0.25, 0.88, 0.46, 0.72, 0.22, 0.32, 0.42, 0.24, 0.28, 0.24, 0.48, 0.14, 0.48,  0.66, 0.08, 0.40, 0.68, 0.05, 0.35),
+
+
         lane (0.56, 0.40, 0.69, 0.63, 0.66, 0.31, 0.68, 0.58, 0.42, 0.46, 0.62, 0.67, 0.48, 0.82, 0.40, 0.62, 0.62, 0.74,  0.65, 0.14, 0.32, 0.74, 0.10, 0.48),
+
+
         lane (0.71, 0.31, 0.61, 0.34, 0.85, 0.18, 0.57, 0.30, 0.18, 0.21, 0.50, 0.92, 0.22, 0.70, 0.22, 0.68, 0.46, 0.50,  0.84, 0.06, 0.18, 0.88, 0.04, 0.28),
+
+
         lane (0.30, 0.44, 0.72, 0.52, 0.44, 0.26, 0.62, 0.62, 0.50, 0.42, 0.48, 0.50, 0.46, 0.44, 0.38, 0.54, 0.42, 0.54,  0.72, 0.12, 0.36, 0.76, 0.08, 0.42),
+
+
         lane (0.38, 0.40, 0.76, 0.55, 0.46, 0.28, 0.58, 0.68, 0.48, 0.38, 0.52, 0.54, 0.42, 0.48, 0.36, 0.56, 0.44, 0.56,  0.70, 0.13, 0.34, 0.78, 0.07, 0.44),
+
+
         lane (0.58, 0.38, 0.78, 0.55, 0.48, 0.28, 0.56, 0.72, 0.54, 0.34, 0.56, 0.60, 0.38, 0.52, 0.38, 0.58, 0.44, 0.58,  0.68, 0.16, 0.34, 0.74, 0.10, 0.42),
-        lane (0.62, 0.42, 0.80, 0.58, 0.50, 0.30, 0.54, 0.76, 0.56, 0.32, 0.58, 0.62, 0.36, 0.54, 0.36, 0.60, 0.46, 0.60,  0.66, 0.15, 0.36, 0.76, 0.09, 0.44),
-        lane (0.48, 0.40, 0.58, 0.45, 0.60, 0.30, 0.74, 0.58, 0.50, 0.42, 0.60, 0.70, 0.54, 0.74, 0.52, 0.64, 0.52, 0.64,  0.66, 0.18, 0.44, 0.72, 0.12, 0.50),
+
+
         lane (0.42, 0.45, 0.65, 0.40, 0.65, 0.35, 0.80, 0.55, 0.40, 0.48, 0.64, 0.74, 0.60, 0.68, 0.58, 0.70, 0.58, 0.70,  0.64, 0.20, 0.48, 0.68, 0.14, 0.54),
+
+
+        lane (0.48, 0.40, 0.58, 0.45, 0.60, 0.30, 0.74, 0.58, 0.50, 0.42, 0.60, 0.70, 0.54, 0.74, 0.52, 0.64, 0.52, 0.64,  0.66, 0.18, 0.44, 0.72, 0.12, 0.50),
       }},
       {{
         {{true, false, false, false, false, false, true, false, true, false, false, false, false, false, true, false}},
+
         {{false, false, true, false, false, true, false, true, false, false, true, false, false, true, false, true}},
+
         {{true, false, true, false, true, true, true, false, true, false, true, false, true, true, true, false}},
+
         {{false, false, false, true, true, false, false, false, false, true, false, true, true, false, false, false}},
+
         {{false, true, false, false, false, false, true, false, false, false, true, false, false, true, false, false}},
+
         {{false, false, false, true, true, false, false, false, false, true, false, true, true, false, false, false}},
-        {{false, true, false, false, false, false, true, false, false, false, true, false, false, true, false, false}},
-        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
+
         {{false, false, false, false, true, false, false, false, true, false, false, true, false, false, false, true}},
+
+        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
       }},
     },
     FactoryPreset {
@@ -79,25 +117,44 @@ const std::array<FactoryPreset, kFactoryPresetCount>& getFactoryPresets ()
       0.75, 0.47, 0.23,
       {{
         lane (0.40, 0.38, 0.50, 0.28, 0.22, 0.22, 0.88, 0.45, 0.68, 0.20, 0.28, 0.35, 0.22, 0.22, 0.22, 0.45, 0.14, 0.40,  0.70, 0.05, 0.38, 0.66, 0.04, 0.28),
+
+
         lane (0.63, 0.33, 0.79, 0.70, 0.70, 0.23, 0.66, 0.60, 0.40, 0.40, 0.58, 0.72, 0.44, 0.86, 0.42, 0.64, 0.66, 0.78,  0.62, 0.16, 0.28, 0.70, 0.12, 0.50),
+
+
         lane (0.73, 0.24, 0.82, 0.42, 0.88, 0.17, 0.58, 0.34, 0.20, 0.20, 0.52, 0.96, 0.20, 0.78, 0.20, 0.74, 0.54, 0.58,  0.86, 0.04, 0.16, 0.90, 0.04, 0.25),
+
+
         lane (0.40, 0.38, 0.86, 0.58, 0.46, 0.30, 0.66, 0.68, 0.54, 0.32, 0.52, 0.58, 0.40, 0.48, 0.40, 0.56, 0.44, 0.56,  0.66, 0.14, 0.36, 0.70, 0.10, 0.44),
+
+
         lane (0.48, 0.36, 0.88, 0.60, 0.48, 0.28, 0.62, 0.72, 0.56, 0.30, 0.54, 0.62, 0.38, 0.52, 0.38, 0.58, 0.46, 0.58,  0.68, 0.13, 0.34, 0.72, 0.09, 0.46),
+
+
         lane (0.58, 0.35, 0.90, 0.62, 0.50, 0.26, 0.58, 0.76, 0.58, 0.28, 0.56, 0.64, 0.36, 0.54, 0.36, 0.60, 0.48, 0.60,  0.68, 0.16, 0.32, 0.74, 0.11, 0.44),
-        lane (0.64, 0.32, 0.88, 0.64, 0.52, 0.24, 0.56, 0.78, 0.60, 0.26, 0.58, 0.66, 0.34, 0.56, 0.34, 0.62, 0.50, 0.62,  0.70, 0.15, 0.34, 0.76, 0.10, 0.46),
-        lane (0.52, 0.42, 0.62, 0.48, 0.62, 0.32, 0.76, 0.60, 0.52, 0.44, 0.62, 0.72, 0.56, 0.76, 0.54, 0.66, 0.54, 0.66,  0.64, 0.20, 0.46, 0.70, 0.14, 0.52),
+
+
         lane (0.44, 0.48, 0.68, 0.42, 0.68, 0.38, 0.82, 0.58, 0.42, 0.50, 0.66, 0.76, 0.62, 0.70, 0.60, 0.72, 0.60, 0.72,  0.62, 0.22, 0.50, 0.66, 0.16, 0.56),
+
+
+        lane (0.52, 0.42, 0.62, 0.48, 0.62, 0.32, 0.76, 0.60, 0.52, 0.44, 0.62, 0.72, 0.56, 0.76, 0.54, 0.66, 0.54, 0.66,  0.64, 0.20, 0.46, 0.70, 0.14, 0.52),
       }},
       {{
         {{true, false, false, false, true, false, false, false, true, false, false, false, true, false, true, false}},
+
         {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, false, true}},
+
         {{true, true, true, false, true, false, true, true, true, false, true, false, true, true, true, false}},
+
         {{false, true, false, true, false, false, false, false, false, true, false, false, false, true, false, true}},
+
         {{false, false, true, false, false, true, false, false, true, false, false, true, false, false, true, false}},
+
         {{false, true, false, true, false, false, false, false, false, true, false, false, false, true, false, true}},
-        {{false, false, true, false, false, true, false, false, true, false, false, true, false, false, true, false}},
-        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
+
         {{false, false, false, false, true, false, false, false, true, false, false, true, false, false, false, true}},
+
+        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
       }},
     },
     FactoryPreset {
@@ -105,25 +162,44 @@ const std::array<FactoryPreset, kFactoryPresetCount>& getFactoryPresets ()
       0.80, 0.60, 0.31,
       {{
         lane (0.38, 0.40, 0.52, 0.45, 0.28, 0.28, 0.88, 0.46, 0.78, 0.22, 0.35, 0.42, 0.26, 0.25, 0.26, 0.50, 0.12, 0.48,  0.64, 0.10, 0.44, 0.70, 0.06, 0.36),
+
+
         lane (0.54, 0.37, 0.74, 0.73, 0.72, 0.34, 0.67, 0.59, 0.48, 0.45, 0.64, 0.74, 0.50, 0.87, 0.44, 0.62, 0.64, 0.76,  0.60, 0.18, 0.30, 0.68, 0.14, 0.52),
+
+
         lane (0.68, 0.28, 0.79, 0.39, 0.86, 0.21, 0.53, 0.31, 0.24, 0.23, 0.50, 0.94, 0.24, 0.71, 0.22, 0.70, 0.52, 0.54,  0.84, 0.06, 0.18, 0.88, 0.04, 0.28),
+
+
         lane (0.55, 0.46, 0.84, 0.65, 0.50, 0.30, 0.64, 0.72, 0.56, 0.36, 0.56, 0.58, 0.44, 0.56, 0.42, 0.58, 0.42, 0.58,  0.66, 0.16, 0.38, 0.72, 0.12, 0.46),
+
+
         lane (0.62, 0.42, 0.86, 0.66, 0.52, 0.32, 0.62, 0.76, 0.58, 0.34, 0.58, 0.62, 0.40, 0.60, 0.40, 0.60, 0.44, 0.60,  0.64, 0.15, 0.36, 0.74, 0.11, 0.48),
+
+
         lane (0.68, 0.40, 0.88, 0.68, 0.54, 0.34, 0.60, 0.78, 0.60, 0.32, 0.60, 0.64, 0.38, 0.62, 0.38, 0.62, 0.46, 0.62,  0.64, 0.18, 0.34, 0.74, 0.12, 0.46),
-        lane (0.72, 0.38, 0.90, 0.70, 0.56, 0.36, 0.58, 0.80, 0.62, 0.30, 0.62, 0.66, 0.36, 0.64, 0.36, 0.64, 0.48, 0.64,  0.62, 0.17, 0.36, 0.76, 0.11, 0.48),
-        lane (0.58, 0.44, 0.65, 0.52, 0.64, 0.36, 0.78, 0.62, 0.54, 0.46, 0.64, 0.74, 0.58, 0.78, 0.56, 0.68, 0.56, 0.68,  0.62, 0.22, 0.48, 0.68, 0.16, 0.54),
+
+
         lane (0.48, 0.50, 0.72, 0.45, 0.70, 0.42, 0.84, 0.60, 0.44, 0.52, 0.68, 0.78, 0.64, 0.72, 0.62, 0.74, 0.62, 0.74,  0.60, 0.24, 0.52, 0.64, 0.18, 0.58),
+
+
+        lane (0.58, 0.44, 0.65, 0.52, 0.64, 0.36, 0.78, 0.62, 0.54, 0.46, 0.64, 0.74, 0.58, 0.78, 0.56, 0.68, 0.56, 0.68,  0.62, 0.22, 0.48, 0.68, 0.16, 0.54),
       }},
       {{
         {{true, false, false, true, false, false, true, false, true, false, false, false, true, false, false, false}},
+
         {{false, true, false, false, true, false, false, true, false, true, false, false, true, false, false, true}},
+
         {{true, true, false, true, true, false, true, false, true, true, false, true, true, false, true, false}},
+
         {{false, false, true, false, false, true, false, true, false, false, true, false, false, true, false, true}},
+
         {{true, false, false, false, true, false, true, false, false, true, false, false, true, false, true, false}},
+
         {{false, false, true, false, false, true, false, true, false, false, true, false, false, true, false, true}},
-        {{true, false, false, false, true, false, true, false, false, true, false, false, true, false, true, false}},
-        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
+
         {{false, false, false, false, true, false, false, false, true, false, false, true, false, false, false, true}},
+
+        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
       }},
     },
     FactoryPreset {
@@ -131,25 +207,44 @@ const std::array<FactoryPreset, kFactoryPresetCount>& getFactoryPresets ()
       0.77, 0.52, 0.14,
       {{
         lane (0.40, 0.38, 0.42, 0.30, 0.25, 0.16, 0.86, 0.47, 0.72, 0.20, 0.32, 0.40, 0.24, 0.22, 0.24, 0.48, 0.10, 0.44,  0.68, 0.06, 0.36, 0.70, 0.04, 0.32),
+
+
         lane (0.57, 0.45, 0.60, 0.54, 0.58, 0.20, 0.69, 0.56, 0.38, 0.39, 0.56, 0.62, 0.46, 0.73, 0.38, 0.58, 0.56, 0.70,  0.66, 0.12, 0.32, 0.72, 0.08, 0.44),
+
+
         lane (0.65, 0.30, 0.70, 0.30, 0.82, 0.11, 0.55, 0.33, 0.16, 0.22, 0.48, 0.88, 0.20, 0.63, 0.22, 0.66, 0.48, 0.52,  0.82, 0.06, 0.18, 0.86, 0.04, 0.26),
+
+
         lane (0.48, 0.44, 0.62, 0.44, 0.44, 0.20, 0.64, 0.64, 0.48, 0.40, 0.50, 0.54, 0.40, 0.46, 0.38, 0.52, 0.38, 0.50,  0.72, 0.12, 0.36, 0.76, 0.08, 0.40),
+
+
         lane (0.54, 0.40, 0.68, 0.48, 0.46, 0.22, 0.60, 0.68, 0.50, 0.38, 0.52, 0.58, 0.38, 0.48, 0.36, 0.54, 0.40, 0.52,  0.74, 0.11, 0.34, 0.78, 0.07, 0.42),
+
+
         lane (0.58, 0.38, 0.70, 0.50, 0.48, 0.24, 0.58, 0.72, 0.54, 0.36, 0.54, 0.60, 0.36, 0.50, 0.34, 0.56, 0.42, 0.54,  0.72, 0.14, 0.32, 0.76, 0.09, 0.42),
-        lane (0.64, 0.36, 0.74, 0.52, 0.50, 0.26, 0.56, 0.76, 0.56, 0.34, 0.56, 0.62, 0.34, 0.52, 0.32, 0.58, 0.44, 0.56,  0.72, 0.13, 0.34, 0.78, 0.08, 0.44),
-        lane (0.50, 0.42, 0.58, 0.46, 0.60, 0.28, 0.74, 0.58, 0.52, 0.44, 0.60, 0.70, 0.54, 0.74, 0.52, 0.64, 0.52, 0.64,  0.68, 0.18, 0.44, 0.72, 0.12, 0.50),
+
+
         lane (0.42, 0.48, 0.65, 0.40, 0.65, 0.35, 0.80, 0.55, 0.40, 0.50, 0.64, 0.74, 0.60, 0.68, 0.58, 0.70, 0.58, 0.70,  0.66, 0.20, 0.48, 0.68, 0.14, 0.54),
+
+
+        lane (0.50, 0.42, 0.58, 0.46, 0.60, 0.28, 0.74, 0.58, 0.52, 0.44, 0.60, 0.70, 0.54, 0.74, 0.52, 0.64, 0.52, 0.64,  0.68, 0.18, 0.44, 0.72, 0.12, 0.50),
       }},
       {{
         {{true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false}},
+
         {{false, false, true, false, false, true, false, false, false, false, true, false, false, true, false, false}},
+
         {{true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false}},
+
         {{false, false, false, true, false, false, true, false, false, true, false, false, true, false, false, true}},
+
         {{false, true, false, false, false, false, false, true, false, false, true, false, false, false, false, true}},
+
         {{false, false, false, true, false, false, true, false, false, true, false, false, true, false, false, true}},
-        {{false, true, false, false, false, false, false, true, false, false, true, false, false, false, false, true}},
-        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
+
         {{false, false, false, false, true, false, false, false, true, false, false, true, false, false, false, true}},
+
+        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
       }},
     },
     FactoryPreset {
@@ -157,25 +252,44 @@ const std::array<FactoryPreset, kFactoryPresetCount>& getFactoryPresets ()
       0.72, 0.48, 0.08,
       {{
         lane (0.38, 0.32, 0.22, 0.18, 0.12, 0.08, 0.78, 0.48, 0.68, 0.16, 0.28, 0.35, 0.18, 0.18, 0.20, 0.42, 0.10, 0.38,  0.72, 0.12, 0.48, 0.78, 0.08, 0.42),
+
+
         lane (0.42, 0.28, 0.28, 0.22, 0.22, 0.10, 0.72, 0.52, 0.38, 0.18, 0.24, 0.40, 0.20, 0.28, 0.22, 0.45, 0.12, 0.42,  0.75, 0.14, 0.45, 0.80, 0.10, 0.45),
+
+
         lane (0.38, 0.18, 0.35, 0.20, 0.35, 0.06, 0.58, 0.28, 0.20, 0.12, 0.18, 0.55, 0.14, 0.45, 0.18, 0.48, 0.16, 0.42,  0.82, 0.08, 0.28, 0.88, 0.06, 0.35),
+
+
         lane (0.32, 0.30, 0.30, 0.25, 0.20, 0.12, 0.68, 0.52, 0.40, 0.20, 0.32, 0.42, 0.22, 0.25, 0.24, 0.42, 0.14, 0.40,  0.74, 0.12, 0.42, 0.80, 0.08, 0.40),
+
+
         lane (0.36, 0.28, 0.32, 0.28, 0.22, 0.14, 0.65, 0.55, 0.38, 0.18, 0.35, 0.45, 0.20, 0.32, 0.22, 0.45, 0.16, 0.42,  0.76, 0.11, 0.40, 0.82, 0.07, 0.42),
+
+
         lane (0.40, 0.26, 0.35, 0.30, 0.24, 0.16, 0.62, 0.58, 0.42, 0.18, 0.38, 0.48, 0.18, 0.35, 0.20, 0.48, 0.18, 0.44,  0.78, 0.12, 0.38, 0.84, 0.08, 0.44),
-        lane (0.44, 0.24, 0.38, 0.32, 0.26, 0.18, 0.60, 0.62, 0.44, 0.16, 0.40, 0.50, 0.16, 0.38, 0.18, 0.50, 0.20, 0.46,  0.72, 0.14, 0.36, 0.82, 0.09, 0.46),
-        lane (0.38, 0.30, 0.32, 0.28, 0.35, 0.18, 0.70, 0.52, 0.42, 0.22, 0.40, 0.55, 0.32, 0.55, 0.35, 0.52, 0.35, 0.50,  0.70, 0.18, 0.45, 0.76, 0.14, 0.50),
+
+
         lane (0.42, 0.32, 0.35, 0.25, 0.38, 0.22, 0.75, 0.48, 0.35, 0.24, 0.42, 0.60, 0.35, 0.50, 0.38, 0.55, 0.38, 0.55,  0.68, 0.20, 0.48, 0.72, 0.16, 0.52),
+
+
+        lane (0.38, 0.30, 0.32, 0.28, 0.35, 0.18, 0.70, 0.52, 0.42, 0.22, 0.40, 0.55, 0.32, 0.55, 0.35, 0.52, 0.35, 0.50,  0.70, 0.18, 0.45, 0.76, 0.14, 0.50),
       }},
       {{
         {{true, false, false, false, true, false, false, false, true, false, true, false, true, false, false, false}},
+
         {{false, false, true, false, false, true, false, false, false, false, true, false, false, true, false, false}},
+
         {{true, true, true, true, true, false, true, true, true, true, true, false, true, true, true, false}},
+
         {{false, false, false, true, false, true, false, false, true, false, false, true, false, true, false, false}},
+
         {{false, true, false, false, false, false, true, false, false, true, false, false, false, false, true, false}},
+
         {{false, false, false, true, false, true, false, false, true, false, false, true, false, true, false, false}},
-        {{false, true, false, false, false, false, true, false, false, true, false, false, false, false, true, false}},
-        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
+
         {{false, false, false, false, true, false, false, false, true, false, false, true, false, false, false, true}},
+
+        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
       }},
     },
     FactoryPreset {
@@ -183,25 +297,44 @@ const std::array<FactoryPreset, kFactoryPresetCount>& getFactoryPresets ()
       0.75, 0.55, 0.10,
       {{
         lane (0.40, 0.35, 0.25, 0.20, 0.15, 0.10, 0.82, 0.50, 0.70, 0.18, 0.30, 0.38, 0.20, 0.20, 0.22, 0.45, 0.12, 0.40,  0.70, 0.10, 0.42, 0.74, 0.06, 0.38),
+
+
         lane (0.48, 0.30, 0.32, 0.28, 0.28, 0.12, 0.75, 0.54, 0.40, 0.20, 0.26, 0.48, 0.22, 0.32, 0.24, 0.48, 0.14, 0.44,  0.72, 0.12, 0.38, 0.76, 0.08, 0.42),
+
+
         lane (0.45, 0.22, 0.38, 0.25, 0.42, 0.08, 0.62, 0.32, 0.22, 0.14, 0.20, 0.65, 0.16, 0.52, 0.18, 0.52, 0.18, 0.46,  0.80, 0.06, 0.24, 0.85, 0.05, 0.30),
+
+
         lane (0.36, 0.32, 0.28, 0.24, 0.22, 0.12, 0.70, 0.58, 0.42, 0.22, 0.35, 0.45, 0.24, 0.28, 0.26, 0.44, 0.16, 0.42,  0.72, 0.12, 0.40, 0.78, 0.08, 0.40),
+
+
         lane (0.40, 0.30, 0.30, 0.26, 0.24, 0.14, 0.68, 0.60, 0.44, 0.20, 0.38, 0.48, 0.22, 0.32, 0.24, 0.46, 0.18, 0.44,  0.74, 0.11, 0.38, 0.80, 0.07, 0.42),
+
+
         lane (0.44, 0.28, 0.32, 0.28, 0.26, 0.16, 0.65, 0.62, 0.46, 0.18, 0.40, 0.50, 0.20, 0.35, 0.22, 0.48, 0.20, 0.46,  0.72, 0.14, 0.36, 0.78, 0.09, 0.44),
-        lane (0.48, 0.26, 0.35, 0.30, 0.28, 0.18, 0.62, 0.65, 0.48, 0.16, 0.42, 0.52, 0.18, 0.38, 0.20, 0.50, 0.22, 0.48,  0.70, 0.15, 0.34, 0.76, 0.10, 0.46),
-        lane (0.44, 0.35, 0.30, 0.30, 0.40, 0.20, 0.72, 0.55, 0.48, 0.28, 0.42, 0.55, 0.40, 0.62, 0.40, 0.55, 0.40, 0.52,  0.68, 0.16, 0.42, 0.74, 0.12, 0.48),
+
+
         lane (0.40, 0.38, 0.35, 0.28, 0.45, 0.28, 0.78, 0.52, 0.38, 0.30, 0.45, 0.62, 0.42, 0.55, 0.44, 0.58, 0.44, 0.58,  0.66, 0.18, 0.45, 0.70, 0.14, 0.52),
+
+
+        lane (0.44, 0.35, 0.30, 0.30, 0.40, 0.20, 0.72, 0.55, 0.48, 0.28, 0.42, 0.55, 0.40, 0.62, 0.40, 0.55, 0.40, 0.52,  0.68, 0.16, 0.42, 0.74, 0.12, 0.48),
       }},
       {{
         {{true, false, false, false, true, false, false, false, true, false, true, false, true, false, false, false}},
+
         {{false, false, true, false, false, true, false, false, false, false, true, false, false, true, false, false}},
+
         {{true, true, true, true, true, false, true, true, true, true, true, false, true, true, true, false}},
+
         {{false, false, false, true, false, true, false, false, true, false, false, true, false, true, false, false}},
+
         {{false, true, false, false, false, false, true, false, false, true, false, false, false, false, true, false}},
+
         {{false, false, false, true, false, true, false, false, true, false, false, true, false, true, false, false}},
-        {{false, true, false, false, false, false, true, false, false, true, false, false, false, false, true, false}},
-        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
+
         {{false, false, false, false, true, false, false, false, true, false, false, true, false, false, false, true}},
+
+        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
       }},
     },
     FactoryPreset {
@@ -209,25 +342,44 @@ const std::array<FactoryPreset, kFactoryPresetCount>& getFactoryPresets ()
       0.70, 0.42, 0.12,
       {{
         lane (0.35, 0.38, 0.20, 0.15, 0.10, 0.06, 0.75, 0.45, 0.62, 0.20, 0.32, 0.32, 0.22, 0.15, 0.24, 0.40, 0.08, 0.36,  0.68, 0.14, 0.52, 0.72, 0.10, 0.45),
+
+
         lane (0.42, 0.32, 0.25, 0.22, 0.20, 0.08, 0.68, 0.50, 0.35, 0.22, 0.28, 0.42, 0.24, 0.25, 0.26, 0.42, 0.12, 0.40,  0.72, 0.16, 0.48, 0.78, 0.12, 0.48),
+
+
         lane (0.40, 0.24, 0.32, 0.22, 0.38, 0.08, 0.55, 0.30, 0.18, 0.16, 0.22, 0.58, 0.18, 0.48, 0.20, 0.50, 0.20, 0.44,  0.78, 0.10, 0.30, 0.84, 0.08, 0.35),
+
+
         lane (0.30, 0.35, 0.22, 0.20, 0.18, 0.10, 0.65, 0.55, 0.38, 0.24, 0.40, 0.38, 0.26, 0.22, 0.28, 0.40, 0.14, 0.38,  0.70, 0.14, 0.45, 0.76, 0.10, 0.42),
+
+
         lane (0.34, 0.32, 0.24, 0.22, 0.20, 0.12, 0.62, 0.58, 0.40, 0.22, 0.42, 0.42, 0.24, 0.28, 0.26, 0.44, 0.16, 0.42,  0.72, 0.13, 0.42, 0.78, 0.09, 0.44),
+
+
         lane (0.38, 0.30, 0.26, 0.24, 0.22, 0.14, 0.60, 0.60, 0.42, 0.20, 0.44, 0.45, 0.22, 0.32, 0.24, 0.46, 0.18, 0.44,  0.74, 0.14, 0.40, 0.80, 0.10, 0.46),
-        lane (0.42, 0.28, 0.28, 0.26, 0.24, 0.16, 0.58, 0.62, 0.44, 0.18, 0.46, 0.48, 0.20, 0.35, 0.22, 0.48, 0.20, 0.46,  0.72, 0.15, 0.38, 0.78, 0.11, 0.48),
-        lane (0.36, 0.38, 0.28, 0.25, 0.32, 0.16, 0.68, 0.52, 0.45, 0.28, 0.45, 0.50, 0.38, 0.52, 0.40, 0.50, 0.38, 0.48,  0.66, 0.18, 0.48, 0.72, 0.14, 0.52),
+
+
         lane (0.38, 0.40, 0.30, 0.22, 0.35, 0.20, 0.72, 0.48, 0.35, 0.30, 0.48, 0.55, 0.40, 0.48, 0.42, 0.52, 0.42, 0.52,  0.64, 0.20, 0.50, 0.68, 0.16, 0.55),
+
+
+        lane (0.36, 0.38, 0.28, 0.25, 0.32, 0.16, 0.68, 0.52, 0.45, 0.28, 0.45, 0.50, 0.38, 0.52, 0.40, 0.50, 0.38, 0.48,  0.66, 0.18, 0.48, 0.72, 0.14, 0.52),
       }},
       {{
         {{true, false, false, false, true, false, false, false, true, false, false, false, true, false, true, false}},
+
         {{false, false, true, false, false, true, false, true, false, false, true, false, false, true, false, true}},
+
         {{true, true, true, false, true, false, true, true, true, false, true, false, true, true, true, false}},
+
         {{false, true, false, true, false, false, false, false, false, true, false, false, false, true, false, true}},
+
         {{false, false, true, false, false, true, false, false, true, false, false, true, false, false, true, false}},
+
         {{false, true, false, true, false, false, false, false, false, true, false, false, false, true, false, true}},
-        {{false, false, true, false, false, true, false, false, true, false, false, true, false, false, true, false}},
-        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
+
         {{false, false, false, false, true, false, false, false, true, false, false, true, false, false, false, true}},
+
+        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
       }},
     },
   };

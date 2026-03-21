@@ -18,7 +18,8 @@ namespace Steinberg::WestCoastDrumSynth {
 
 namespace {
 
-constexpr uint32 kStateVersion = 7;
+constexpr uint32 kStateVersion = 8;
+constexpr uint32 kV7StateVersion = 7;
 constexpr uint32 kV6StateVersion = 6;
 constexpr uint32 kV5StateVersion = 5;
 constexpr uint32 kV4StateVersion = 4;
@@ -36,9 +37,8 @@ constexpr std::array<std::array<double, kLaneExtraParamCount>, kLaneCount> kLane
   {{0.42, 0.38, 0.48, 0.52, 0.42, 0.48}},
   {{0.44, 0.36, 0.50, 0.54, 0.44, 0.50}},
   {{0.52, 0.34, 0.54, 0.60, 0.40, 0.56}},
-  {{0.54, 0.32, 0.56, 0.62, 0.38, 0.58}},
-  {{0.48, 0.40, 0.58, 0.68, 0.52, 0.72}},
   {{0.38, 0.45, 0.62, 0.72, 0.58, 0.65}},
+  {{0.48, 0.40, 0.58, 0.68, 0.52, 0.72}},
 }};
 
 constexpr std::array<std::array<double, kLaneMacroParamCount>, kLaneCount> kLaneMacroDefaults {{
@@ -48,9 +48,8 @@ constexpr std::array<std::array<double, kLaneMacroParamCount>, kLaneCount> kLane
   {{0.32, 0.48, 0.40, 0.54}},
   {{0.34, 0.46, 0.42, 0.56}},
   {{0.36, 0.50, 0.44, 0.58}},
-  {{0.38, 0.48, 0.46, 0.60}},
-  {{0.30, 0.52, 0.50, 0.62}},
   {{0.28, 0.54, 0.55, 0.68}},
+  {{0.30, 0.52, 0.50, 0.62}},
 }};
 
 constexpr std::array<std::array<double, kLaneFilterParamCount>, kLaneCount> kLaneFilterDefaults {{
@@ -60,9 +59,8 @@ constexpr std::array<std::array<double, kLaneFilterParamCount>, kLaneCount> kLan
   {{0.72, 0.12, 0.38, 0.76, 0.08, 0.42}},
   {{0.74, 0.11, 0.40, 0.78, 0.07, 0.44}},
   {{0.70, 0.14, 0.36, 0.74, 0.09, 0.40}},
-  {{0.72, 0.13, 0.38, 0.76, 0.08, 0.42}},
-  {{0.68, 0.16, 0.42, 0.72, 0.10, 0.48}},
   {{0.66, 0.18, 0.45, 0.70, 0.12, 0.52}},
+  {{0.68, 0.16, 0.42, 0.72, 0.10, 0.48}},
 }};
 
 UString128 toString128 (const char* ascii)
@@ -76,6 +74,20 @@ Vst::RangeParameter* makeRangeParam (const char* title, Vst::ParamID id, const c
   auto title16 = toString128 (title);
   auto unit16 = toString128 (unit);
   return new Vst::RangeParameter (title16, id, unit16, minPlain, maxPlain, defaultPlain);
+}
+
+bool readV7StreamIntoDenseByParamId (IBStreamer& streamer, std::array<double, 709>& out)
+{
+  out.fill (0.0);
+  const auto idsV7 = allParameterIdsV7 ();
+  for (int32 i = 0; i < kV7TotalParameterCount; ++i)
+  {
+    double v = 0.0;
+    if (!streamer.readDouble (v))
+      return false;
+    out[static_cast<size_t> (idsV7[static_cast<size_t> (i)])] = v;
+  }
+  return true;
 }
 
 } // namespace
@@ -126,12 +138,10 @@ tresult PLUGIN_API WestCoastController::initialize (FUnknown* context)
       "Perc A2 Output", "Perc A2 Pan"}},
     {{"Perc B1 Tune", "Perc B1 Decay", "Perc B1 Fold", "Perc B1 FM", "Perc B1 Noise Level", "Perc B1 Drive",
       "Perc B1 Output", "Perc B1 Pan"}},
-    {{"Perc B2 Tune", "Perc B2 Decay", "Perc B2 Fold", "Perc B2 FM", "Perc B2 Noise Level", "Perc B2 Drive",
-      "Perc B2 Output", "Perc B2 Pan"}},
+    {{"Clap Tune", "Clap Decay", "Clap Fold", "Clap FM", "Clap Noise Level", "Clap Drive", "Clap Output",
+      "Clap Pan"}},
     {{"RimShot Tune", "RimShot Decay", "RimShot Fold", "RimShot FM", "RimShot Noise Level", "RimShot Drive",
       "RimShot Output", "RimShot Pan"}},
-    {{"Clap Tune", "Clap Decay", "Clap Fold", "Clap FM", "Clap Noise Level", "Clap Drive",
-      "Clap Output", "Clap Pan"}},
   }};
 
   const std::array<const char*, kLaneParamCount> laneUnits {"st", "s", "%", "%", "%", "%", "%", "%"};
@@ -166,12 +176,10 @@ tresult PLUGIN_API WestCoastController::initialize (FUnknown* context)
       "Perc A2 Noise Decay", "Perc A2 Snap"}},
     {{"Perc B1 Pitch Env", "Perc B1 Pitch Env Decay", "Perc B1 Transient Amt", "Perc B1 Noise Tone",
       "Perc B1 Noise Decay", "Perc B1 Snap"}},
-    {{"Perc B2 Pitch Env", "Perc B2 Pitch Env Decay", "Perc B2 Transient Amt", "Perc B2 Noise Tone",
-      "Perc B2 Noise Decay", "Perc B2 Snap"}},
+    {{"Clap Pitch Env", "Clap Pitch Env Decay", "Clap Transient Amt", "Clap Noise Tone", "Clap Noise Decay",
+      "Clap Snap"}},
     {{"RimShot Pitch Env", "RimShot Pitch Env Decay", "RimShot Transient Amt", "RimShot Noise Tone",
       "RimShot Noise Decay", "RimShot Snap"}},
-    {{"Clap Pitch Env", "Clap Pitch Env Decay", "Clap Transient Amt", "Clap Noise Tone",
-      "Clap Noise Decay", "Clap Snap"}},
   }};
   const std::array<const char*, kLaneExtraParamCount> laneExtraUnits {"st", "ms", "%", "%", "ms", "%"};
   const std::array<std::pair<double, double>, kLaneExtraParamCount> laneExtraRanges {
@@ -200,9 +208,8 @@ tresult PLUGIN_API WestCoastController::initialize (FUnknown* context)
     {{"Perc A1 Transient Decay", "Perc A1 Transient Level", "Perc A1 Noise Resonance", "Perc A1 Noise Env"}},
     {{"Perc A2 Transient Decay", "Perc A2 Transient Level", "Perc A2 Noise Resonance", "Perc A2 Noise Env"}},
     {{"Perc B1 Transient Decay", "Perc B1 Transient Level", "Perc B1 Noise Resonance", "Perc B1 Noise Env"}},
-    {{"Perc B2 Transient Decay", "Perc B2 Transient Level", "Perc B2 Noise Resonance", "Perc B2 Noise Env"}},
-    {{"RimShot Transient Decay", "RimShot Transient Level", "RimShot Noise Resonance", "RimShot Noise Env"}},
     {{"Clap Transient Decay", "Clap Transient Level", "Clap Noise Resonance", "Clap Noise Env"}},
+    {{"RimShot Transient Decay", "RimShot Transient Level", "RimShot Noise Resonance", "RimShot Noise Env"}},
   }};
   const std::array<const char*, kLaneMacroParamCount> laneMacroUnits {"ms", "%", "%", "%"};
   const std::array<std::pair<double, double>, kLaneMacroParamCount> laneMacroRanges {
@@ -233,9 +240,8 @@ tresult PLUGIN_API WestCoastController::initialize (FUnknown* context)
     {{"Perc A1 Osc Cutoff", "Perc A1 Osc Reso", "Perc A1 Osc Flt Env", "Perc A1 Trans Cutoff", "Perc A1 Trans Reso", "Perc A1 Trans Flt Env"}},
     {{"Perc A2 Osc Cutoff", "Perc A2 Osc Reso", "Perc A2 Osc Flt Env", "Perc A2 Trans Cutoff", "Perc A2 Trans Reso", "Perc A2 Trans Flt Env"}},
     {{"Perc B1 Osc Cutoff", "Perc B1 Osc Reso", "Perc B1 Osc Flt Env", "Perc B1 Trans Cutoff", "Perc B1 Trans Reso", "Perc B1 Trans Flt Env"}},
-    {{"Perc B2 Osc Cutoff", "Perc B2 Osc Reso", "Perc B2 Osc Flt Env", "Perc B2 Trans Cutoff", "Perc B2 Trans Reso", "Perc B2 Trans Flt Env"}},
-    {{"RimShot Osc Cutoff", "RimShot Osc Reso", "RimShot Osc Flt Env", "RimShot Trans Cutoff", "RimShot Trans Reso", "RimShot Trans Flt Env"}},
     {{"Clap Osc Cutoff", "Clap Osc Reso", "Clap Osc Flt Env", "Clap Trans Cutoff", "Clap Trans Reso", "Clap Trans Flt Env"}},
+    {{"RimShot Osc Cutoff", "RimShot Osc Reso", "RimShot Osc Flt Env", "RimShot Trans Cutoff", "RimShot Trans Reso", "RimShot Trans Flt Env"}},
   }};
   const std::array<const char*, kLaneFilterParamCount> laneFilterUnits {"%", "%", "%", "%", "%", "%"};
   const std::array<std::pair<double, double>, kLaneFilterParamCount> laneFilterRanges {
@@ -263,19 +269,19 @@ tresult PLUGIN_API WestCoastController::initialize (FUnknown* context)
 
   const std::array<const char*, kLaneCount> laneLedTitles {
     "Kick Trigger LED", "Snare Trigger LED", "Hat Trigger LED", "Perc A1 Trigger LED", "Perc A2 Trigger LED",
-    "Perc B1 Trigger LED", "Perc B2 Trigger LED", "RimShot Trigger LED", "Clap Trigger LED"};
+    "Perc B1 Trigger LED", "Clap Trigger LED", "RimShot Trigger LED"};
   for (int32 lane = 0; lane < kLaneCount; ++lane)
     parameters.addParameter (makeRangeParam (laneLedTitles[lane], laneLedParamID (lane), "", 0.0, 1.0, 0.0));
 
   const std::array<const char*, kLaneCount> laneMuteTitles {
-    "Kick Mute", "Snare Mute", "Hat Mute", "Perc A1 Mute", "Perc A2 Mute",
-    "Perc B1 Mute", "Perc B2 Mute", "RimShot Mute", "Clap Mute"};
+    "Kick Mute", "Snare Mute", "Hat Mute", "Perc A1 Mute", "Perc A2 Mute", "Perc B1 Mute", "Clap Mute",
+    "RimShot Mute"};
   for (int32 lane = 0; lane < kLaneCount; ++lane)
     parameters.addParameter (makeRangeParam (laneMuteTitles[lane], laneMuteParamID (lane), "", 0.0, 1.0, 0.0));
 
   const std::array<const char*, kLaneCount> laneOscMixTitles {
-    "Kick Osc Mix", "Snare Osc Mix", "Hat Osc Mix", "Perc A1 Osc Mix", "Perc A2 Osc Mix",
-    "Perc B1 Osc Mix", "Perc B2 Osc Mix", "RimShot Osc Mix", "Clap Osc Mix"};
+    "Kick Osc Mix", "Snare Osc Mix", "Hat Osc Mix", "Perc A1 Osc Mix", "Perc A2 Osc Mix", "Perc B1 Osc Mix",
+    "Clap Osc Mix", "RimShot Osc Mix"};
   for (int32 lane = 0; lane < kLaneCount; ++lane)
     parameters.addParameter (makeRangeParam (laneOscMixTitles[lane], laneOscMixParamID (lane), "%", 0.0, 100.0, 100.0));
 
@@ -488,13 +494,14 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
 
   if (version == kV5StateVersion)
   {
-    constexpr int32 v5ParamCount = kTotalParameterCount - kLaneMuteParamCount - kLaneOscMixParamCount - 1;
+    constexpr int32 v5ParamCount = kV7TotalParameterCount - kV7LaneCount - kV7LaneCount - 1;
+    const auto idsV7 = allParameterIdsV7 ();
     for (int32 i = 0; i < v5ParamCount; ++i)
     {
       double value = 0.0;
       if (!streamer.readDouble (value))
         return kResultFalse;
-      setParamNormalized (allParameterIds ()[i], value);
+      setParamNormalized (idsV7[static_cast<size_t> (i)], value);
     }
     setParamNormalized (kParamRandomizeAmount, 1.0);
     for (int32 lane = 0; lane < kLaneCount; ++lane)
@@ -506,16 +513,50 @@ tresult PLUGIN_API WestCoastController::setComponentState (IBStream* state)
 
   if (version == kV6StateVersion)
   {
-    constexpr int32 v6ParamCount = kTotalParameterCount - kLaneOscMixParamCount;
+    constexpr int32 v6ParamCount = kV7TotalParameterCount - kV7LaneCount;
+    const auto idsV7 = allParameterIdsV7 ();
     for (int32 i = 0; i < v6ParamCount; ++i)
     {
       double value = 0.0;
       if (!streamer.readDouble (value))
         return kResultFalse;
-      setParamNormalized (allParameterIds ()[i], value);
+      setParamNormalized (idsV7[static_cast<size_t> (i)], value);
     }
     for (int32 lane = 0; lane < kLaneCount; ++lane)
       setParamNormalized (laneOscMixParamID (lane), 1.0);
+    return kResultOk;
+  }
+
+  if (version == kV7StateVersion)
+  {
+    std::array<double, 709> v7Dense {};
+    if (!readV7StreamIntoDenseByParamId (streamer, v7Dense))
+      return kResultFalse;
+
+    auto copyLaneFromV7 = [this, &v7Dense] (int32 destLane, int32 srcLane) {
+      for (int32 p = 0; p < kLaneParamCount; ++p)
+        setParamNormalized (laneParamID (destLane, static_cast<LaneParamOffset> (p)),
+                            v7Dense[laneParamID (srcLane, static_cast<LaneParamOffset> (p))]);
+      for (int32 p = 0; p < kLaneExtraParamCount; ++p)
+        setParamNormalized (laneExtraParamID (destLane, static_cast<LaneExtraParamOffset> (p)),
+                            v7Dense[laneExtraParamID (srcLane, static_cast<LaneExtraParamOffset> (p))]);
+      for (int32 p = 0; p < kLaneMacroParamCount; ++p)
+        setParamNormalized (laneMacroParamID (destLane, static_cast<LaneMacroParamOffset> (p)),
+                            v7Dense[laneMacroParamID (srcLane, static_cast<LaneMacroParamOffset> (p))]);
+      for (int32 p = 0; p < kLaneFilterParamCount; ++p)
+        setParamNormalized (laneFilterParamID (destLane, static_cast<LaneFilterParamOffset> (p)),
+                            v7Dense[laneFilterParamID (srcLane, static_cast<LaneFilterParamOffset> (p))]);
+      setParamNormalized (laneLedParamID (destLane), v7Dense[laneLedParamID (srcLane)]);
+      setParamNormalized (laneMuteParamID (destLane), v7Dense[laneMuteParamID (srcLane)]);
+      setParamNormalized (laneOscMixParamID (destLane), v7Dense[laneOscMixParamID (srcLane)]);
+    };
+
+    for (int32 i = 0; i < kParamGlobalCount; ++i)
+      setParamNormalized (static_cast<Vst::ParamID> (i), v7Dense[static_cast<size_t> (i)]);
+    for (int32 lane = 0; lane < 6; ++lane)
+      copyLaneFromV7 (lane, lane);
+    copyLaneFromV7 (6, 8);
+    copyLaneFromV7 (7, 7);
     return kResultOk;
   }
 

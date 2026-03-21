@@ -9,6 +9,7 @@
 #include "pluginterfaces/vst/ivstprocesscontext.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <random>
 #include <type_traits>
@@ -18,7 +19,8 @@ namespace Steinberg::WestCoastDrumSynth {
 
 namespace {
 
-constexpr uint32 kStateVersion = 7;
+constexpr uint32 kStateVersion = 8;
+constexpr uint32 kV7StateVersion = 7;
 constexpr uint32 kV6StateVersion = 6;
 constexpr uint32 kV5StateVersion = 5;
 constexpr uint32 kV4StateVersion = 4;
@@ -36,9 +38,8 @@ constexpr std::array<std::array<double, kLaneExtraParamCount>, kLaneCount> kLane
   {{0.42, 0.38, 0.48, 0.52, 0.42, 0.48}},
   {{0.44, 0.36, 0.50, 0.54, 0.44, 0.50}},
   {{0.52, 0.34, 0.54, 0.60, 0.40, 0.56}},
-  {{0.54, 0.32, 0.56, 0.62, 0.38, 0.58}},
-  {{0.48, 0.40, 0.58, 0.68, 0.52, 0.72}},
   {{0.38, 0.45, 0.62, 0.72, 0.58, 0.65}},
+  {{0.48, 0.40, 0.58, 0.68, 0.52, 0.72}},
 }};
 
 constexpr std::array<std::array<double, kLaneMacroParamCount>, kLaneCount> kLaneMacroDefaults {{
@@ -48,9 +49,8 @@ constexpr std::array<std::array<double, kLaneMacroParamCount>, kLaneCount> kLane
   {{0.32, 0.48, 0.40, 0.54}},
   {{0.34, 0.46, 0.42, 0.56}},
   {{0.36, 0.50, 0.44, 0.58}},
-  {{0.38, 0.48, 0.46, 0.60}},
-  {{0.30, 0.52, 0.50, 0.62}},
   {{0.28, 0.54, 0.55, 0.68}},
+  {{0.30, 0.52, 0.50, 0.62}},
 }};
 
 constexpr std::array<std::array<double, kLaneFilterParamCount>, kLaneCount> kLaneFilterDefaults {{
@@ -60,9 +60,8 @@ constexpr std::array<std::array<double, kLaneFilterParamCount>, kLaneCount> kLan
   {{0.72, 0.12, 0.38, 0.76, 0.08, 0.42}},
   {{0.74, 0.11, 0.40, 0.78, 0.07, 0.44}},
   {{0.70, 0.14, 0.36, 0.74, 0.09, 0.40}},
-  {{0.72, 0.13, 0.38, 0.76, 0.08, 0.42}},
-  {{0.68, 0.16, 0.42, 0.72, 0.10, 0.48}},
   {{0.66, 0.18, 0.45, 0.70, 0.12, 0.52}},
+  {{0.68, 0.16, 0.42, 0.72, 0.10, 0.48}},
 }};
 
 inline double clamp01 (double x)
@@ -94,6 +93,20 @@ inline double normalizedFromPresetIndex (int32 presetIndex)
          static_cast<double> (kFactoryPresetCount - 1);
 }
 
+bool readV7StreamIntoDenseByParamId (IBStreamer& streamer, std::array<double, 709>& out)
+{
+  out.fill (0.0);
+  const auto idsV7 = allParameterIdsV7 ();
+  for (int32 i = 0; i < kV7TotalParameterCount; ++i)
+  {
+    double v = 0.0;
+    if (!streamer.readDouble (v))
+      return false;
+    out[static_cast<size_t> (idsV7[static_cast<size_t> (i)])] = v;
+  }
+  return true;
+}
+
 inline int32 laneForLegacyDrumMap (int16 pitch)
 {
   switch (pitch)
@@ -120,12 +133,12 @@ inline int32 laneForLegacyDrumMap (int16 pitch)
     case 51:
     case 53:
       return 6;
+    case 41:
+    case 43:
+      return 6;
     case 37:
     case 39:
       return 7;
-    case 41:
-    case 43:
-      return 8;
     default:
       return -1;
   }
@@ -136,7 +149,7 @@ inline int32 laneForMidiPitch (int16 pitch)
   if (pitch < 0 || pitch > 127)
     return -1;
 
-  // Chromatic keyzones: C through G# in every octave map directly to the 9 lanes.
+  // Chromatic keyzones: C through G# in every octave map directly to the 8 lanes.
   // This keeps the layout predictable while preserving legacy GM-note compatibility.
   constexpr int16 kKeyzoneRoot = 24; // C0
   if (pitch >= kKeyzoneRoot)
@@ -419,13 +432,14 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
 
   if (version == kV5StateVersion)
   {
-    constexpr int32 v5ParamCount = kTotalParameterCount - kLaneMuteParamCount - kLaneOscMixParamCount - 1;
+    constexpr int32 v5ParamCount = kV7TotalParameterCount - kV7LaneCount - kV7LaneCount - 1;
+    const auto idsV7 = allParameterIdsV7 ();
     for (int32 i = 0; i < v5ParamCount; ++i)
     {
       double normalized = 0.0;
       if (!streamer.readDouble (normalized))
         return kResultFalse;
-      setParam (allParameterIds ()[i], normalized);
+      setParam (idsV7[static_cast<size_t> (i)], normalized);
     }
     setParam (kParamRandomizeAmount, 1.0);
     for (int32 lane = 0; lane < kLaneCount; ++lane)
@@ -441,16 +455,56 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
 
   if (version == kV6StateVersion)
   {
-    constexpr int32 v6ParamCount = kTotalParameterCount - kLaneOscMixParamCount;
+    constexpr int32 v6ParamCount = kV7TotalParameterCount - kV7LaneCount;
+    const auto idsV7 = allParameterIdsV7 ();
     for (int32 i = 0; i < v6ParamCount; ++i)
     {
       double normalized = 0.0;
       if (!streamer.readDouble (normalized))
         return kResultFalse;
-      setParam (allParameterIds ()[i], normalized);
+      setParam (idsV7[static_cast<size_t> (i)], normalized);
     }
     for (int32 lane = 0; lane < kLaneCount; ++lane)
       setParam (laneOscMixParamID (lane), 1.0);
+    const auto& preset = getFactoryPresets ()[loadedPreset_];
+    sequencer_.setPattern (preset.pattern);
+    updateLaneFramesFromParameters ();
+    presetPending_ = false;
+    return kResultOk;
+  }
+
+  if (version == kV7StateVersion)
+  {
+    std::array<double, 709> v7Dense {};
+    if (!readV7StreamIntoDenseByParamId (streamer, v7Dense))
+      return kResultFalse;
+
+    params_.fill (0.0);
+    auto copyLaneFromV7 = [this, &v7Dense] (int32 destLane, int32 srcLane) {
+      for (int32 p = 0; p < kLaneParamCount; ++p)
+        setParam (laneParamID (destLane, static_cast<LaneParamOffset> (p)),
+                  v7Dense[laneParamID (srcLane, static_cast<LaneParamOffset> (p))]);
+      for (int32 p = 0; p < kLaneExtraParamCount; ++p)
+        setParam (laneExtraParamID (destLane, static_cast<LaneExtraParamOffset> (p)),
+                  v7Dense[laneExtraParamID (srcLane, static_cast<LaneExtraParamOffset> (p))]);
+      for (int32 p = 0; p < kLaneMacroParamCount; ++p)
+        setParam (laneMacroParamID (destLane, static_cast<LaneMacroParamOffset> (p)),
+                  v7Dense[laneMacroParamID (srcLane, static_cast<LaneMacroParamOffset> (p))]);
+      for (int32 p = 0; p < kLaneFilterParamCount; ++p)
+        setParam (laneFilterParamID (destLane, static_cast<LaneFilterParamOffset> (p)),
+                  v7Dense[laneFilterParamID (srcLane, static_cast<LaneFilterParamOffset> (p))]);
+      setParam (laneLedParamID (destLane), v7Dense[laneLedParamID (srcLane)]);
+      setParam (laneMuteParamID (destLane), v7Dense[laneMuteParamID (srcLane)]);
+      setParam (laneOscMixParamID (destLane), v7Dense[laneOscMixParamID (srcLane)]);
+    };
+
+    for (int32 i = 0; i < kParamGlobalCount; ++i)
+      setParam (static_cast<Vst::ParamID> (i), v7Dense[static_cast<size_t> (i)]);
+    for (int32 lane = 0; lane < 6; ++lane)
+      copyLaneFromV7 (lane, lane);
+    copyLaneFromV7 (6, 8);
+    copyLaneFromV7 (7, 7);
+
     const auto& preset = getFactoryPresets ()[loadedPreset_];
     sequencer_.setPattern (preset.pattern);
     updateLaneFramesFromParameters ();
@@ -848,45 +902,45 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
   // then lane defaults in kLaneExtraDefaults / kLaneMacroDefaults / kLaneFilterDefaults at file top.
   // FactoryPresets.cpp controls preset snapshots; morph uses getMorphedParam (center = stored value).
 
-  // Kick, Snare, Hat, PercA1, PercA2 (low bass), PercB1, PercB2 (higher), RimShot, Clap
+  // Kick, Snare, Hat, PercA1, PercA2 (low bass), PercB1, Clap, RimShot
   static constexpr std::array<double, kLaneCount> kBaseFrequencies {
-    52.0, 185.0, 3800.0, 45.0, 65.0, 520.0, 820.0, 950.0, 650.0};
+    52.0, 185.0, 3800.0, 45.0, 65.0, 520.0, 650.0, 950.0};
   static constexpr std::array<LaneCharacter, kLaneCount> kLaneCharacters {
     LaneCharacter::Kick, LaneCharacter::Snare, LaneCharacter::Hat,
-    LaneCharacter::PercA, LaneCharacter::PercA, LaneCharacter::PercB, LaneCharacter::PercB,
-    LaneCharacter::RimShot, LaneCharacter::Clap};
+    LaneCharacter::PercA, LaneCharacter::PercA, LaneCharacter::PercB,
+    LaneCharacter::Clap, LaneCharacter::RimShot};
   static constexpr std::array<double, kLaneCount> kPitchEnvScale {
-    1.0, 0.60, 0.28, 0.85, 0.82, 0.72, 0.68, 0.58, 0.48};
+    1.0, 0.60, 0.28, 0.85, 0.82, 0.72, 0.48, 0.58};
   static constexpr std::array<double, kLaneCount> kTransientAttackScale {
-    1.0, 0.92, 0.74, 0.90, 0.88, 0.92, 0.90, 0.95, 0.88};
+    1.0, 0.92, 0.74, 0.90, 0.88, 0.92, 0.88, 0.95};
   static constexpr std::array<double, kLaneCount> kTransientDecayScale {
-    1.4, 1.16, 0.68, 1.3, 1.25, 0.94, 0.90, 0.85, 0.78};
+    1.4, 1.16, 0.68, 1.3, 1.25, 0.94, 0.78, 0.85};
   static constexpr std::array<double, kLaneCount> kTransientLevelScale {
-    1.35, 1.10, 0.88, 1.25, 1.20, 1.02, 1.00, 1.08, 1.12};
+    1.35, 1.10, 0.88, 1.25, 1.20, 1.02, 1.12, 1.08};
   static constexpr std::array<double, kLaneCount> kNoiseLevelScale {
-    1.05, 2.05, 1.65, 1.35, 1.38, 1.42, 1.45, 1.55, 1.75};
+    1.05, 2.05, 1.65, 1.35, 1.38, 1.42, 1.75, 1.55};
   static constexpr std::array<double, kLaneCount> kNoiseDecayScale {
-    0.82, 1.58, 0.94, 1.15, 1.12, 1.08, 1.05, 0.95, 0.88};
+    0.82, 1.58, 0.94, 1.15, 1.12, 1.08, 0.88, 0.95};
   static constexpr std::array<double, kLaneCount> kNoiseResScale {
-    0.90, 1.04, 1.12, 0.98, 1.00, 1.02, 1.04, 1.08, 1.12};
+    0.90, 1.04, 1.12, 0.98, 1.00, 1.02, 1.12, 1.08};
   static constexpr std::array<double, kLaneCount> kNoiseEnvScale {
-    0.88, 1.02, 1.18, 0.98, 1.00, 1.05, 1.08, 1.12, 1.18};
+    0.88, 1.02, 1.18, 0.98, 1.00, 1.05, 1.18, 1.12};
   static constexpr std::array<double, kLaneCount> kSnapScale {
-    0.24, 1.0, 0.86, 0.55, 0.52, 0.62, 0.60, 0.75, 0.68};
+    0.24, 1.0, 0.86, 0.55, 0.52, 0.62, 0.68, 0.75};
   static constexpr std::array<double, kLaneCount> kOscCutoffScale {
-    0.62, 0.88, 1.70, 1.08, 1.06, 1.12, 1.10, 1.15, 1.18};
+    0.62, 0.88, 1.70, 1.08, 1.06, 1.12, 1.18, 1.15};
   static constexpr std::array<double, kLaneCount> kOscResScale {
-    1.08, 1.0, 0.82, 0.96, 0.98, 1.00, 1.02, 1.05, 1.08};
+    1.08, 1.0, 0.82, 0.96, 0.98, 1.00, 1.08, 1.05};
   static constexpr std::array<double, kLaneCount> kOscEnvScale {
-    1.24, 1.02, 0.58, 0.92, 0.90, 0.88, 0.86, 0.82, 0.78};
+    1.24, 1.02, 0.58, 0.92, 0.90, 0.88, 0.78, 0.82};
   static constexpr std::array<double, kLaneCount> kOscBalance {
-    1.0, 0.92, 0.76, 0.94, 0.92, 0.90, 0.88, 0.86, 0.82};
+    1.0, 0.92, 0.76, 0.94, 0.92, 0.90, 0.82, 0.86};
   // Keep enough travel for sound design, but narrow the most extreme tuning
   // swings so small moves land on more usable drum fundamentals.
   static constexpr std::array<double, kLaneCount> kPitchSemitoneRange {
-    30.0, 24.0, 18.0, 28.0, 26.0, 22.0, 20.0, 16.0, 14.0};
+    30.0, 24.0, 18.0, 28.0, 26.0, 22.0, 14.0, 16.0};
   static constexpr std::array<bool, kLaneCount> kLaneIsLowRegister {
-    true, true, false, true, true, false, false, false, false};
+    true, true, false, true, true, false, false, false};
 
   const double oscFilterCutoffNorm = getParam (kParamOscFilterCutoff);
   const double oscFilterResNorm = getParam (kParamOscFilterResonance);

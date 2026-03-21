@@ -6,7 +6,7 @@
 
 namespace Steinberg::WestCoastDrumSynth {
 
-constexpr int32 kLaneCount = 9;
+constexpr int32 kLaneCount = 8;
 constexpr int32 kPatternSteps = 16;
 using PatternGrid = std::array<std::array<bool, kPatternSteps>, kLaneCount>;
 
@@ -89,6 +89,13 @@ constexpr int32 kTotalParameterCount =
   kParamGlobalCount + (kLaneCount * kLaneParamCount) + (kLaneCount * kLaneExtraParamCount) +
   (kLaneCount * kLaneMacroParamCount) + (kLaneCount * kLaneFilterParamCount) + kLaneMuteParamCount +
   kLaneOscMixParamCount;
+
+// Saved projects from builds with 9 lanes (v7 and earlier migration paths).
+constexpr int32 kV7LaneCount = 9;
+constexpr int32 kV7TotalParameterCount =
+  kParamGlobalCount + (kV7LaneCount * kLaneParamCount) + (kV7LaneCount * kLaneExtraParamCount) +
+  (kV7LaneCount * kLaneMacroParamCount) + (kV7LaneCount * kLaneFilterParamCount) + kV7LaneCount +
+  kV7LaneCount + kV7LaneCount;
 
 inline constexpr Vst::ParamID laneParamID (int32 lane, LaneParamOffset offset)
 {
@@ -215,6 +222,41 @@ inline constexpr std::array<Vst::ParamID, kTotalParameterCount> allParameterIds 
   for (int32 lane = 0; lane < kLaneCount; ++lane)
     ids[index++] = laneMuteParamID (lane);
   for (int32 lane = 0; lane < kLaneCount; ++lane)
+    ids[index++] = laneOscMixParamID (lane);
+  return ids;
+}
+
+inline constexpr std::array<Vst::ParamID, kV7TotalParameterCount> allParameterIdsV7 ()
+{
+  std::array<Vst::ParamID, kV7TotalParameterCount> ids {};
+  int32 index = 0;
+  for (int32 i = 0; i < kParamGlobalCount; ++i)
+    ids[index++] = static_cast<Vst::ParamID> (i);
+  for (int32 lane = 0; lane < kV7LaneCount; ++lane)
+  {
+    for (int32 param = 0; param < kLaneParamCount; ++param)
+      ids[index++] = laneParamID (lane, static_cast<LaneParamOffset> (param));
+  }
+  for (int32 lane = 0; lane < kV7LaneCount; ++lane)
+  {
+    for (int32 param = 0; param < kLaneExtraParamCount; ++param)
+      ids[index++] = laneExtraParamID (lane, static_cast<LaneExtraParamOffset> (param));
+  }
+  for (int32 lane = 0; lane < kV7LaneCount; ++lane)
+  {
+    for (int32 param = 0; param < kLaneMacroParamCount; ++param)
+      ids[index++] = laneMacroParamID (lane, static_cast<LaneMacroParamOffset> (param));
+  }
+  for (int32 lane = 0; lane < kV7LaneCount; ++lane)
+  {
+    for (int32 param = 0; param < kLaneFilterParamCount; ++param)
+      ids[index++] = laneFilterParamID (lane, static_cast<LaneFilterParamOffset> (param));
+  }
+  for (int32 lane = 0; lane < kV7LaneCount; ++lane)
+    ids[index++] = laneLedParamID (lane);
+  for (int32 lane = 0; lane < kV7LaneCount; ++lane)
+    ids[index++] = laneMuteParamID (lane);
+  for (int32 lane = 0; lane < kV7LaneCount; ++lane)
     ids[index++] = laneOscMixParamID (lane);
   return ids;
 }
