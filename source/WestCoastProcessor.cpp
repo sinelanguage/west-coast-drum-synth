@@ -80,12 +80,6 @@ inline double responseRange (double x, double minimum, double maximum, double ex
   return minimum + (responseCurve (x, exponent) * (maximum - minimum));
 }
 
-inline double softClip (double x)
-{
-  constexpr double kSoftClipDrive = 1.4;
-  return std::tanh (x * kSoftClipDrive) / std::tanh (kSoftClipDrive);
-}
-
 inline int32 presetIndexFromNormalized (double normalized)
 {
   const int32 maxIndex = kFactoryPresetCount - 1;
@@ -599,8 +593,9 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
   if (data.numOutputs == 0 || data.outputs == nullptr || data.numSamples <= 0)
     return kResultOk;
 
-  const double masterGain = std::pow (clamp01 (getParam (kParamMaster)), 1.5);
-  constexpr double kBusHeadroom = 1.0 / 3.0;
+  const double masterGain = std::pow (clamp01 (getParam (kParamMaster)), 1.35);
+  // Single gentle ceiling after summing; avoid stacking heavy tanh with per-voice softClip.
+  constexpr double kBusHeadroom = 0.52;
   std::array<bool, kLaneCount> triggers {};
 
   auto render = [&] (auto** outChannels)
@@ -652,8 +647,10 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
         frameR += sample * gainR;
       }
 
-      const double busL = softClip (frameL * kBusHeadroom * masterGain);
-      const double busR = softClip (frameR * kBusHeadroom * masterGain);
+      const double gL = frameL * kBusHeadroom * masterGain;
+      const double gR = frameR * kBusHeadroom * masterGain;
+      const double busL = gL / (1.0 + std::abs (gL) * 0.55);
+      const double busR = gR / (1.0 + std::abs (gR) * 0.55);
 
       left[sampleIndex] = static_cast<SampleType> (busL);
       right[sampleIndex] = static_cast<SampleType> (busR);
@@ -847,6 +844,10 @@ void WestCoastProcessor::processParameterChanges (Vst::IParameterChanges* change
 
 void WestCoastProcessor::updateLaneFramesFromParameters ()
 {
+  // Tuning workflow: adjust per-lane scale tables below (kTransient*Scale, kOsc*, kNoise*, etc.),
+  // then lane defaults in kLaneExtraDefaults / kLaneMacroDefaults / kLaneFilterDefaults at file top.
+  // FactoryPresets.cpp controls preset snapshots; morph uses getMorphedParam (center = stored value).
+
   // Kick, Snare, Hat, PercA1, PercA2 (low bass), PercB1, PercB2 (higher), RimShot, Clap
   static constexpr std::array<double, kLaneCount> kBaseFrequencies {
     52.0, 185.0, 3800.0, 45.0, 65.0, 520.0, 820.0, 950.0, 650.0};
@@ -944,9 +945,10 @@ void WestCoastProcessor::updateLaneFramesFromParameters ()
     frame.transientDecaySeconds =
       std::clamp ((0.003 + (transientDecay * transientDecay * 0.46)) * kTransientDecayScale[lane], 0.0015, 0.5);
     const double transientLevel = getMorphedParam (laneMacroParamID (lane, kLaneTransientMix));
+    // No minimum floor: at 0% the transient path is fully silent (was 0.18 bleed-through).
     frame.transientLevel =
-      std::clamp ((0.18 + (std::pow (transientLevel, 1.08) * 1.45)) * kTransientLevelScale[lane], 0.0, 2.5);
-    frame.transientMix = std::clamp (0.18 + (transientLevel * 1.05), 0.0, 1.4);
+      std::clamp (std::pow (transientLevel, 1.12) * 1.55 * kTransientLevelScale[lane], 0.0, 2.5);
+    frame.transientMix = std::clamp (transientLevel * 1.12, 0.0, 1.4);
     const double noiseTone = getMorphedParam (laneExtraParamID (lane, kLaneNoiseTone));
     frame.noiseTone = (noiseTone * 2.0) - 1.0;
     frame.noiseFilterCutoffHz = 220.0 + (std::pow (noiseTone, 1.40) * 16000.0);

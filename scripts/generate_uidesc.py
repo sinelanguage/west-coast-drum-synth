@@ -10,8 +10,8 @@ import xml.etree.ElementTree as ET
 # ---------------------------------------------------------------------------
 # Editor dimensions
 # ---------------------------------------------------------------------------
-EDITOR_W = 1032   # 510 + 12 + 510 for original column spacing
-EDITOR_H = 513   # GLOBAL_H 57 (75% of SEC_H)
+EDITOR_W = 1066   # 527 + 12 + 527 for column spacing (PITCH ENV strip width)
+EDITOR_H = 622   # 57 global + 1 sep + 5×(108+1) row + bottom DS9 strip
 
 # ---------------------------------------------------------------------------
 # Margins / header

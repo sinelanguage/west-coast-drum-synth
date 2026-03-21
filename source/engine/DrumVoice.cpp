@@ -24,7 +24,7 @@ inline size_t characterIndex (LaneCharacter character)
 
 inline double softClip (double x)
 {
-  constexpr double kSoftClipDrive = 1.65;
+  constexpr double kSoftClipDrive = 1.42;
   return std::tanh (x * kSoftClipDrive) / std::tanh (kSoftClipDrive);
 }
 
@@ -102,12 +102,15 @@ void DrumVoice::trigger (const LaneFrame& frame)
   const double pitchTau = frame_.pitchEnvDecaySeconds;
   const double noiseTau = frame_.noiseDecaySeconds;
   const double transientTau =
-    std::clamp (frame_.transientDecaySeconds * (1.08 - (0.45 * frame_.snapAmount)), 0.0015, 0.5);
+    std::clamp (frame_.transientDecaySeconds * (1.02 - (0.38 * frame_.snapAmount)), 0.0012, 0.5);
   ampDecayCoef_ = std::exp (-1.0 / (ampTau * sampleRate_));
   toneDecayCoef_ = std::exp (-1.0 / (toneTau * sampleRate_));
   pitchDecayCoef_ = std::exp (-1.0 / (pitchTau * sampleRate_));
   noiseDecayCoef_ = std::exp (-1.0 / (noiseTau * sampleRate_));
   transientDecayCoef_ = std::exp (-1.0 / (transientTau * sampleRate_));
+  const double clickTauSec = std::clamp (0.00035 + (frame_.snapAmount * 0.00055), 0.0002, 0.002);
+  clickDecayCoef_ = std::exp (-1.0 / (clickTauSec * sampleRate_));
+  clickEnv_ = 1.0;
 
   const double tone01 = clamp01 ((frame_.noiseTone + 1.0) * 0.5);
   const double baseNoiseCutoff = frame_.noiseFilterCutoffHz * (0.40 + (tone01 * 0.70));
@@ -170,9 +173,11 @@ double DrumVoice::process ()
   const double dynamicFold = frame_.foldAmount * (1.2 + (1.2 * toneEnv_));
   body = wavefold (body, dynamicFold);
 
-  // Filters: global body filter as base, per-lane osc filter as modifier; stronger resonance and env
-  const double oscBaseCutoff =
-    frame_.bodyFilterCutoffHz * (0.4 + 0.6 * frame_.oscFilterCutoff);
+  // Per-lane osc filter: 0 = nearly closed, 1 = full openness (no mid-neutral 0.4 floor)
+  const double oscClosedHz = 72.0;
+  const double oscOpenHz = std::max (140.0, frame_.bodyFilterCutoffHz);
+  const double oscNorm = clamp01 (frame_.oscFilterCutoff);
+  const double oscBaseCutoff = oscClosedHz + (oscOpenHz - oscClosedHz) * std::pow (oscNorm, 0.82);
   const double oscEnvMod =
     oscBaseCutoff * frame_.bodyFilterEnvAmount * frame_.oscFilterEnvAmount * toneEnv_ * 4.5;
   const double oscCutoffHz = std::clamp (oscBaseCutoff + oscEnvMod, 20.0, sampleRate_ * 0.47);
@@ -190,9 +195,9 @@ double DrumVoice::process ()
     std::clamp ((frame_.transientMix * 0.65) + (frame_.snapAmount * kNoiseTransientBlend[character]), 0.0, 1.0);
   const double transientCore = (transientOsc * (1.0 - transientBlend)) + (transientNoise * transientBlend);
 
-  const double transBaseCutoff = cutoffFromNormalized (frame_.transFilterCutoff, 800.0, 20000.0);
+  const double transBaseCutoff = cutoffFromNormalized (frame_.transFilterCutoff, 95.0, 20000.0);
   const double transEnvMod = transBaseCutoff * frame_.transFilterEnvAmount * transientEnv_ * 4.0;
-  const double transCutoffHz = std::clamp (transBaseCutoff + transEnvMod, 400.0, sampleRate_ * 0.43);
+  const double transCutoffHz = std::clamp (transBaseCutoff + transEnvMod, 70.0, sampleRate_ * 0.43);
   const double transResScaled = std::min (0.96, frame_.transFilterResonance * 1.35);
   const double filteredTransient = processStateVariableLowpass (transientCore, transCutoffHz,
                                                                 transResScaled,
@@ -200,7 +205,11 @@ double DrumVoice::process ()
 
   const double transientGain =
     (0.5 + (frame_.transientAmount * 1.5)) * frame_.transientLevel * kTransientGainBoost[character];
-  const double transOut = filteredTransient * transientEnv_ * transientGain;
+  const double clickAmt =
+    (0.42 + (frame_.snapAmount * 0.55)) * (0.35 + (frame_.transientAmount * 1.15)) * transientEnv_;
+  const double clickOut = transientCore * clickEnv_ * clickAmt * transientGain;
+  clickEnv_ *= clickDecayCoef_;
+  const double transOut = (filteredTransient * transientEnv_ * transientGain) + clickOut;
 
   // --- NOISE PATH ---
   const double rawNoise = randomBipolar ();
@@ -250,7 +259,7 @@ double DrumVoice::process ()
   noiseEnv_ *= noiseDecayCoef_;
   transientEnv_ *= transientDecayCoef_;
 
-  if (ampEnv_ < 0.00008 && noiseEnv_ < 0.00008 && transientEnv_ < 0.00008)
+  if (ampEnv_ < 0.00008 && noiseEnv_ < 0.00008 && transientEnv_ < 0.00008 && clickEnv_ < 0.00002)
   {
     active_ = false;
     ampEnv_ = 0.0;
@@ -258,6 +267,7 @@ double DrumVoice::process ()
     pitchEnv_ = 0.0;
     noiseEnv_ = 0.0;
     transientEnv_ = 0.0;
+    clickEnv_ = 0.0;
   }
 
   return sample;
@@ -273,6 +283,7 @@ void DrumVoice::reset ()
   pitchEnv_ = 0.0;
   noiseEnv_ = 0.0;
   transientEnv_ = 0.0;
+  clickEnv_ = 0.0;
   noiseLowState_ = 0.0;
   noiseHighState_ = 0.0;
   noiseResLowState_ = 0.0;

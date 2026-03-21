@@ -86,6 +86,10 @@ private:
   double noiseDecayCoef_ {0.995};
   double transientDecayCoef_ {0.96};
 
+  // Very short unfiltered click layer for percussive edge (decays in under ~1 ms)
+  double clickEnv_ {0.0};
+  double clickDecayCoef_ {0.0};
+
   double noiseLowState_ {0.0};
   double noiseHighState_ {0.0};
   double noiseLpCoef_ {0.15};
