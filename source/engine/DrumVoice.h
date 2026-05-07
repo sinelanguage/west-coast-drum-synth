@@ -8,8 +8,8 @@ enum class LaneCharacter : uint8_t {
   Kick = 0,
   Snare,
   Hat,
-  PercA,   // Low bass groove (lanes 3, 4)
-  PercB,   // Higher percussion (lanes 5, 6)
+  PercA,   // Lower percussion family (lanes 3, 4)
+  PercB,   // Higher percussion family (lane 5)
   RimShot,
   Clap
 };
@@ -74,17 +74,24 @@ private:
   double carrierPhase_ {0.0};
   double modPhase_ {0.0};
   double transientPhase_ {0.0};
+  double thumpPhase_ {0.0};
 
   double ampEnv_ {0.0};
   double toneEnv_ {0.0};
   double pitchEnv_ {0.0};
   double noiseEnv_ {0.0};
   double transientEnv_ {0.0};
+  double thumpEnv_ {0.0};
+  double thumpPitchEnv_ {0.0};
   double ampDecayCoef_ {0.9995};
   double toneDecayCoef_ {0.9985};
   double pitchDecayCoef_ {0.995};
   double noiseDecayCoef_ {0.995};
   double transientDecayCoef_ {0.96};
+  double thumpDecayCoef_ {0.96};
+  double thumpPitchDecayCoef_ {0.96};
+  double thumpBaseHz_ {120.0};
+  double thumpPeakHz_ {360.0};
 
   // Very short unfiltered click layer for percussive edge (decays in under ~1 ms)
   double clickEnv_ {0.0};

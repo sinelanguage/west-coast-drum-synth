@@ -410,6 +410,9 @@ VSTGUI_TOOLS:BOOL=OFF
 //Add Scripting Support to the UIDescription editor
 VSTGUI_UISCRIPTING:BOOL=OFF
 
+//Neutral plugin name for distribution builds
+WCDS_PUBLIC_PLUGIN_NAME:BOOL=OFF
+
 //macOS architectures when not universal
 WCSD_MAC_ARCHITECTURES:STRING=arm64
 

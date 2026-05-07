@@ -29,8 +29,16 @@ public:
   tresult PLUGIN_API process (Vst::ProcessData& data) SMTG_OVERRIDE;
 
 private:
+  static constexpr int32 kUserPresetCount = 8;
+
+  struct UserPresetSlot {
+    bool initialized {false};
+    std::array<double, kParameterStateSize> params {};
+  };
+
   void resetEngine ();
   void loadPresetByIndex (int32 presetIndex, Vst::IParameterChanges* outputChanges);
+  void storeCurrentToUserPresetSlot (int32 slotIndex);
   void processParameterChanges (Vst::IParameterChanges* changes, Vst::IParameterChanges* outputChanges);
   void updateLaneFramesFromParameters ();
   void pushParamChange (Vst::IParameterChanges* outputChanges, Vst::ParamID id, double normalizedValue) const;
@@ -48,6 +56,7 @@ private:
   int32 ledFlashDurationSamples_ {2205};
 
   int32 loadedPreset_ {0};
+  std::array<UserPresetSlot, kUserPresetCount> userPresetSlots_ {};
   bool presetPending_ {true};
   std::mt19937 rng_ {std::random_device {}()};
 };

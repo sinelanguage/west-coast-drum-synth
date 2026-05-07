@@ -30,12 +30,20 @@ inline double softClip (double x)
 
 // Indexed by LaneCharacter: Kick, Snare, Hat, PercA, PercB, RimShot, Clap
 constexpr std::array<double, 7> kPitchSemitoneSpan {66.0, 20.0, 8.0, 36.0, 32.0, 18.0, 14.0};
-constexpr std::array<double, 7> kTransientBaseHz {3200.0, 2500.0, 7000.0, 2200.0, 4500.0, 3500.0, 2200.0};
-constexpr std::array<double, 7> kNoiseBlendGain {0.85, 1.25, 1.45, 1.10, 1.15, 1.30, 1.45};
+constexpr std::array<double, 7> kTransientBaseHz {1100.0, 2200.0, 7000.0, 1500.0, 2800.0, 2800.0, 2200.0};
+constexpr std::array<double, 7> kTransientPitchRatio {8.0, 10.0, 28.0, 9.0, 13.0, 15.0, 10.0};
+constexpr std::array<double, 7> kNoiseBlendGain {1.85, 2.45, 2.55, 2.10, 2.20, 2.30, 2.55};
 constexpr std::array<double, 7> kBodyGain {1.05, 0.84, 0.42, 1.02, 0.96, 0.92, 0.88};
 constexpr std::array<double, 7> kFmScale {1.0, 0.85, 0.40, 0.92, 0.88, 0.65, 0.45};
 constexpr std::array<double, 7> kNoiseTransientBlend {0.62, 0.68, 0.38, 0.65, 0.58, 0.72, 0.55};
-constexpr std::array<double, 7> kTransientGainBoost {1.65, 1.0, 1.0, 1.45, 1.35, 1.0, 1.0};
+constexpr std::array<double, 7> kTransientGainBoost {2.40, 1.55, 1.05, 2.05, 1.85, 1.35, 1.30};
+// Per-character thump (low-frequency knock) weighting and pitch ratios.
+// Kick/PercA dominate; hat/clap/rim are minimal so the click stays bright.
+constexpr std::array<double, 7> kThumpGain {1.55, 0.95, 0.0, 1.30, 1.10, 0.30, 0.40};
+constexpr std::array<double, 7> kThumpPitchRatio {1.55, 1.20, 1.00, 1.40, 1.30, 1.10, 1.10};
+constexpr std::array<double, 7> kThumpBaseFloorHz {38.0, 95.0, 0.0, 60.0, 75.0, 110.0, 130.0};
+constexpr std::array<double, 7> kThumpDecayBase {0.040, 0.022, 0.001, 0.030, 0.026, 0.012, 0.012};
+constexpr std::array<double, 7> kThumpPitchDecay {0.0065, 0.0045, 0.0010, 0.0055, 0.0050, 0.0030, 0.0030};
 
 inline double cutoffFromNormalized (double normalized, double minHz, double maxHz)
 {
@@ -108,9 +116,25 @@ void DrumVoice::trigger (const LaneFrame& frame)
   pitchDecayCoef_ = std::exp (-1.0 / (pitchTau * sampleRate_));
   noiseDecayCoef_ = std::exp (-1.0 / (noiseTau * sampleRate_));
   transientDecayCoef_ = std::exp (-1.0 / (transientTau * sampleRate_));
-  const double clickTauSec = std::clamp (0.00035 + (frame_.snapAmount * 0.00055), 0.0002, 0.002);
+  const double clickTauSec = std::clamp (0.00028 + (frame_.snapAmount * 0.00045), 0.00015, 0.0016);
   clickDecayCoef_ = std::exp (-1.0 / (clickTauSec * sampleRate_));
   clickEnv_ = 1.0;
+
+  // Low-frequency knock/thump layer (for 909-style kick knock, 808 click body).
+  // Tied to the voice's fundamental so it remains audible at sub frequencies.
+  const size_t thumpChar = std::min (characterIndex (frame_.character), size_t {6});
+  thumpBaseHz_ = std::max (kThumpBaseFloorHz[thumpChar], frame_.frequencyHz);
+  thumpPeakHz_ = thumpBaseHz_ * kThumpPitchRatio[thumpChar];
+  const double thumpTau =
+    std::clamp (kThumpDecayBase[thumpChar] * (0.55 + (frame_.transientAmount * 1.10)),
+                0.002, 0.080);
+  const double thumpPitchTau =
+    std::clamp (kThumpPitchDecay[thumpChar] * (0.85 + (frame_.snapAmount * 0.50)), 0.0008, 0.020);
+  thumpDecayCoef_ = std::exp (-1.0 / (thumpTau * sampleRate_));
+  thumpPitchDecayCoef_ = std::exp (-1.0 / (thumpPitchTau * sampleRate_));
+  thumpPhase_ = 0.0;
+  thumpEnv_ = (kThumpGain[thumpChar] > 0.0) ? 1.0 : 0.0;
+  thumpPitchEnv_ = 1.0;
 
   const double tone01 = clamp01 ((frame_.noiseTone + 1.0) * 0.5);
   const double baseNoiseCutoff = frame_.noiseFilterCutoffHz * (0.40 + (tone01 * 0.70));
@@ -158,8 +182,10 @@ double DrumVoice::process ()
 
   modPhase_ += (kTwoPi * modFrequency) / sampleRate_;
   carrierPhase_ += (kTwoPi * carrierFrequency) / sampleRate_;
-  const double transFreqSweep = 0.7 + (frame_.transientAmount * 1.5);
-  transientPhase_ += (kTwoPi * kTransientBaseHz[character] * transFreqSweep) / sampleRate_;
+  const double transFreqSweep = 0.85 + (frame_.transientAmount * 1.4);
+  const double transientFrequency =
+    std::max (kTransientBaseHz[character], frame_.frequencyHz * kTransientPitchRatio[character]) * transFreqSweep;
+  transientPhase_ += (kTwoPi * transientFrequency) / sampleRate_;
   modPhase_ = wrapPhase (modPhase_);
   carrierPhase_ = wrapPhase (carrierPhase_);
   transientPhase_ = wrapPhase (transientPhase_);
@@ -173,20 +199,34 @@ double DrumVoice::process ()
   const double dynamicFold = frame_.foldAmount * (1.2 + (1.2 * toneEnv_));
   body = wavefold (body, dynamicFold);
 
-  // Per-lane osc filter: 0 = nearly closed, 1 = full openness (no mid-neutral 0.4 floor)
-  const double oscClosedHz = 72.0;
-  const double oscOpenHz = std::max (140.0, frame_.bodyFilterCutoffHz);
+  // Body filter: now actually closes down to a useful low minimum and modulates
+  // gently so the cutoff knob is audibly effective across its full range.
+  // The global Osc Body Cutoff (frame_.bodyFilterCutoffHz) defines the upper
+  // ceiling; the per-lane Osc Cutoff knob (frame_.oscFilterCutoff) sweeps from
+  // a real closed value (60 Hz) up to that ceiling.
+  const double oscClosedHz = 60.0;
+  const double oscOpenHz = std::max (oscClosedHz + 20.0, frame_.bodyFilterCutoffHz);
   const double oscNorm = clamp01 (frame_.oscFilterCutoff);
-  const double oscBaseCutoff = oscClosedHz + (oscOpenHz - oscClosedHz) * std::pow (oscNorm, 0.82);
+  // Exponential sweep so the lower half of the knob still spans 60..1000 Hz audibly.
+  const double oscBaseCutoff = oscClosedHz * std::pow (oscOpenHz / oscClosedHz, oscNorm);
+  // Reduce env-mod multiplier so the filter doesn't blast wide open at trigger.
   const double oscEnvMod =
-    oscBaseCutoff * frame_.bodyFilterEnvAmount * frame_.oscFilterEnvAmount * toneEnv_ * 4.5;
-  const double oscCutoffHz = std::clamp (oscBaseCutoff + oscEnvMod, 20.0, sampleRate_ * 0.47);
+    oscBaseCutoff * frame_.bodyFilterEnvAmount * frame_.oscFilterEnvAmount * toneEnv_ * 0.95;
+  const double oscCutoffHz = std::clamp (oscBaseCutoff + oscEnvMod, 30.0, sampleRate_ * 0.47);
   const double oscResScaled =
-    std::min (0.98, (frame_.bodyFilterResonance * 0.5 + frame_.oscFilterResonance * 0.5) * 1.35);
+    std::min (0.92, (frame_.bodyFilterResonance * 0.5 + frame_.oscFilterResonance * 0.5) * 0.92);
   body = processStateVariableLowpass (body, oscCutoffHz, oscResScaled,
                                       oscFilterLowState_, oscFilterBandState_);
   const double oscGate = ampEnv_ * (0.38 + (0.72 * toneEnv_));
   const double oscOut = body * frame_.oscLevel * oscGate * kBodyGain[character] * 1.41;
+
+  // Global tone-tilt derived from the Osc Body Cutoff position. Maps the body
+  // cutoff to a 0..1 "darkness" amount; at fully closed body the noise/transient
+  // get gently darkened too, so the global cutoff knob always changes character.
+  // Smooth, lightweight, no per-sample state cost — just attenuates highs.
+  const double bodyCeilingNorm =
+    clamp01 (std::log (oscOpenHz / 200.0) / std::log (16000.0 / 200.0));
+  const double globalToneTilt = clamp01 (bodyCeilingNorm * 0.55 + oscNorm * 0.45);
 
   // --- TRANSIENT PATH ---
   const double transientOsc = std::sin (transientPhase_);
@@ -194,22 +234,53 @@ double DrumVoice::process ()
   const double transientBlend =
     std::clamp ((frame_.transientMix * 0.65) + (frame_.snapAmount * kNoiseTransientBlend[character]), 0.0, 1.0);
   const double transientCore = (transientOsc * (1.0 - transientBlend)) + (transientNoise * transientBlend);
+  const double transientExciter = softClip (transientCore * (1.8 + (frame_.snapAmount * 1.3)));
 
   const double transBaseCutoff = cutoffFromNormalized (frame_.transFilterCutoff, 95.0, 20000.0);
-  const double transEnvMod = transBaseCutoff * frame_.transFilterEnvAmount * transientEnv_ * 4.0;
+  const double transEnvMod =
+    transBaseCutoff * (0.35 + (frame_.transientAmount * 0.45)) * frame_.transFilterEnvAmount * transientEnv_ * 2.8;
   const double transCutoffHz = std::clamp (transBaseCutoff + transEnvMod, 70.0, sampleRate_ * 0.43);
-  const double transResScaled = std::min (0.96, frame_.transFilterResonance * 1.35);
-  const double filteredTransient = processStateVariableLowpass (transientCore, transCutoffHz,
+  const double transResScaled =
+    std::min (0.985, 0.35 + (frame_.transFilterResonance * 0.52) + (frame_.transientAmount * 0.18));
+  const double filteredTransient = processStateVariableLowpass (transientExciter, transCutoffHz,
                                                                 transResScaled,
                                                                 transFilterLowState_, transFilterBandState_);
 
+  // Low-frequency thump layer: a pitched sine that sweeps from peak->base over
+  // a few ms. Drives the audible "knock" body for kicks at any fundamental and
+  // gives 808/909-style click weight. Disabled (gain=0) for hat to keep it crisp.
+  double thumpOut = 0.0;
+  if (kThumpGain[character] > 0.0)
+  {
+    const double thumpFreq =
+      thumpBaseHz_ + (thumpPeakHz_ - thumpBaseHz_) * std::pow (std::max (thumpPitchEnv_, 0.0), 0.85);
+    thumpPhase_ += (kTwoPi * thumpFreq) / sampleRate_;
+    thumpPhase_ = wrapPhase (thumpPhase_);
+    const double thumpOsc = std::sin (thumpPhase_);
+    // Soft saturate the thump for a touch of body & to keep peaks tame.
+    const double thumpDriven = std::tanh (thumpOsc * (1.25 + frame_.snapAmount * 0.85));
+    thumpOut = thumpDriven * thumpEnv_ * kThumpGain[character];
+    thumpEnv_ *= thumpDecayCoef_;
+    thumpPitchEnv_ *= thumpPitchDecayCoef_;
+  }
+
   const double transientGain =
-    (0.5 + (frame_.transientAmount * 1.5)) * frame_.transientLevel * kTransientGainBoost[character];
-  const double clickAmt =
-    (0.42 + (frame_.snapAmount * 0.55)) * (0.35 + (frame_.transientAmount * 1.15)) * transientEnv_;
-  const double clickOut = transientCore * clickEnv_ * clickAmt * transientGain;
+    (0.72 + (frame_.transientAmount * 1.9)) * frame_.transientLevel * kTransientGainBoost[character];
+  const double knockWeight = 1.0 + (std::pow (1.0 - clamp01 (frame_.transFilterCutoff), 0.72) * 1.8);
+  const double clickAmt = (0.62 + (frame_.snapAmount * 0.72)) * (0.68 + (frame_.transientAmount * 1.35));
+  const double clickRaw = transientExciter * clickEnv_ * clickAmt;
   clickEnv_ *= clickDecayCoef_;
-  const double transOut = (filteredTransient * transientEnv_ * transientGain) + clickOut;
+  // Sum the transient bus pre-saturation, then drive through tanh AFTER applying
+  // gain so loud settings audibly saturate (musical click bite) while bounding
+  // the per-voice peak. Output stays roughly under ~1.5 regardless of user gain.
+  const double transientBus =
+    (filteredTransient * transientEnv_ * knockWeight) + thumpOut + clickRaw;
+  // Mild global tone tilt on transient (less than noise so percussive bite stays).
+  // tilt=0 -> 0.72x, tilt=1 -> 1.00x. Thump component is mostly low-end so
+  // it stays prominent even when the body filter is closed.
+  const double transientToneTilt = 0.72 + (globalToneTilt * 0.28);
+  const double transientDriven = transientBus * transientGain;
+  const double transOut = std::tanh (transientDriven * 0.42) * 1.55 * transientToneTilt;
 
   // --- NOISE PATH ---
   const double rawNoise = randomBipolar ();
@@ -228,8 +299,20 @@ double DrumVoice::process ()
   const double noiseResonance = std::clamp (frame_.noiseResonance + (frame_.snapAmount * 0.16), 0.0, 0.98);
   const double resonantNoise = processStateVariableLowpass (shapedNoise, noiseCutoffEnv, noiseResonance,
                                                             noiseResLowState_, noiseResBandState_);
-  const double noiseOut =
-    resonantNoise * frame_.noiseAmount * frame_.noiseLevel * noiseContour * kNoiseBlendGain[character];
+  // Resonant LPFs with high Q lose perceived energy on the unfiltered noise floor.
+  // Add ~+6 dB make-up at high resonance to keep the noise audible everywhere.
+  const double noiseResMakeup = 1.0 + (noiseResonance * noiseResonance * 1.10);
+  // Loudness law tuned so the user's noise-level knob has obvious effect at any
+  // setting. Floor raised vs. previous (0.40 vs 0.24) so a small noise value is
+  // still audible against body+transient. Slope steeper so the knob has reach.
+  // Product still goes to 0 if both factor inputs are 0.
+  const double noisePresence =
+    (0.40 + (frame_.noiseAmount * 1.05)) * (0.78 + (frame_.noiseLevel * 0.55));
+  // Apply the global tone-tilt so the body cutoff knob darkens noise too.
+  // tilt=0 (body closed) -> attenuate noise to 0.55x; tilt=1 (open) -> 1.00x.
+  const double noiseToneAttenuation = 0.55 + (globalToneTilt * 0.45);
+  const double noiseOut = resonantNoise * noisePresence * noiseContour * kNoiseBlendGain[character] *
+                          noiseResMakeup * noiseToneAttenuation;
 
   // --- SUMMING (per-voice, no dynamic normalization) ---
   const double drive = 1.0 + (frame_.driveAmount * 6.0);
@@ -259,7 +342,8 @@ double DrumVoice::process ()
   noiseEnv_ *= noiseDecayCoef_;
   transientEnv_ *= transientDecayCoef_;
 
-  if (ampEnv_ < 0.00008 && noiseEnv_ < 0.00008 && transientEnv_ < 0.00008 && clickEnv_ < 0.00002)
+  if (ampEnv_ < 0.00008 && noiseEnv_ < 0.00008 && transientEnv_ < 0.00008 &&
+      clickEnv_ < 0.00002 && thumpEnv_ < 0.00008)
   {
     active_ = false;
     ampEnv_ = 0.0;
@@ -267,6 +351,8 @@ double DrumVoice::process ()
     pitchEnv_ = 0.0;
     noiseEnv_ = 0.0;
     transientEnv_ = 0.0;
+    thumpEnv_ = 0.0;
+    thumpPitchEnv_ = 0.0;
     clickEnv_ = 0.0;
   }
 
@@ -278,11 +364,14 @@ void DrumVoice::reset ()
   carrierPhase_ = 0.0;
   modPhase_ = 0.0;
   transientPhase_ = 0.0;
+  thumpPhase_ = 0.0;
   ampEnv_ = 0.0;
   toneEnv_ = 0.0;
   pitchEnv_ = 0.0;
   noiseEnv_ = 0.0;
   transientEnv_ = 0.0;
+  thumpEnv_ = 0.0;
+  thumpPitchEnv_ = 0.0;
   clickEnv_ = 0.0;
   noiseLowState_ = 0.0;
   noiseHighState_ = 0.0;
@@ -339,9 +428,12 @@ double DrumVoice::processStateVariableLowpass (double input, double cutoffHz, do
     lowState += 0.5 * f * bandState;
   }
 
-  // Clamp filter states to prevent runaway
-  bandState = std::clamp (bandState, -8.0, 8.0);
-  lowState = std::clamp (lowState, -8.0, 8.0);
+  // Flush denormals + clamp filter states to prevent runaway. Adding a tiny
+  // anti-denormal offset keeps the IEEE-754 path on normalized values when
+  // the voice is silent for long stretches.
+  constexpr double kDenormalGuard = 1.0e-25;
+  bandState = std::clamp (bandState + kDenormalGuard, -8.0, 8.0);
+  lowState = std::clamp (lowState + kDenormalGuard, -8.0, 8.0);
 
   return lowState;
 }

@@ -1,6 +1,15 @@
 #pragma once
 
+// DAW-visible name (Bitwig browser, etc.). Debug vs Release builds use different
+// strings so you can tell which binary is installed. Set -DWCDS_PUBLIC_PLUGIN_NAME=ON
+// for a neutral shipping name without (Debug)/(Release).
+#if defined(WCDS_PUBLIC_PLUGIN_NAME)
 #define stringPluginName "West Coast Drum Synth"
+#elif defined(NDEBUG)
+#define stringPluginName "West Coast Drum Synth (Release)"
+#else
+#define stringPluginName "West Coast Drum Synth (Debug)"
+#endif
 #define stringCompanyName "Sine Language"
 #define stringCompanyWeb "https://sinelanguage.com"
 #define stringCompanyEmail "info@sinelanguage.com"

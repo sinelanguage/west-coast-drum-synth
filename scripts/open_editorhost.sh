@@ -21,4 +21,5 @@ if [[ ! -d "${PLUGIN_PATH}" ]]; then
 fi
 
 echo "Launching editorhost with plugin: ${PLUGIN_PATH}"
+echo "(Release build: host lists this as \"West Coast Drum Synth (Release)\" unless WCDS_PUBLIC_PLUGIN_NAME is ON.)"
 exec "${EDITORHOST_BIN}" "${PLUGIN_PATH}"

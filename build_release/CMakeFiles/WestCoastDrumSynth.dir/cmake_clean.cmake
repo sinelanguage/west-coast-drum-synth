@@ -16,6 +16,22 @@ file(REMOVE_RECURSE
   "VST3/Release/WestCoastDrumSynth.vst3/Contents/MacOS/WestCoastDrumSynth"
   "VST3/Release/WestCoastDrumSynth.vst3/Contents/MacOS/WestCoastDrumSynth.pdb"
   "VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/WestCoastEditor.uidesc"
+  "VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/flat_panel_border_9.png"
+  "VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/flat_panel_border_9_2x.png"
+  "VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/lane_frame_9.png"
+  "VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/lane_frame_9_2x.png"
+  "VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/signal_path_dark.png"
+  "VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/signal_path_dark_2x.png"
+  "VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_h.png"
+  "VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_h_2x.png"
+  "VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_mini_v.png"
+  "VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_mini_v_2x.png"
+  "VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_v.png"
+  "VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_v_2x.png"
+  "VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_ticks_10.png"
+  "VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_ticks_10_2x.png"
+  "VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_ticks_10_narrow.png"
+  "VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_ticks_10_narrow_2x.png"
 )
 
 # Per-language clean rules from dependency scanning.

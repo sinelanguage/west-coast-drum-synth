@@ -76,6 +76,70 @@ VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/WestCoastEditor.uidesc: 
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Copying OS X content VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/WestCoastEditor.uidesc"
 	$(CMAKE_COMMAND) -E copy /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/WestCoastEditor.uidesc VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/WestCoastEditor.uidesc
 
+VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/flat_panel_border_9.png: /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/flat_panel_border_9.png
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Copying OS X content VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/flat_panel_border_9.png"
+	$(CMAKE_COMMAND) -E copy /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/flat_panel_border_9.png VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/flat_panel_border_9.png
+
+VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/flat_panel_border_9_2x.png: /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/flat_panel_border_9_2x.png
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Copying OS X content VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/flat_panel_border_9_2x.png"
+	$(CMAKE_COMMAND) -E copy /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/flat_panel_border_9_2x.png VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/flat_panel_border_9_2x.png
+
+VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/lane_frame_9.png: /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/lane_frame_9.png
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Copying OS X content VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/lane_frame_9.png"
+	$(CMAKE_COMMAND) -E copy /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/lane_frame_9.png VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/lane_frame_9.png
+
+VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/lane_frame_9_2x.png: /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/lane_frame_9_2x.png
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Copying OS X content VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/lane_frame_9_2x.png"
+	$(CMAKE_COMMAND) -E copy /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/lane_frame_9_2x.png VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/lane_frame_9_2x.png
+
+VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_v.png: /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/slider_cap_v.png
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Copying OS X content VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_v.png"
+	$(CMAKE_COMMAND) -E copy /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/slider_cap_v.png VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_v.png
+
+VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_v_2x.png: /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/slider_cap_v_2x.png
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Copying OS X content VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_v_2x.png"
+	$(CMAKE_COMMAND) -E copy /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/slider_cap_v_2x.png VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_v_2x.png
+
+VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_mini_v.png: /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/slider_cap_mini_v.png
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Copying OS X content VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_mini_v.png"
+	$(CMAKE_COMMAND) -E copy /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/slider_cap_mini_v.png VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_mini_v.png
+
+VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_mini_v_2x.png: /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/slider_cap_mini_v_2x.png
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Copying OS X content VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_mini_v_2x.png"
+	$(CMAKE_COMMAND) -E copy /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/slider_cap_mini_v_2x.png VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_mini_v_2x.png
+
+VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_h.png: /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/slider_cap_h.png
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Copying OS X content VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_h.png"
+	$(CMAKE_COMMAND) -E copy /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/slider_cap_h.png VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_h.png
+
+VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_h_2x.png: /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/slider_cap_h_2x.png
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Copying OS X content VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_h_2x.png"
+	$(CMAKE_COMMAND) -E copy /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/slider_cap_h_2x.png VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_h_2x.png
+
+VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/signal_path_dark.png: /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/signal_path_dark.png
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Copying OS X content VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/signal_path_dark.png"
+	$(CMAKE_COMMAND) -E copy /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/signal_path_dark.png VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/signal_path_dark.png
+
+VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/signal_path_dark_2x.png: /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/signal_path_dark_2x.png
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Copying OS X content VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/signal_path_dark_2x.png"
+	$(CMAKE_COMMAND) -E copy /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/signal_path_dark_2x.png VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/signal_path_dark_2x.png
+
+VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_ticks_10.png: /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/slider_ticks_10.png
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Copying OS X content VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_ticks_10.png"
+	$(CMAKE_COMMAND) -E copy /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/slider_ticks_10.png VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_ticks_10.png
+
+VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_ticks_10_2x.png: /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/slider_ticks_10_2x.png
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Copying OS X content VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_ticks_10_2x.png"
+	$(CMAKE_COMMAND) -E copy /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/slider_ticks_10_2x.png VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_ticks_10_2x.png
+
+VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_ticks_10_narrow.png: /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/slider_ticks_10_narrow.png
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Copying OS X content VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_ticks_10_narrow.png"
+	$(CMAKE_COMMAND) -E copy /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/slider_ticks_10_narrow.png VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_ticks_10_narrow.png
+
+VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_ticks_10_narrow_2x.png: /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/slider_ticks_10_narrow_2x.png
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Copying OS X content VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_ticks_10_narrow_2x.png"
+	$(CMAKE_COMMAND) -E copy /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/resource/bitmaps/slider_ticks_10_narrow_2x.png VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_ticks_10_narrow_2x.png
+
 CMakeFiles/WestCoastDrumSynth.dir/source/factory.cpp.o: CMakeFiles/WestCoastDrumSynth.dir/flags.make
 CMakeFiles/WestCoastDrumSynth.dir/source/factory.cpp.o: /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/source/factory.cpp
 CMakeFiles/WestCoastDrumSynth.dir/source/factory.cpp.o: CMakeFiles/WestCoastDrumSynth.dir/compiler_depend.ts
@@ -213,6 +277,22 @@ VST3/Release/WestCoastDrumSynth.vst3/Contents/MacOS/WestCoastDrumSynth: CMakeFil
 # Rule to build all files generated by this target.
 CMakeFiles/WestCoastDrumSynth.dir/build: VST3/Release/WestCoastDrumSynth.vst3/Contents/MacOS/WestCoastDrumSynth
 CMakeFiles/WestCoastDrumSynth.dir/build: VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/WestCoastEditor.uidesc
+CMakeFiles/WestCoastDrumSynth.dir/build: VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/flat_panel_border_9.png
+CMakeFiles/WestCoastDrumSynth.dir/build: VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/flat_panel_border_9_2x.png
+CMakeFiles/WestCoastDrumSynth.dir/build: VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/lane_frame_9.png
+CMakeFiles/WestCoastDrumSynth.dir/build: VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/lane_frame_9_2x.png
+CMakeFiles/WestCoastDrumSynth.dir/build: VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/signal_path_dark.png
+CMakeFiles/WestCoastDrumSynth.dir/build: VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/signal_path_dark_2x.png
+CMakeFiles/WestCoastDrumSynth.dir/build: VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_h.png
+CMakeFiles/WestCoastDrumSynth.dir/build: VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_h_2x.png
+CMakeFiles/WestCoastDrumSynth.dir/build: VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_mini_v.png
+CMakeFiles/WestCoastDrumSynth.dir/build: VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_mini_v_2x.png
+CMakeFiles/WestCoastDrumSynth.dir/build: VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_v.png
+CMakeFiles/WestCoastDrumSynth.dir/build: VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_cap_v_2x.png
+CMakeFiles/WestCoastDrumSynth.dir/build: VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_ticks_10.png
+CMakeFiles/WestCoastDrumSynth.dir/build: VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_ticks_10_2x.png
+CMakeFiles/WestCoastDrumSynth.dir/build: VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_ticks_10_narrow.png
+CMakeFiles/WestCoastDrumSynth.dir/build: VST3/Release/WestCoastDrumSynth.vst3/Contents/Resources/slider_ticks_10_narrow_2x.png
 .PHONY : CMakeFiles/WestCoastDrumSynth.dir/build
 
 CMakeFiles/WestCoastDrumSynth.dir/clean:

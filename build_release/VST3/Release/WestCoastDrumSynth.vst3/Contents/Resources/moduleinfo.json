@@ -15,7 +15,7 @@
     {
       "CID": "77A94C269C5A4A9A85B3B4F1F4126B88",
       "Category": "Audio Module Class",
-      "Name": "West Coast Drum Synth",
+      "Name": "West Coast Drum Synth (Release)",
       "Vendor": "Sine Language",
       "Version": "1.0.0",
       "SDKVersion": "VST 3.8.0",
@@ -32,7 +32,7 @@
     {
       "CID": "4FBE32D1206A4EABB1E8D8A56227D29E",
       "Category": "Component Controller Class",
-      "Name": "West Coast Drum SynthController",
+      "Name": "West Coast Drum Synth (Release)Controller",
       "Vendor": "Sine Language",
       "Version": "1.0.0",
       "SDKVersion": "VST 3.8.0",

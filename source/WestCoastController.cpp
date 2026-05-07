@@ -12,11 +12,91 @@
 
 #include <algorithm>
 #include <array>
+#include <cmath>
+#include <string>
 #include <utility>
+#include <vector>
 
 namespace Steinberg::WestCoastDrumSynth {
 
 namespace {
+
+constexpr double kEditorBaseWidth = 1066.0;
+constexpr double kEditorBaseHeight = 537.0;
+constexpr double kEditorMinZoom = 0.72;
+constexpr double kEditorMaxZoom = 2048.0 / kEditorBaseWidth;
+constexpr std::array<double, 6> kEditorZoomSteps {
+  0.72, 0.85, 1.00, 1.25, 1.50, kEditorMaxZoom
+};
+
+double snapEditorZoom (double requestedZoom)
+{
+  const auto clamped = std::clamp (requestedZoom, kEditorMinZoom, kEditorMaxZoom);
+  const auto upper = std::upper_bound (kEditorZoomSteps.begin (), kEditorZoomSteps.end (), clamped);
+  if (upper == kEditorZoomSteps.begin ())
+    return *upper;
+  if (upper == kEditorZoomSteps.end ())
+    return kEditorZoomSteps.back ();
+  return *std::prev (upper);
+}
+
+class SteppedZoomVST3Editor final : public VSTGUI::VST3Editor
+{
+public:
+  using VSTGUI::VST3Editor::VST3Editor;
+
+protected:
+  bool PLUGIN_API open (void* parent, const VSTGUI::PlatformType& type) SMTG_OVERRIDE
+  {
+    if (!VSTGUI::VST3Editor::open (parent, type))
+      return false;
+    setZoomFactor (currentZoom_);
+    return true;
+  }
+
+  tresult PLUGIN_API checkSizeConstraint (ViewRect* rect) SMTG_OVERRIDE
+  {
+    if (!rect)
+      return kInvalidArgument;
+
+    const auto requestedWidth = std::max<int32> (1, rect->right - rect->left);
+    const auto snappedZoom =
+      snapEditorZoom (static_cast<double> (requestedWidth) / (kEditorBaseWidth * getContentScaleFactor ()));
+    const auto snappedWidth =
+      static_cast<int32> (std::lround (kEditorBaseWidth * snappedZoom * getContentScaleFactor ()));
+    const auto snappedHeight =
+      static_cast<int32> (std::lround (kEditorBaseHeight * snappedZoom * getContentScaleFactor ()));
+
+    rect->right = rect->left + snappedWidth;
+    rect->bottom = rect->top + snappedHeight;
+    pendingZoom_ = snappedZoom;
+    return VSTGUI::VST3Editor::checkSizeConstraint (rect);
+  }
+
+  tresult PLUGIN_API onSize (ViewRect* newSize) SMTG_OVERRIDE
+  {
+    if (!newSize)
+      return kInvalidArgument;
+
+    setZoomFactor (pendingZoom_);
+    currentZoom_ = pendingZoom_;
+    return kResultTrue;
+  }
+
+#ifdef VST3_CONTENT_SCALE_SUPPORT
+  tresult PLUGIN_API setContentScaleFactor (ScaleFactor factor) SMTG_OVERRIDE
+  {
+    const auto result = VSTGUI::VST3Editor::setContentScaleFactor (factor);
+    if (result == kResultTrue)
+      setZoomFactor (currentZoom_);
+    return result;
+  }
+#endif
+
+private:
+  double currentZoom_ {1.0};
+  double pendingZoom_ {1.0};
+};
 
 constexpr uint32 kStateVersion = 8;
 constexpr uint32 kV7StateVersion = 7;
@@ -29,6 +109,7 @@ constexpr uint32 kPreviousStateVersion = 2;
 constexpr uint32 kLegacyStateVersion = 1;
 constexpr int32 kLegacyLaneCount = 4;
 constexpr int32 kPreviousGlobalParamCount = 6;
+constexpr int32 kUserPresetCount = 8;
 
 constexpr std::array<std::array<double, kLaneExtraParamCount>, kLaneCount> kLaneExtraDefaults {{
   {{0.84, 0.30, 0.76, 0.36, 0.26, 0.24}},
@@ -108,7 +189,7 @@ tresult PLUGIN_API WestCoastController::initialize (FUnknown* context)
     makeRangeParam ("Internal Tempo (Seq)", kParamInternalTempo, "BPM", 60.0, 180.0, 120.0));
   parameters.addParameter (makeRangeParam ("Swing", kParamSwing, "%", 0.0, 100.0, 12.0));
   parameters.addParameter (
-    makeRangeParam ("Osc Body Cutoff", kParamOscFilterCutoff, "Hz", 80.0, 16000.0, 3200.0));
+    makeRangeParam ("Osc Body Cutoff", kParamOscFilterCutoff, "Hz", 80.0, 16000.0, 16000.0));
   parameters.addParameter (
     makeRangeParam ("Osc Body Resonance", kParamOscFilterResonance, "%", 0.0, 100.0, 34.0));
   parameters.addParameter (
@@ -123,9 +204,15 @@ tresult PLUGIN_API WestCoastController::initialize (FUnknown* context)
     auto presetName = toString128 (preset.name.data ());
     presetParam->appendString (presetName);
   }
+  for (int32 userIndex = 0; userIndex < kUserPresetCount; ++userIndex)
+  {
+    const std::string userPresetName = "User " + std::to_string (userIndex + 1);
+    auto presetName = toString128 (userPresetName.c_str ());
+    presetParam->appendString (presetName);
+  }
   parameters.addParameter (presetParam);
   parameters.addParameter (STR16 ("Morph"), nullptr, 1, 0.0, Vst::ParameterInfo::kCanAutomate, kParamRandomize);
-  parameters.addParameter (makeRangeParam ("Morph", kParamRandomizeAmount, "%", -50.0, 50.0, 0.0));
+  parameters.addParameter (makeRangeParam ("Morph Amount", kParamRandomizeAmount, "%", -50.0, 50.0, 0.0));
 
   const std::array<std::array<const char*, kLaneParamCount>, kLaneCount> laneTitles {{
     {{"Kick Tune", "Kick Decay", "Kick Fold", "Kick FM", "Kick Noise Level", "Kick Drive", "Kick Output", "Kick Pan"}},
@@ -578,10 +665,12 @@ IPlugView* PLUGIN_API WestCoastController::createView (FIDString name)
 {
   if (FIDStringsEqual (name, Vst::ViewType::kEditor))
   {
-    auto* editor = new VSTGUI::AspectRatioVST3Editor (this, "Editor", "WestCoastEditor.uidesc");
+    auto* editor = new SteppedZoomVST3Editor (this, "Editor", "WestCoastEditor.uidesc");
     editor->setDelegate (this);
-    editor->setMinZoomFactor (0.72);
-    editor->setEditorSizeConstrains (VSTGUI::CPoint (720., 337.), VSTGUI::CPoint (2048., 960.));
+    editor->setAllowedZoomFactors (std::vector<double> (kEditorZoomSteps.begin (), kEditorZoomSteps.end ()));
+    editor->setEditorSizeConstrains (
+      VSTGUI::CPoint (kEditorBaseWidth * kEditorMinZoom, kEditorBaseHeight * kEditorMinZoom),
+      VSTGUI::CPoint (2048., 960.));
     return editor;
   }
   return nullptr;

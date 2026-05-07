@@ -14,6 +14,9 @@ endif()
 option(WCSD_MAC_UNIVERSAL "Build macOS universal binary (arm64;x86_64)" OFF)
 set(WCSD_MAC_ARCHITECTURES "arm64" CACHE STRING "macOS architectures when not universal")
 
+# When ON, plugin shows as "West Coast Drum Synth" in the host (no Debug/Release suffix).
+option(WCDS_PUBLIC_PLUGIN_NAME "Neutral plugin name for distribution builds" OFF)
+
 if(APPLE)
   if(NOT DEFINED CMAKE_OSX_ARCHITECTURES OR CMAKE_OSX_ARCHITECTURES STREQUAL "")
     if(WCSD_MAC_UNIVERSAL)
@@ -118,9 +121,29 @@ target_link_libraries(WestCoastDrumSynth
     vstgui_support
 )
 
+if(WCDS_PUBLIC_PLUGIN_NAME)
+  target_compile_definitions(WestCoastDrumSynth PRIVATE WCDS_PUBLIC_PLUGIN_NAME=1)
+endif()
+
 smtg_target_add_plugin_resources(WestCoastDrumSynth
   RESOURCES
     "resource/WestCoastEditor.uidesc"
+    "resource/bitmaps/flat_panel_border_9.png"
+    "resource/bitmaps/flat_panel_border_9_2x.png"
+    "resource/bitmaps/lane_frame_9.png"
+    "resource/bitmaps/lane_frame_9_2x.png"
+    "resource/bitmaps/slider_cap_v.png"
+    "resource/bitmaps/slider_cap_v_2x.png"
+    "resource/bitmaps/slider_cap_mini_v.png"
+    "resource/bitmaps/slider_cap_mini_v_2x.png"
+    "resource/bitmaps/slider_cap_h.png"
+    "resource/bitmaps/slider_cap_h_2x.png"
+    "resource/bitmaps/signal_path_dark.png"
+    "resource/bitmaps/signal_path_dark_2x.png"
+    "resource/bitmaps/slider_ticks_10.png"
+    "resource/bitmaps/slider_ticks_10_2x.png"
+    "resource/bitmaps/slider_ticks_10_narrow.png"
+    "resource/bitmaps/slider_ticks_10_narrow_2x.png"
 )
 
 smtg_target_configure_version_file(WestCoastDrumSynth)

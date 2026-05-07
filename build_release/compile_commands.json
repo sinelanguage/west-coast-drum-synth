@@ -109,6 +109,30 @@
 },
 {
   "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
+  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -DVSTGUI_ENABLE_DEPRECATED_METHODS=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -stdlib=libc++ -o CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3groupcontroller.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4/vstgui/plugin-bindings/vst3groupcontroller.cpp",
+  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4/vstgui/plugin-bindings/vst3groupcontroller.cpp",
+  "output": "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3groupcontroller.cpp.o"
+},
+{
+  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
+  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -DVSTGUI_ENABLE_DEPRECATED_METHODS=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -stdlib=libc++ -o CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3padcontroller.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4/vstgui/plugin-bindings/vst3padcontroller.cpp",
+  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4/vstgui/plugin-bindings/vst3padcontroller.cpp",
+  "output": "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3padcontroller.cpp.o"
+},
+{
+  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
+  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -DVSTGUI_ENABLE_DEPRECATED_METHODS=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -stdlib=libc++ -o CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3editor.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4/vstgui/plugin-bindings/vst3editor.cpp",
+  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4/vstgui/plugin-bindings/vst3editor.cpp",
+  "output": "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3editor.cpp.o"
+},
+{
+  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
+  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -DVSTGUI_ENABLE_DEPRECATED_METHODS=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -stdlib=libc++ -o CMakeFiles/vstgui_support.dir/public.sdk/source/vst/vstguieditor.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/vstguieditor.cpp",
+  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/vstguieditor.cpp",
+  "output": "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/public.sdk/source/vst/vstguieditor.cpp.o"
+},
+{
+  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
   "command": "/usr/bin/c++ -DDEVELOPMENT=1 -DSMTG_USE_STDATOMIC_H=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -o CMakeFiles/pluginterfaces.dir/pluginterfaces/base/conststringtable.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/pluginterfaces/base/conststringtable.cpp",
   "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/pluginterfaces/base/conststringtable.cpp",
   "output": "_deps/vst3sdk-build/CMakeFiles/pluginterfaces.dir/pluginterfaces/base/conststringtable.cpp.o"
@@ -196,84 +220,6 @@
   "command": "/usr/bin/c++ -DDEVELOPMENT=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src -x objective-c++ -O3 -DNDEBUG -std=c++2a -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -o CMakeFiles/sdk_common.dir/public.sdk/source/common/systemclipboard_mac.mm.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/common/systemclipboard_mac.mm",
   "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/common/systemclipboard_mac.mm",
   "output": "_deps/vst3sdk-build/CMakeFiles/sdk_common.dir/public.sdk/source/common/systemclipboard_mac.mm.o"
-},
-{
-  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
-  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -o CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/connectionproxy.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/connectionproxy.cpp",
-  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/connectionproxy.cpp",
-  "output": "_deps/vst3sdk-build/CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/connectionproxy.cpp.o"
-},
-{
-  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
-  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -o CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/eventlist.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/eventlist.cpp",
-  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/eventlist.cpp",
-  "output": "_deps/vst3sdk-build/CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/eventlist.cpp.o"
-},
-{
-  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
-  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -o CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/hostclasses.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/hostclasses.cpp",
-  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/hostclasses.cpp",
-  "output": "_deps/vst3sdk-build/CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/hostclasses.cpp.o"
-},
-{
-  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
-  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -o CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/module.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/module.cpp",
-  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/module.cpp",
-  "output": "_deps/vst3sdk-build/CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/module.cpp.o"
-},
-{
-  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
-  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -o CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/parameterchanges.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/parameterchanges.cpp",
-  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/parameterchanges.cpp",
-  "output": "_deps/vst3sdk-build/CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/parameterchanges.cpp.o"
-},
-{
-  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
-  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -o CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/pluginterfacesupport.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/pluginterfacesupport.cpp",
-  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/pluginterfacesupport.cpp",
-  "output": "_deps/vst3sdk-build/CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/pluginterfacesupport.cpp.o"
-},
-{
-  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
-  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -o CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/processdata.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/processdata.cpp",
-  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/processdata.cpp",
-  "output": "_deps/vst3sdk-build/CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/processdata.cpp.o"
-},
-{
-  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
-  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -o CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/utility/stringconvert.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/utility/stringconvert.cpp",
-  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/utility/stringconvert.cpp",
-  "output": "_deps/vst3sdk-build/CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/utility/stringconvert.cpp.o"
-},
-{
-  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
-  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -o CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/vstinitiids.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/vstinitiids.cpp",
-  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/vstinitiids.cpp",
-  "output": "_deps/vst3sdk-build/CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/vstinitiids.cpp.o"
-},
-{
-  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
-  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -DVSTGUI_ENABLE_DEPRECATED_METHODS=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -stdlib=libc++ -o CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3groupcontroller.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4/vstgui/plugin-bindings/vst3groupcontroller.cpp",
-  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4/vstgui/plugin-bindings/vst3groupcontroller.cpp",
-  "output": "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3groupcontroller.cpp.o"
-},
-{
-  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
-  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -DVSTGUI_ENABLE_DEPRECATED_METHODS=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -stdlib=libc++ -o CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3padcontroller.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4/vstgui/plugin-bindings/vst3padcontroller.cpp",
-  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4/vstgui/plugin-bindings/vst3padcontroller.cpp",
-  "output": "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3padcontroller.cpp.o"
-},
-{
-  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
-  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -DVSTGUI_ENABLE_DEPRECATED_METHODS=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -stdlib=libc++ -o CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3editor.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4/vstgui/plugin-bindings/vst3editor.cpp",
-  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4/vstgui/plugin-bindings/vst3editor.cpp",
-  "output": "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/vstgui4/vstgui/plugin-bindings/vst3editor.cpp.o"
-},
-{
-  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
-  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -DVSTGUI_ENABLE_DEPRECATED_METHODS=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/vstgui4 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -stdlib=libc++ -o CMakeFiles/vstgui_support.dir/public.sdk/source/vst/vstguieditor.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/vstguieditor.cpp",
-  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/vstguieditor.cpp",
-  "output": "_deps/vst3sdk-build/CMakeFiles/vstgui_support.dir/public.sdk/source/vst/vstguieditor.cpp.o"
 },
 {
   "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
@@ -376,6 +322,60 @@
   "command": "/usr/bin/c++ -DDEVELOPMENT=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -o CMakeFiles/sdk.dir/public.sdk/source/vst/vstrepresentation.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/vstrepresentation.cpp",
   "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/vstrepresentation.cpp",
   "output": "_deps/vst3sdk-build/CMakeFiles/sdk.dir/public.sdk/source/vst/vstrepresentation.cpp.o"
+},
+{
+  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
+  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -o CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/connectionproxy.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/connectionproxy.cpp",
+  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/connectionproxy.cpp",
+  "output": "_deps/vst3sdk-build/CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/connectionproxy.cpp.o"
+},
+{
+  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
+  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -o CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/eventlist.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/eventlist.cpp",
+  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/eventlist.cpp",
+  "output": "_deps/vst3sdk-build/CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/eventlist.cpp.o"
+},
+{
+  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
+  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -o CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/hostclasses.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/hostclasses.cpp",
+  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/hostclasses.cpp",
+  "output": "_deps/vst3sdk-build/CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/hostclasses.cpp.o"
+},
+{
+  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
+  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -o CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/module.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/module.cpp",
+  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/module.cpp",
+  "output": "_deps/vst3sdk-build/CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/module.cpp.o"
+},
+{
+  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
+  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -o CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/parameterchanges.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/parameterchanges.cpp",
+  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/parameterchanges.cpp",
+  "output": "_deps/vst3sdk-build/CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/parameterchanges.cpp.o"
+},
+{
+  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
+  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -o CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/pluginterfacesupport.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/pluginterfacesupport.cpp",
+  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/pluginterfacesupport.cpp",
+  "output": "_deps/vst3sdk-build/CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/pluginterfacesupport.cpp.o"
+},
+{
+  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
+  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -o CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/processdata.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/processdata.cpp",
+  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/hosting/processdata.cpp",
+  "output": "_deps/vst3sdk-build/CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/hosting/processdata.cpp.o"
+},
+{
+  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
+  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -o CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/utility/stringconvert.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/utility/stringconvert.cpp",
+  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/utility/stringconvert.cpp",
+  "output": "_deps/vst3sdk-build/CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/utility/stringconvert.cpp.o"
+},
+{
+  "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build",
+  "command": "/usr/bin/c++ -DDEVELOPMENT=1 -I/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src  -stdlib=libc++ -O3 -DNDEBUG -std=c++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -mmacosx-version-min=11.0 -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DSMTG_RENAME_ASSERT=1 -DRELEASE=1 -o CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/vstinitiids.cpp.o -c /Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/vstinitiids.cpp",
+  "file": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-src/public.sdk/source/vst/vstinitiids.cpp",
+  "output": "_deps/vst3sdk-build/CMakeFiles/sdk_hosting.dir/public.sdk/source/vst/vstinitiids.cpp.o"
 },
 {
   "directory": "/Users/sinelanguage/dev/2026/ai/west-coast-drum-synth/build_release/_deps/vst3sdk-build/VSTGUI.build/vstgui/lib",
