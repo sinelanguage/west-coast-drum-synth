@@ -17,7 +17,7 @@
       "Category": "Audio Module Class",
       "Name": "West Coast Drum Synth (Release)",
       "Vendor": "Sine Language",
-      "Version": "1.0.0",
+      "Version": "1.1.0",
       "SDKVersion": "VST 3.8.0",
       "Sub Categories": [
         "Instrument",
@@ -34,7 +34,7 @@
       "Category": "Component Controller Class",
       "Name": "West Coast Drum Synth (Release)Controller",
       "Vendor": "Sine Language",
-      "Version": "1.0.0",
+      "Version": "1.1.0",
       "SDKVersion": "VST 3.8.0",
       "Class Flags": 0,
       "Cardinality": 2147483647,
