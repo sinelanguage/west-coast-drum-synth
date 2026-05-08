@@ -12,7 +12,9 @@
 
 #include <algorithm>
 #include <array>
+#include <cmath>
 #include <utility>
+#include <vector>
 
 namespace Steinberg::WestCoastDrumSynth {
 
@@ -537,10 +539,20 @@ IPlugView* PLUGIN_API WestCoastController::createView (FIDString name)
 {
   if (FIDStringsEqual (name, Vst::ViewType::kEditor))
   {
+    // Logical design size must match uidesc template "Editor" size attribute (Hi-DPI hosts scale via
+    // IPlugViewContentScaleSupport; AspectRatioVST3Editor applies zoom on resize).
+    constexpr double kDesignW = 1024.;
+    constexpr double kDesignH = 488.;
+    constexpr double kMinScale = 0.55;
+    constexpr double kMaxScale = 2.5;
+
     auto* editor = new VSTGUI::AspectRatioVST3Editor (this, "Editor", "WestCoastEditor.uidesc");
     editor->setDelegate (this);
-    editor->setMinZoomFactor (0.72);
-    editor->setEditorSizeConstrains (VSTGUI::CPoint (720., 337.), VSTGUI::CPoint (2048., 960.));
+    editor->setMinZoomFactor (0.5);
+    editor->setEditorSizeConstrains (
+      VSTGUI::CPoint (std::round (kDesignW * kMinScale), std::round (kDesignH * kMinScale)),
+      VSTGUI::CPoint (std::round (kDesignW * kMaxScale), std::round (kDesignH * kMaxScale)));
+    editor->setAllowedZoomFactors ({0.5, 2. / 3., 0.75, 0.85, 1.0, 1.25, 1.5, 2.0});
     return editor;
   }
   return nullptr;

@@ -13,6 +13,14 @@ import xml.etree.ElementTree as ET
 EDITOR_W = 1024
 EDITOR_H = 488
 
+# Resize bounds (logical px); must stay in sync with WestCoastController::createView
+EDITOR_MIN_SCALE = 0.55
+EDITOR_MAX_SCALE = 2.5
+EDITOR_MIN_W = int(round(EDITOR_W * EDITOR_MIN_SCALE))
+EDITOR_MIN_H = int(round(EDITOR_H * EDITOR_MIN_SCALE))
+EDITOR_MAX_W = int(round(EDITOR_W * EDITOR_MAX_SCALE))
+EDITOR_MAX_H = int(round(EDITOR_H * EDITOR_MAX_SCALE))
+
 # ---------------------------------------------------------------------------
 # Margins / header
 # ---------------------------------------------------------------------------
@@ -540,6 +548,7 @@ def generate():
                  f'background-color-draw-style="filled and stroked" '
                  f'class="CViewContainer" mouse-enabled="true" name="Editor" '
                  f'opacity="1" origin="0, 0" size="{EDITOR_W}, {EDITOR_H}" '
+                 f'minSize="{EDITOR_MIN_W}, {EDITOR_MIN_H}" maxSize="{EDITOR_MAX_W}, {EDITOR_MAX_H}" '
                  f'transparent="false" wants-focus="false">')
 
     # Title

@@ -20,7 +20,7 @@
     <color name="ButtonFrame" rgba="#71767dff"/>
   </colors>
 
-  <template background-color="Backdrop" background-color-draw-style="filled and stroked" class="CViewContainer" mouse-enabled="true" name="Editor" opacity="1" origin="0, 0" size="1024, 488" transparent="false" wants-focus="false">
+  <template background-color="Backdrop" background-color-draw-style="filled and stroked" class="CViewContainer" mouse-enabled="true" name="Editor" opacity="1" origin="0, 0" size="1024, 488" minSize="563, 268" maxSize="2560, 1220" transparent="false" wants-focus="false">
     <view back-color="Backdrop" background-offset="0, 0" class="CTextLabel" font="label_title" font-antialias="true" font-color="TextBright" frame-width="0" mouse-enabled="false" opacity="1" origin="6, 4" size="100, 14" style-no-frame="true" text-alignment="left" title="WSDS-F416" transparent="true"/>
     <view back-color="Backdrop" background-offset="0, 0" class="CTextLabel" font="label_micro" font-antialias="true" font-color="TextSubtle" frame-width="0" mouse-enabled="false" opacity="1" origin="500, 5" size="76, 10" style-no-frame="true" text-alignment="center" title="0011011010" transparent="true"/>
     <view background-color="ModuleBg" background-color-draw-style="filled and stroked" class="CViewContainer" mouse-enabled="true" opacity="1" origin="0, 16" size="1024, 32" transparent="false">
