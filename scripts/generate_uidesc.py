@@ -25,7 +25,7 @@ import xml.etree.ElementTree as ET
 # Top-level dimensions
 # ---------------------------------------------------------------------------
 EDITOR_W = 1180
-EDITOR_H = 760
+EDITOR_H = 800
 
 # ---------------------------------------------------------------------------
 # Color palette (Blast-Beats inspired matte black panel)
@@ -310,7 +310,7 @@ def text_button(tag, x, y, w, h, title, *, fill="ButtonGrey",
 # ---------------------------------------------------------------------------
 # Top I/O strip — decorative jack labels with downward arrows
 # ---------------------------------------------------------------------------
-TOP_STRIP_H = 56
+TOP_STRIP_H = 64
 
 IO_LABELS_LEFT  = ["dc", "out1", "out2", "out3", "out4"]   # arrows pointing UP (outputs)
 IO_LABELS_RIGHT = ["mix", "sd sync", "midi", "usb"]        # arrows pointing DOWN (inputs)
@@ -318,33 +318,38 @@ IO_LABELS_RIGHT = ["mix", "sd sync", "midi", "usb"]        # arrows pointing DOW
 def build_top_strip():
     lines = []
     lines.append(f'{ind(2)}{rect(0, 0, EDITOR_W, TOP_STRIP_H, "PanelBlack", mouse=False)}')
+    # silver hairline along bottom edge of the strip
+    lines.append(f'{ind(2)}{rect(0, TOP_STRIP_H - 1, EDITOR_W, 1, "HairlineSoft")}')
 
     # Logo block on the right side: "WCDS" stylized, with subtitle
-    logo_x = EDITOR_W - 196
-    lines.append(f'{ind(2)}{label(logo_x,  6, 188, 18, "WCDS", font="label_logo", color="TextBright", align="right", bg="PanelBlack")}')
-    lines.append(f'{ind(2)}{label(logo_x, 28, 188, 14, "WEST COAST DRUMS", font="label_logo_sub", color="AccentRed", align="right", bg="PanelBlack")}')
+    logo_x = EDITOR_W - 240
+    lines.append(f'{ind(2)}{label(logo_x,  6, 230, 22, "WCDS", font="label_logo", color="TextBright", align="right", bg="PanelBlack")}')
+    lines.append(f'{ind(2)}{label(logo_x, 30, 230, 14, "WEST COAST DRUMS", font="label_logo_sub", color="AccentRed", align="right", bg="PanelBlack")}')
 
     # Centre-left: I/O ports row (decorative). Two groups separated by a small gap.
-    base_y = 8
+    base_y = 6
+    jack_w = 22
+    jack_gap = 14
     cx = 24
-    # group 1: outputs (arrow pointing up — out of the synth)
     for name in IO_LABELS_LEFT:
-        # tiny “jack” circle
-        lines.append(f'{ind(2)}{rect(cx + 8, base_y + 0, 14, 14, "PanelDeep", mouse=False)}')
-        lines.append(f'{ind(2)}{rect(cx + 11, base_y + 3, 8, 8, "InsetBlack", mouse=False)}')
-        lines.append(f'{ind(2)}{label(cx, base_y + 18, 30, 10, "▲", font="label_arrow", color="TextDim", bg="PanelBlack")}')
-        lines.append(f'{ind(2)}{label(cx, base_y + 30, 30, 10, name, font="label_micro", color="TextDim", bg="PanelBlack")}')
-        cx += 36
+        # outer jack ring
+        lines.append(f'{ind(2)}{rect(cx, base_y, jack_w, jack_w, "PanelLight")}')
+        lines.append(f'{ind(2)}{rect(cx + 2, base_y + 2, jack_w - 4, jack_w - 4, "PanelInk")}')
+        lines.append(f'{ind(2)}{rect(cx + 7, base_y + 7, jack_w - 14, jack_w - 14, "Backdrop")}')
+        # arrow above + label below
+        lines.append(f'{ind(2)}{label(cx - 4, base_y + jack_w + 1, jack_w + 8, 10, "▲", font="label_arrow", color="TextDim", bg="PanelBlack")}')
+        lines.append(f'{ind(2)}{label(cx - 4, base_y + jack_w + 11, jack_w + 8, 10, name, font="label_micro", color="TextDim", bg="PanelBlack")}')
+        cx += jack_w + jack_gap
 
-    cx += 36  # gap
+    cx += jack_gap   # gap between groups
 
-    # group 2: phones / mix / midi / usb (arrows pointing down — into the synth)
     for name in IO_LABELS_RIGHT:
-        lines.append(f'{ind(2)}{rect(cx + 8, base_y + 0, 14, 14, "PanelDeep", mouse=False)}')
-        lines.append(f'{ind(2)}{rect(cx + 11, base_y + 3, 8, 8, "InsetBlack", mouse=False)}')
-        lines.append(f'{ind(2)}{label(cx, base_y + 18, 30, 10, "▼", font="label_arrow", color="TextDim", bg="PanelBlack")}')
-        lines.append(f'{ind(2)}{label(cx, base_y + 30, 30, 10, name, font="label_micro", color="TextDim", bg="PanelBlack")}')
-        cx += 36
+        lines.append(f'{ind(2)}{rect(cx, base_y, jack_w, jack_w, "PanelLight")}')
+        lines.append(f'{ind(2)}{rect(cx + 2, base_y + 2, jack_w - 4, jack_w - 4, "PanelInk")}')
+        lines.append(f'{ind(2)}{rect(cx + 7, base_y + 7, jack_w - 14, jack_w - 14, "Backdrop")}')
+        lines.append(f'{ind(2)}{label(cx - 4, base_y + jack_w + 1, jack_w + 8, 10, "▼", font="label_arrow", color="TextDim", bg="PanelBlack")}')
+        lines.append(f'{ind(2)}{label(cx - 4, base_y + jack_w + 11, jack_w + 8, 10, name, font="label_micro", color="TextDim", bg="PanelBlack")}')
+        cx += jack_w + jack_gap
 
     return "\n".join(lines)
 
@@ -395,20 +400,109 @@ def build_global_strip():
 # Wave glyph + pattern row (decorative)
 # ---------------------------------------------------------------------------
 WAVE_Y = GLOBAL_Y + GLOBAL_H
-WAVE_H = 40
+WAVE_H = 48
 
-# Waveform glyphs as small inline SVG-ish unicode strokes.
-# We approximate each shape by a single Unicode character; modern fonts may not
-# render them all, so we additionally draw a tiny reference rectangle behind.
-WAVE_GLYPHS = ["∿", "⌒", "⋀", "⊓", "⌐", "⌐", "⊐", "⊏"]
+def waveform_glyph(cx, cy, kind, color="TextBright"):
+    """Draw an 8-wide × 12-tall waveform glyph using small rectangles.
+    Each glyph is rendered as a compact set of 1-pixel-tall rectangles
+    along a x-grid so it still looks crisp at any zoom level (vector).
+    `cx` is the centre of the cell, `cy` is the top of the drawing area.
+    Returns a list of XML strings.
+    """
+    parts = []
+    # 32x12 logical drawing space, anchored at (cx-16, cy)
+    ox = cx - 16
+    oy = cy
 
-PATTERN_GROUPS = [
-    "1  2 3",    # pattern 1
-    "1 2 3 4",   # pattern 2
-    "1 2 3 4",   # pattern 3
-    "1 2 3 4",   # pattern 4
-    "1 2 3 4",   # pattern 5
+    def px(x, y, w=1, h=1):
+        parts.append(rect(ox + x, oy + y, w, h, color))
+
+    if kind == 'sine':
+        # discretized sine wave
+        ys = [6, 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10,
+              10, 10, 9, 8, 7, 6, 5, 4, 3, 2, 2, 3, 4, 5, 6, 6]
+        for x, y in enumerate(ys):
+            px(x, y)
+    elif kind == 'tri':
+        # triangle wave (V shape)
+        for x in range(0, 16):
+            px(x, 2 + (x // 2))
+        for x in range(16, 32):
+            px(x, 10 - ((x - 16) // 2))
+    elif kind == 'saw':
+        # rising saw
+        for x in range(0, 16):
+            px(x, 10 - (x // 2))
+        for x in range(16, 32):
+            px(x, 10 - ((x - 16) // 2))
+    elif kind == 'sqr':
+        # square wave
+        for x in range(0, 16):
+            px(x, 2)
+        for y in range(2, 10):
+            px(15, y)
+            px(16, y)
+        for x in range(16, 32):
+            px(x, 10)
+    elif kind == 'pulse':
+        # narrow pulse
+        for x in range(0, 24):
+            px(x, 10)
+        for y in range(2, 10):
+            px(23, y)
+            px(28, y)
+        for x in range(24, 28):
+            px(x, 2)
+        for x in range(28, 32):
+            px(x, 10)
+    elif kind == 'fold':
+        # folded sine
+        for x, y in [(0, 8), (2, 6), (4, 4), (6, 2), (8, 4), (10, 6),
+                     (12, 4), (14, 2), (16, 4), (18, 6), (20, 8), (22, 6),
+                     (24, 4), (26, 6), (28, 8), (30, 10)]:
+            px(x, y); px(x + 1, y)
+    elif kind == 'fm':
+        # complex fm-style
+        ys = [6, 4, 3, 4, 6, 8, 9, 8, 6, 4, 2, 3, 5, 7, 9, 10,
+              9, 7, 5, 3, 4, 6, 8, 9, 8, 6, 4, 5, 6, 7, 6, 6]
+        for x, y in enumerate(ys):
+            px(x, y)
+    elif kind == 'noise':
+        # pseudo-random noise - deterministic pattern
+        ys = [3, 7, 5, 9, 2, 8, 4, 10, 3, 6, 9, 4, 7, 2, 8, 5,
+              10, 3, 6, 8, 4, 9, 2, 7, 5, 10, 3, 8, 6, 4, 9, 5]
+        for x, y in enumerate(ys):
+            px(x, y)
+    return parts
+
+
+def pattern_dot_grid(ox, oy, active, cell=7, pad=2):
+    """A 4x4 LED dot grid showing which steps are 'on'.
+    `active` is a 16-char string of 0/1.
+    """
+    parts = []
+    for r in range(4):
+        for c in range(4):
+            i = r * 4 + c
+            on = i < len(active) and active[i] == '1'
+            x = ox + c * (cell + pad)
+            y = oy + r * (cell + pad)
+            parts.append(rect(x, y, cell, cell, "LedOn" if on else "LedOff"))
+    return parts
+
+
+# 8 wave types matching our drum synth's 8 oscillator shapes
+WAVE_KINDS = ['sine', 'tri', 'saw', 'sqr', 'pulse', 'fold', 'fm', 'noise']
+
+# 5 pattern previews — 4×4 grids with deterministic visual pattern
+PATTERN_BITMAPS = [
+    "1000010000100001",    # diagonal
+    "1010010110100101",    # checker
+    "1111000000001111",    # bookend
+    "1100110000110011",    # offset
+    "1111111111111111",    # all on
 ]
+
 
 def build_wave_row():
     lines = []
@@ -416,21 +510,26 @@ def build_wave_row():
     lines.append(f'{ind(2)}{rect(0, y0, EDITOR_W, WAVE_H, "PanelBlack")}')
     lines.append(f'{ind(2)}{rect(0, y0 + WAVE_H - 1, EDITOR_W, 1, "Hairline")}')
 
-    # 8 wave glyphs (left half)
-    cell = 56
-    cx = 24
+    # 8 hand-drawn waveform glyphs (left half of the row)
+    cell = 60
+    cx = 30
     for i in range(8):
-        lines.append(f'{ind(2)}{label(cx, y0 + 4, cell - 8, 16, WAVE_GLYPHS[i], font="label_wave", color="TextBright", bg="PanelBlack")}')
-        lines.append(f'{ind(2)}{label(cx, y0 + 22, cell - 8, 12, str(i + 1), font="label_micro", color="TextSubtle", bg="PanelBlack")}')
+        # arrow pointing down to indicate "this voice uses this shape"
+        lines.append(f'{ind(2)}{label(cx - 28, y0 + 0, 56, 9, "▼", font="label_arrow", color="TextSubtle", bg="PanelBlack")}')
+        for r in waveform_glyph(cx, y0 + 12, WAVE_KINDS[i]):
+            lines.append(f'{ind(2)}{r}')
+        lines.append(f'{ind(2)}{label(cx - 28, y0 + 26, 56, 12, str(i + 1), font="label_micro", color="TextSubtle", bg="PanelBlack")}')
         cx += cell
 
-    # 5 pattern indicators (right half) — small bracketed groups
-    px = 560
-    cell_p = 96
-    for i, txt in enumerate(PATTERN_GROUPS):
-        lines.append(f'{ind(2)}{label(px, y0 + 4, cell_p - 8, 14, txt, font="label_micro", color="TextBright", bg="PanelBlack")}')
-        lines.append(f'{ind(2)}{label(px, y0 + 22, cell_p - 8, 12, str(i + 1), font="label_micro", color="TextSubtle", bg="PanelBlack")}')
-        px += cell_p
+    # 5 pattern grids (right half) - ~36px wide each
+    grid_origin_x = 580
+    grid_w = 32 + 24
+    for i, bits in enumerate(PATTERN_BITMAPS):
+        gx = grid_origin_x + i * (grid_w + 36)
+        for r in pattern_dot_grid(gx, y0 + 4, bits):
+            lines.append(f'{ind(2)}{r}')
+        # number label below
+        lines.append(f'{ind(2)}{label(gx - 8, y0 + 38, 48, 10, str(i + 1), font="label_section", color="TextDim", bg="PanelBlack", align="left")}')
 
     return "\n".join(lines)
 
