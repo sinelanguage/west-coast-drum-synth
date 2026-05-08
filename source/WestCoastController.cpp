@@ -21,8 +21,8 @@ namespace Steinberg::WestCoastDrumSynth {
 
 namespace {
 
-constexpr double kEditorBaseWidth = 1066.0;
-constexpr double kEditorBaseHeight = 537.0;
+constexpr double kEditorBaseWidth = 1180.0;
+constexpr double kEditorBaseHeight = 800.0;
 // Logical zoom factors relative to uidesc template size (hosts multiply via content scale factor).
 constexpr double kEditorMinZoom = 0.5;
 constexpr double kEditorMaxZoom = 2.5;
