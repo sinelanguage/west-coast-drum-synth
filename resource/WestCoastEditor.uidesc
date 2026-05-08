@@ -66,7 +66,7 @@
     <bitmap name="slider_ticks_10_narrow#2.0x" path="slider_ticks_10_narrow_2x.png"/>
   </bitmaps>
 
-  <template background-color="Backdrop" background-color-draw-style="filled and stroked" class="CViewContainer" mouse-enabled="true" name="Editor" opacity="1" origin="0, 0" size="1066, 537" transparent="false" wants-focus="false">
+  <template background-color="Backdrop" background-color-draw-style="filled and stroked" class="CViewContainer" mouse-enabled="true" name="Editor" opacity="1" origin="0, 0" size="1066, 537" minSize="533, 268" maxSize="2665, 1343" transparent="false" wants-focus="false">
     <view background-color="PanelRaised" background-color-draw-style="filled and stroked" class="CViewContainer" mouse-enabled="true" opacity="1" origin="0, 0" size="1066, 96" transparent="false">
       <view back-color="PanelRaised" background-offset="0, 0" class="CTextLabel" font="label_title" font-antialias="true" font-color="TextBright" frame-width="0" mouse-enabled="false" opacity="1" origin="16, 12" size="178, 16" style-no-frame="true" text-alignment="left" title="WEST COAST DRUM" transparent="true"/>
       <view back-color="PanelRaised" background-offset="0, 0" class="CTextLabel" font="label_micro" font-antialias="true" font-color="TextSubtle" frame-width="0" mouse-enabled="false" opacity="1" origin="17, 29" size="150, 10" style-no-frame="true" text-alignment="left" title="HYBRID SYNTH MACHINE" transparent="true"/>

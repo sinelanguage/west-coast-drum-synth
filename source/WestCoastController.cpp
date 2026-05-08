@@ -23,10 +23,21 @@ namespace {
 
 constexpr double kEditorBaseWidth = 1066.0;
 constexpr double kEditorBaseHeight = 537.0;
-constexpr double kEditorMinZoom = 0.72;
-constexpr double kEditorMaxZoom = 2048.0 / kEditorBaseWidth;
-constexpr std::array<double, 6> kEditorZoomSteps {
-  0.72, 0.85, 1.00, 1.25, 1.50, kEditorMaxZoom
+// Logical zoom factors relative to uidesc template size (hosts multiply via content scale factor).
+constexpr double kEditorMinZoom = 0.5;
+constexpr double kEditorMaxZoom = 2.5;
+constexpr std::array<double, 11> kEditorZoomSteps {
+  kEditorMinZoom,
+  2. / 3.,
+  0.72,
+  0.85,
+  1.00,
+  1.25,
+  1.50,
+  1.75,
+  2.00,
+  2.25,
+  kEditorMaxZoom
 };
 
 double snapEditorZoom (double requestedZoom)
@@ -669,8 +680,10 @@ IPlugView* PLUGIN_API WestCoastController::createView (FIDString name)
     editor->setDelegate (this);
     editor->setAllowedZoomFactors (std::vector<double> (kEditorZoomSteps.begin (), kEditorZoomSteps.end ()));
     editor->setEditorSizeConstrains (
-      VSTGUI::CPoint (kEditorBaseWidth * kEditorMinZoom, kEditorBaseHeight * kEditorMinZoom),
-      VSTGUI::CPoint (2048., 960.));
+      VSTGUI::CPoint (std::lround (kEditorBaseWidth * kEditorMinZoom),
+                      std::lround (kEditorBaseHeight * kEditorMinZoom)),
+      VSTGUI::CPoint (std::lround (kEditorBaseWidth * kEditorMaxZoom),
+                      std::lround (kEditorBaseHeight * kEditorMaxZoom)));
     return editor;
   }
   return nullptr;
