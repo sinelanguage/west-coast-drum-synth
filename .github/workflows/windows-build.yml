@@ -10,7 +10,8 @@ on:
 jobs:
   windows:
     name: Build + validate (Windows x64)
-    runs-on: windows-latest
+    # Pin to windows-2022: windows-latest now ships VS 2026 only.
+    runs-on: windows-2022
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,10 +24,44 @@ jobs:
           if [ -d vst3sdk ]; then mv vst3sdk vst3sdk.ci-bak; fi
 
       - name: Configure (MSVC x64 Release)
+        run: >
+          cmake -S . -B build
+          -G "Visual Studio 17 2022"
+          -A x64
+          -DSMTG_CREATE_PLUGIN_LINK=OFF
+          -DSMTG_RUN_VST_VALIDATOR=OFF
+          -DSMTG_CREATE_MODULE_INFO=OFF
+          -DFETCHCONTENT_UPDATES_DISCONNECTED=ON
+
+      - name: Relax SDK warning flags for MSVC
+        shell: pwsh
         run: |
-          cmake -S . -B build -G "Visual Studio 17 2022" -A x64 `
-            -DSMTG_CREATE_PLUGIN_LINK=OFF `
-            -DSMTG_RUN_VST_VALIDATOR=OFF
+          $ErrorActionPreference = "Stop"
+          $files = @(
+            "build/_deps/vst3sdk-src/cmake/modules/SMTG_PlatformToolset.cmake",
+            "build/_deps/vst3sdk-src/vstgui4/vstgui/cmake/modules/vstgui_init.cmake"
+          )
+          foreach ($file in $files) {
+            if (-not (Test-Path $file)) {
+              Write-Host "Skip missing optional SDK file: $file"
+              continue
+            }
+            $text = Get-Content -Path $file -Raw
+            $updated = $text -replace "-Wno-multichar", ""
+            if ($updated -ne $text) {
+              [System.IO.File]::WriteAllText((Resolve-Path $file), $updated, [System.Text.UTF8Encoding]::new($false))
+            }
+          }
+
+      - name: Reconfigure after MSVC warning patch
+        run: >
+          cmake -S . -B build
+          -G "Visual Studio 17 2022"
+          -A x64
+          -DSMTG_CREATE_PLUGIN_LINK=OFF
+          -DSMTG_RUN_VST_VALIDATOR=OFF
+          -DSMTG_CREATE_MODULE_INFO=OFF
+          -DFETCHCONTENT_UPDATES_DISCONNECTED=ON
 
       - name: Build plugin
         run: cmake --build build --config Release --target WestCoastDrumSynth -j
@@ -35,14 +70,32 @@ jobs:
         run: cmake --build build --config Release --target validator -j
 
       - name: Run Steinberg validator
+        shell: pwsh
         run: |
+          $ErrorActionPreference = "Stop"
           $plugin = "build/VST3/Release/WestCoastDrumSynth.vst3"
-          if (-not (Test-Path $plugin)) { throw "Plugin bundle missing: $plugin" }
+          if (-not (Test-Path $plugin)) { $plugin = "build/VST3/WestCoastDrumSynth.vst3" }
+          if (-not (Test-Path $plugin)) { throw "Plugin bundle missing" }
           & "build/bin/Release/validator.exe" $plugin
+
+      - name: Package Windows artifact
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $candidatePaths = @(
+            "build/VST3/Release/WestCoastDrumSynth.vst3",
+            "build/VST3/WestCoastDrumSynth.vst3"
+          )
+          $pluginPath = $candidatePaths | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (-not $pluginPath) { throw "Could not locate Windows VST3 bundle." }
+          New-Item -ItemType Directory -Path dist -Force | Out-Null
+          Copy-Item -Path $pluginPath -Destination "dist/WestCoastDrumSynth.vst3" -Recurse -Force
+          Compress-Archive -Path "dist/WestCoastDrumSynth.vst3" `
+                           -DestinationPath "dist/westcoastdrumsynth-windows-x64.vst3.zip" -Force
 
       - name: Upload VST3 artifact
         uses: actions/upload-artifact@v4
         with:
           name: WestCoastDrumSynth-windows-x64
-          path: build/VST3/Release/WestCoastDrumSynth.vst3
+          path: dist/westcoastdrumsynth-windows-x64.vst3.zip
           if-no-files-found: error
