@@ -4,7 +4,7 @@
 
 ### Project overview
 
-West Coast Drum Synth is a C++20 VST3 audio plugin built with CMake and the Steinberg VST3 SDK (fetched via CMake FetchContent). There are no web services, databases, or Docker dependencies. See `README.md` for synthesis architecture details.
+West Coast Drum Synth is a C++20 VST3 MIDI-triggered drum instrument built with CMake and the Steinberg VST3 SDK. Prefer the local `vst3sdk/` submodule (pinned to `v3.8.0_build_66`); otherwise CMake FetchContent fetches that same tag. There are no web services, databases, or Docker dependencies. See `README.md` for synthesis architecture details. The internal sequencer is currently removed — focus is drum engine + UI.
 
 ### Git workflow (important)
 
@@ -71,7 +71,7 @@ No dedicated linter configuration exists. Use standard C++ static analysis if ne
 
 ### Important caveats
 
-- The VST3 SDK is auto-fetched via CMake FetchContent on first configure (~30s). No git submodule init needed.
+- Prefer the local `vst3sdk/` git submodule at tag `v3.8.0_build_66`. If it is missing, FetchContent downloads that same pinned tag (~30s on first configure).
 - The SDK's sample `editorhost` and Carla cannot render this plugin's VSTGUI-based GUI because they don't initialize the VSTGUI platform factory. The plugin itself is correct; GUI testing requires a full DAW host (Reaper, Bitwig, Ardour, etc.).
 - System dependencies required on Linux (installed via apt): `libxcb-util-dev libxcb-cursor-dev libxcb-keysyms1-dev libxcb-xkb-dev libxkbcommon-dev libxkbcommon-x11-dev libcairo2-dev libgtkmm-3.0-dev libstdc++-14-dev`.
-- First CMake configure is slow (~40s) due to SDK download; subsequent configures are fast.
+- First CMake configure is slow (~40s) when FetchContent must download the SDK; subsequent configures are fast.

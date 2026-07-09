@@ -717,10 +717,9 @@
       <view background-color="GroupDivider" background-color-draw-style="filled and stroked" class="CView" mouse-enabled="false" opacity="1" origin="340, 22" size="1, 76" transparent="false"/>
       <view background-color="GroupDivider" background-color-draw-style="filled and stroked" class="CView" mouse-enabled="false" opacity="1" origin="441, 22" size="1, 76" transparent="false"/>
     </view>
-    <view background-offset="0, 0" class="CSlider" control-tag="1" default-value="0.5" draw-back="false" draw-frame="false" draw-value="false" handle-bitmap="slider_cap_v" handle-offset="0, 0" max-value="1" min-value="0" mode="free click" mouse-enabled="true" opacity="0" orientation="vertical" origin="990, 2" reverse-orientation="false" size="2, 2" transparent="true" transparent-handle="false" wheel-inc-value="0.02" zoom-factor="1"/>
-    <view background-offset="0, 0" class="CSlider" control-tag="2" default-value="0.5" draw-back="false" draw-frame="false" draw-value="false" handle-bitmap="slider_cap_v" handle-offset="0, 0" max-value="1" min-value="0" mode="free click" mouse-enabled="true" opacity="0" orientation="vertical" origin="991, 2" reverse-orientation="false" size="2, 2" transparent="true" transparent-handle="false" wheel-inc-value="0.02" zoom-factor="1"/>
-    <view background-offset="0, 0" class="CSlider" control-tag="3" default-value="0.5" draw-back="false" draw-frame="false" draw-value="false" handle-bitmap="slider_cap_v" handle-offset="0, 0" max-value="1" min-value="0" mode="free click" mouse-enabled="true" opacity="0" orientation="vertical" origin="992, 2" reverse-orientation="false" size="2, 2" transparent="true" transparent-handle="false" wheel-inc-value="0.02" zoom-factor="1"/>
-    <view background-offset="0, 0" class="CSlider" control-tag="4" default-value="0.5" draw-back="false" draw-frame="false" draw-value="false" handle-bitmap="slider_cap_v" handle-offset="0, 0" max-value="1" min-value="0" mode="free click" mouse-enabled="true" opacity="0" orientation="vertical" origin="993, 2" reverse-orientation="false" size="2, 2" transparent="true" transparent-handle="false" wheel-inc-value="0.02" zoom-factor="1"/>
+
+
+
     <view background-offset="0, 0" class="CSlider" control-tag="6" default-value="0.5" draw-back="false" draw-frame="false" draw-value="false" handle-bitmap="slider_cap_v" handle-offset="0, 0" max-value="1" min-value="0" mode="free click" mouse-enabled="true" opacity="0" orientation="vertical" origin="994, 2" reverse-orientation="false" size="2, 2" transparent="true" transparent-handle="false" wheel-inc-value="0.02" zoom-factor="1"/>
     <view background-offset="0, 0" class="CSlider" control-tag="205" default-value="0.5" draw-back="false" draw-frame="false" draw-value="false" handle-bitmap="slider_cap_v" handle-offset="0, 0" max-value="1" min-value="0" mode="free click" mouse-enabled="true" opacity="0" orientation="vertical" origin="995, 2" reverse-orientation="false" size="2, 2" transparent="true" transparent-handle="false" wheel-inc-value="0.02" zoom-factor="1"/>
     <view background-offset="0, 0" class="CSlider" control-tag="303" default-value="0.5" draw-back="false" draw-frame="false" draw-value="false" handle-bitmap="slider_cap_v" handle-offset="0, 0" max-value="1" min-value="0" mode="free click" mouse-enabled="true" opacity="0" orientation="vertical" origin="996, 2" reverse-orientation="false" size="2, 2" transparent="true" transparent-handle="false" wheel-inc-value="0.02" zoom-factor="1"/>
@@ -772,10 +771,6 @@
 
   <control-tags>
     <control-tag name="Master" tag="0"/>
-    <control-tag name="InternalTempo" tag="1"/>
-    <control-tag name="Swing" tag="2"/>
-    <control-tag name="Run" tag="3"/>
-    <control-tag name="FollowHost" tag="4"/>
     <control-tag name="Preset" tag="5"/>
     <control-tag name="Randomize" tag="6"/>
     <control-tag name="OscFilterCutoff" tag="7"/>

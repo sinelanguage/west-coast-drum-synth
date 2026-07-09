@@ -1,25 +1,26 @@
 # west-coast-drum-synth
 
-West Coast Drum Synth is a VST3 drum-machine instrument built directly on the Steinberg VST3 SDK (no JUCE).
+West Coast Drum Synth is a VST3 MIDI-triggered drum instrument built directly on the Steinberg VST3 SDK (no JUCE).
 
 ## Features
 
 - Buchla / west coast-inspired percussive synthesis
-- 5 lanes: Kick, Snare, Hat, Perc A, Perc B
+- 8 lanes: Kick, Snare, Hat, Perc A1, Perc A2, Perc B1, Clap, RimShot
 - Per-lane controls: Tune, Decay, Fold, FM, Noise, Drive, Level, Pan
 - Per-lane macro controls: Pitch Env/Decay, Attack Click, Transient Decay/Mix, Noise Tone/Decay, Noise Resonance, Noise Env Amount, Snap
-- Internal 16-step sequencer with swing
-- Host transport/tempo follow
+- MIDI note-on triggering (chromatic keyzones + legacy GM drum map)
 - Factory presets
 - Custom VSTGUI editor skin
 
+The internal step sequencer is intentionally removed for now so work can focus on the drum engine and UI. It will return later.
+
 ## Project structure
 
-- `source/WestCoastProcessor.*` - audio processing, sequencing, state/preset loading
+- `source/WestCoastProcessor.*` - audio processing, MIDI triggers, state/preset loading
 - `source/WestCoastController.*` - parameter definitions, editor binding
 - `source/engine/DrumVoice.*` - west coast drum voice DSP
-- `source/engine/StepSequencer.*` - clock/swing/step timing
 - `source/presets/FactoryPresets.*` - factory preset data
+- `source/LaneDefaults.h` / `source/StateMigration.h` - shared defaults and state helpers
 - `resource/WestCoastEditor.uidesc` - VSTGUI layout
 - `source/factory.cpp` - VST3 class factory registration
 
@@ -27,7 +28,7 @@ West Coast Drum Synth is a VST3 drum-machine instrument built directly on the St
 
 - CMake 3.22+
 - C++20 toolchain
-- VST3 SDK (auto-fetched if not supplied)
+- VST3 SDK **v3.8.0_build_66** (local `vst3sdk/` submodule preferred; otherwise FetchContent pins that tag)
 
 ## Build (general)
 
@@ -92,7 +93,7 @@ cmake -S . -B build -DWCSD_MAC_ARCHITECTURES=arm64
 The build produces a `.vst3` bundle target named **WestCoastDrumSynth**.
 
 Install the bundle to:
-- macOS: `/Library/Audio/Plug-Ins/VST3/`
+- macOS: `/Library/Audio/Plug-Ins/VST3/` (or `~/Library/Audio/Plug-Ins/VST3/` via `scripts/install_vst3_mac.sh`)
 - Linux: `~/.vst3/`
 - Windows: `C:\Program Files\Common Files\VST3\`
 

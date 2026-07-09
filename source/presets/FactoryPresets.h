@@ -37,10 +37,7 @@ struct NormalizedLanePreset {
 struct FactoryPreset {
   std::string_view name;
   double master {0.8};
-  double internalTempo {0.5};
-  double swing {0.12};
   std::array<NormalizedLanePreset, kLaneCount> lanes {};
-  PatternGrid pattern {};
 };
 
 constexpr int32 kFactoryPresetCount = 8;

@@ -1,70 +1,27 @@
 #include "WestCoastProcessor.h"
 
+#include "LaneDefaults.h"
+#include "StateMigration.h"
 #include "presets/FactoryPresets.h"
 #include "westcoastdrumcids.h"
 
 #include "base/source/fstreamer.h"
 #include "pluginterfaces/vst/ivstevents.h"
 #include "pluginterfaces/vst/ivstparameterchanges.h"
-#include "pluginterfaces/vst/ivstprocesscontext.h"
 
 #include <algorithm>
 #include <array>
 #include <cmath>
 #include <random>
 #include <type_traits>
-#include <vector>
 
 namespace Steinberg::WestCoastDrumSynth {
 
 namespace {
 
-constexpr uint32 kStateVersion = 8;
-constexpr uint32 kV7StateVersion = 7;
-constexpr uint32 kV6StateVersion = 6;
-constexpr uint32 kV5StateVersion = 5;
-constexpr uint32 kV4StateVersion = 4;
-constexpr uint32 kV3StateVersion = 3;
-constexpr int32 kV4LaneCount = 5;
-constexpr uint32 kPreviousStateVersion = 2;
-constexpr uint32 kLegacyStateVersion = 1;
-constexpr int32 kLegacyLaneCount = 4;
-constexpr int32 kPreviousGlobalParamCount = 6;
 constexpr int32 kUserPresetCount = 8;
 constexpr int32 kTotalPresetCount = kFactoryPresetCount + kUserPresetCount;
-
-constexpr std::array<std::array<double, kLaneExtraParamCount>, kLaneCount> kLaneExtraDefaults {{
-  {{0.84, 0.28, 0.78, 0.30, 0.22, 0.18}},
-  {{0.44, 0.44, 0.72, 0.62, 0.52, 0.86}},
-  {{0.16, 0.16, 0.34, 0.94, 0.14, 0.70}},
-  {{0.40, 0.34, 0.58, 0.40, 0.36, 0.32}},
-  {{0.46, 0.30, 0.62, 0.46, 0.32, 0.40}},
-  {{0.56, 0.28, 0.68, 0.66, 0.28, 0.52}},
-  {{0.24, 0.32, 0.56, 0.82, 0.74, 0.52}},
-  {{0.32, 0.20, 0.82, 0.46, 0.18, 0.84}},
-}};
-
-constexpr std::array<std::array<double, kLaneMacroParamCount>, kLaneCount> kLaneMacroDefaults {{
-  {{0.26, 0.50, 0.28, 0.48}},
-  {{0.36, 0.64, 0.58, 0.74}},
-  {{0.16, 0.40, 0.72, 0.90}},
-  {{0.34, 0.54, 0.38, 0.48}},
-  {{0.30, 0.58, 0.40, 0.46}},
-  {{0.24, 0.64, 0.44, 0.44}},
-  {{0.44, 0.72, 0.62, 0.78}},
-  {{0.14, 0.78, 0.32, 0.34}},
-}};
-
-constexpr std::array<std::array<double, kLaneFilterParamCount>, kLaneCount> kLaneFilterDefaults {{
-  {{0.72, 0.05, 0.28, 0.54, 0.18, 0.26}},
-  {{0.66, 0.10, 0.24, 0.62, 0.22, 0.40}},
-  {{0.84, 0.04, 0.16, 0.88, 0.05, 0.24}},
-  {{0.70, 0.09, 0.22, 0.48, 0.28, 0.30}},
-  {{0.76, 0.08, 0.20, 0.58, 0.26, 0.34}},
-  {{0.80, 0.06, 0.18, 0.68, 0.20, 0.28}},
-  {{0.52, 0.14, 0.20, 0.78, 0.12, 0.44}},
-  {{0.62, 0.07, 0.14, 0.38, 0.34, 0.18}},
-}};
+constexpr int32 kUserPresetMagic = 0x57555053; // "WUPS"
 
 inline double clamp01 (double x)
 {
@@ -93,22 +50,6 @@ inline double normalizedFromPresetIndex (int32 presetIndex)
     return 0.0;
   return static_cast<double> (std::clamp (presetIndex, 0, kTotalPresetCount - 1)) /
          static_cast<double> (kTotalPresetCount - 1);
-}
-
-constexpr int32 kUserPresetMagic = 0x57555053; // "WUPS"
-
-bool readV7StreamIntoDenseByParamId (IBStreamer& streamer, std::array<double, 709>& out)
-{
-  out.fill (0.0);
-  const auto idsV7 = allParameterIdsV7 ();
-  for (int32 i = 0; i < kV7TotalParameterCount; ++i)
-  {
-    double v = 0.0;
-    if (!streamer.readDouble (v))
-      return false;
-    out[static_cast<size_t> (idsV7[static_cast<size_t> (i)])] = v;
-  }
-  return true;
 }
 
 inline int32 laneForLegacyDrumMap (int16 pitch)
@@ -297,7 +238,6 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
     setParam (kParamOscFilterEnv, 0.46);
 
     const auto& preset = getFactoryPresets ()[loadedPreset_];
-    sequencer_.setPattern (preset.pattern);
     updateLaneFramesFromParameters ();
     presetPending_ = false;
     return kResultOk;
@@ -341,7 +281,6 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
     applyFilterDefaults ();
 
     const auto& preset = getFactoryPresets ()[loadedPreset_];
-    sequencer_.setPattern (preset.pattern);
     updateLaneFramesFromParameters ();
     presetPending_ = false;
     return kResultOk;
@@ -394,7 +333,6 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
     setParam (kParamOscFilterEnv, 0.46);
 
     const auto& preset = getFactoryPresets ()[loadedPreset_];
-    sequencer_.setPattern (preset.pattern);
     updateLaneFramesFromParameters ();
     presetPending_ = false;
     return kResultOk;
@@ -428,7 +366,6 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
                   kLaneFilterDefaults[lane][p]);
     }
     const auto& preset = getFactoryPresets ()[loadedPreset_];
-    sequencer_.setPattern (preset.pattern);
     updateLaneFramesFromParameters ();
     presetPending_ = false;
     return kResultOk;
@@ -451,7 +388,6 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
     for (int32 lane = 0; lane < kLaneCount; ++lane)
       setParam (laneOscMixParamID (lane), 1.0);
     const auto& preset = getFactoryPresets ()[loadedPreset_];
-    sequencer_.setPattern (preset.pattern);
     updateLaneFramesFromParameters ();
     presetPending_ = false;
     return kResultOk;
@@ -471,7 +407,6 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
     for (int32 lane = 0; lane < kLaneCount; ++lane)
       setParam (laneOscMixParamID (lane), 1.0);
     const auto& preset = getFactoryPresets ()[loadedPreset_];
-    sequencer_.setPattern (preset.pattern);
     updateLaneFramesFromParameters ();
     presetPending_ = false;
     return kResultOk;
@@ -510,7 +445,6 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
     copyLaneFromV7 (7, 7);
 
     const auto& preset = getFactoryPresets ()[loadedPreset_];
-    sequencer_.setPattern (preset.pattern);
     updateLaneFramesFromParameters ();
     presetPending_ = false;
     return kResultOk;
@@ -534,7 +468,6 @@ tresult PLUGIN_API WestCoastProcessor::setState (IBStream* state)
   }
 
   const auto& preset = getFactoryPresets ()[loadedPreset_];
-  sequencer_.setPattern (preset.pattern);
   updateLaneFramesFromParameters ();
   presetPending_ = false;
 
@@ -623,7 +556,6 @@ tresult PLUGIN_API WestCoastProcessor::setupProcessing (Vst::ProcessSetup& setup
   if (result != kResultOk)
     return result;
 
-  sequencer_.setSampleRate (setup.sampleRate);
   for (auto& voice : voices_)
     voice.setSampleRate (setup.sampleRate);
   ledFlashDurationSamples_ = std::max<int32> (1, static_cast<int32> (std::lround (setup.sampleRate * 0.045)));
@@ -643,38 +575,15 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
   if (presetPending_)
     loadPresetByIndex (loadedPreset_, data.outputParameterChanges);
 
-  bool hostPlaying = false;
-  bool hostTempoValid = false;
-  bool hostProjectTimeValid = false;
-  double hostTempo = 120.0;
-  double hostPpq = 0.0;
-
-  if (data.processContext)
-  {
-    hostPlaying = (data.processContext->state & Vst::ProcessContext::kPlaying) != 0;
-    hostTempoValid = (data.processContext->state & Vst::ProcessContext::kTempoValid) != 0;
-    hostProjectTimeValid = (data.processContext->state & Vst::ProcessContext::kProjectTimeMusicValid) != 0;
-    hostTempo = data.processContext->tempo;
-    hostPpq = data.processContext->projectTimeMusic;
-  }
-
-  const bool followTransport = getParam (kParamFollowTransport) > 0.5;
-  const bool run = getParam (kParamRun) > 0.5;
-  const double internalTempo = 60.0 + (getParam (kParamInternalTempo) * 120.0);
-  const double tempo = (followTransport && hostTempoValid) ? hostTempo : internalTempo;
-
-  sequencer_.setTempo (tempo);
-  sequencer_.setSwing (getParam (kParamSwing));
-  sequencer_.setRunning (run && (!followTransport || hostPlaying));
-
-  if (followTransport && hostProjectTimeValid && hostPlaying)
-    sequencer_.syncToHost (hostPpq, hostPlaying);
-
   struct MidiTrigger {
     int32 sampleOffset;
     int32 lane;
   };
-  std::vector<MidiTrigger> midiTriggers;
+
+  constexpr int32 kMaxMidiTriggers = 128;
+  std::array<MidiTrigger, kMaxMidiTriggers> midiTriggers {};
+  int32 midiTriggerCount = 0;
+
   if (data.inputEvents)
   {
     const int32 eventCount = data.inputEvents->getEventCount ();
@@ -687,10 +596,10 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
         continue;
 
       const int32 lane = laneForMidiPitch (event.noteOn.pitch);
-      if (lane >= 0 && lane < kLaneCount)
+      if (lane >= 0 && lane < kLaneCount && midiTriggerCount < kMaxMidiTriggers)
       {
-        const int32 offset = std::clamp (event.sampleOffset, 0, data.numSamples - 1);
-        midiTriggers.push_back ({offset, lane});
+        const int32 offset = std::clamp (event.sampleOffset, 0, std::max (0, data.numSamples - 1));
+        midiTriggers[midiTriggerCount++] = {offset, lane};
       }
     }
   }
@@ -701,7 +610,17 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
   const double masterGain = std::pow (clamp01 (getParam (kParamMaster)), 1.35);
   // Single gentle ceiling after summing; avoid stacking heavy tanh with per-voice softClip.
   constexpr double kBusHeadroom = 0.52;
-  std::array<bool, kLaneCount> triggers {};
+
+  std::array<bool, kLaneCount> muted {};
+  std::array<double, kLaneCount> panGainL {};
+  std::array<double, kLaneCount> panGainR {};
+  for (int32 lane = 0; lane < kLaneCount; ++lane)
+  {
+    muted[lane] = getParam (laneMuteParamID (lane)) > 0.5;
+    const double pan = std::clamp (laneFrames_[lane].pan, -1.0, 1.0);
+    panGainL[lane] = std::sqrt (0.5 * (1.0 - pan));
+    panGainR[lane] = std::sqrt (0.5 * (1.0 + pan));
+  }
 
   auto render = [&] (auto** outChannels)
   {
@@ -712,25 +631,14 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
 
     for (int32 sampleIndex = 0; sampleIndex < data.numSamples; ++sampleIndex)
     {
-      for (const auto& mt : midiTriggers)
+      for (int32 triggerIndex = 0; triggerIndex < midiTriggerCount; ++triggerIndex)
       {
-        if (mt.sampleOffset == sampleIndex)
-        {
-          const int32 lane = mt.lane;
-          const bool muted = getParam (laneMuteParamID (lane)) > 0.5;
-          if (!muted && laneFrames_[lane].outputLevel > 1e-6)
-          {
-            voices_[lane].trigger (laneFrames_[lane]);
-            laneLedFlashSamples_[lane] = ledFlashDurationSamples_;
-          }
-        }
-      }
+        const auto& mt = midiTriggers[triggerIndex];
+        if (mt.sampleOffset != sampleIndex)
+          continue;
 
-      sequencer_.processSample (triggers);
-      for (int32 lane = 0; lane < kLaneCount; ++lane)
-      {
-        const bool muted = getParam (laneMuteParamID (lane)) > 0.5;
-        if (triggers[lane] && laneFrames_[lane].outputLevel > 1e-6 && !muted)
+        const int32 lane = mt.lane;
+        if (!muted[lane] && laneFrames_[lane].outputLevel > 1e-6)
         {
           voices_[lane].trigger (laneFrames_[lane]);
           laneLedFlashSamples_[lane] = ledFlashDurationSamples_;
@@ -741,15 +649,11 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
       double frameR = 0.0;
       for (int32 lane = 0; lane < kLaneCount; ++lane)
       {
-        const bool muted = getParam (laneMuteParamID (lane)) > 0.5;
-        if (muted || laneFrames_[lane].outputLevel < 1e-6)
+        if (muted[lane] || laneFrames_[lane].outputLevel < 1e-6)
           continue;
         const double sample = voices_[lane].process ();
-        const double pan = std::clamp (laneFrames_[lane].pan, -1.0, 1.0);
-        const double gainL = std::sqrt (0.5 * (1.0 - pan));
-        const double gainR = std::sqrt (0.5 * (1.0 + pan));
-        frameL += sample * gainL;
-        frameR += sample * gainR;
+        frameL += sample * panGainL[lane];
+        frameR += sample * panGainR[lane];
       }
 
       const double gL = frameL * kBusHeadroom * masterGain;
@@ -795,7 +699,6 @@ tresult PLUGIN_API WestCoastProcessor::process (Vst::ProcessData& data)
 
 void WestCoastProcessor::resetEngine ()
 {
-  sequencer_.reset ();
   for (auto& voice : voices_)
     voice.reset ();
   laneLedState_.fill (-1.0);
@@ -829,13 +732,9 @@ void WestCoastProcessor::loadPresetByIndex (int32 presetIndex, Vst::IParameterCh
   const auto& preset = presets[loadedPreset_];
 
   setParam (kParamMaster, preset.master);
-  setParam (kParamInternalTempo, preset.internalTempo);
-  setParam (kParamSwing, preset.swing);
   setParam (kParamPresetSelect, normalizedFromPresetIndex (loadedPreset_));
 
   pushParamChange (outputChanges, kParamMaster, getParam (kParamMaster));
-  pushParamChange (outputChanges, kParamInternalTempo, getParam (kParamInternalTempo));
-  pushParamChange (outputChanges, kParamSwing, getParam (kParamSwing));
   pushParamChange (outputChanges, kParamPresetSelect, getParam (kParamPresetSelect));
 
   for (int32 lane = 0; lane < kLaneCount; ++lane)
@@ -896,7 +795,6 @@ void WestCoastProcessor::loadPresetByIndex (int32 presetIndex, Vst::IParameterCh
     pushParamChange (outputChanges, laneOscMixParamID (lane), 1.0);
   }
 
-  sequencer_.setPattern (preset.pattern);
   updateLaneFramesFromParameters ();
   presetPending_ = false;
 }
@@ -944,7 +842,7 @@ void WestCoastProcessor::processParameterChanges (Vst::IParameterChanges* change
       for (const auto id : allParameterIds ())
       {
         if (id == kParamRandomize || id == kParamRandomizeAmount || id == kParamPresetSelect ||
-            id == kParamRun || id == kParamFollowTransport || isLaneLedParamID (id))
+            isReservedSequencerParamID (id) || isLaneLedParamID (id))
           continue;
         if (id >= kLaneMuteParamBase && id <= kLaneMuteMaxParamId)
           continue;
@@ -982,7 +880,7 @@ void WestCoastProcessor::processParameterChanges (Vst::IParameterChanges* change
 void WestCoastProcessor::updateLaneFramesFromParameters ()
 {
   // Tuning workflow: adjust per-lane scale tables below (kTransient*Scale, kOsc*, kNoise*, etc.),
-  // then lane defaults in kLaneExtraDefaults / kLaneMacroDefaults / kLaneFilterDefaults at file top.
+  // then lane defaults in LaneDefaults.h.
   // FactoryPresets.cpp controls preset snapshots; morph uses getMorphedParam (center = stored value).
 
   // Kick, Snare, Hat, PercA1, PercA2 (low percussion), PercB1, Clap, RimShot

@@ -191,8 +191,6 @@ def hidden_tags(lane):
 # Control-tag names (for the <control-tags> section)
 # ---------------------------------------------------------------------------
 GLOBAL_TAG_NAMES = {
-    0: "Master", 1: "InternalTempo", 2: "Swing",
-    3: "Run", 4: "FollowHost", 5: "Preset", 6: "Randomize",
     7: "OscFilterCutoff", 8: "OscFilterResonance", 9: "OscFilterEnv",
     10: "RandomizeAmount",
 }
@@ -449,8 +447,8 @@ def build_hidden_sliders():
     lines = []
     hx, hy = 990, 2
     idx = 0
-    # Hidden global params: Clock (1,2), Run (3), Follow (4), Morph button (6)
-    for tag in [1, 2, 3, 4, 6]:
+    # Hidden global params: Morph button (6). Sequencer tags 1-4 removed.
+    for tag in [6]:
         lines.append(f'{ind(2)}{hidden_slider(tag, hx + idx % 10, hy + idx // 10)}')
         idx += 1
     for lane in range(LANE_COUNT):

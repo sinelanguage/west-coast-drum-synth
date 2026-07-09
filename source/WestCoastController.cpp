@@ -1,6 +1,8 @@
 #include "WestCoastController.h"
 
+#include "LaneDefaults.h"
 #include "ParameterIds.h"
+#include "StateMigration.h"
 #include "presets/FactoryPresets.h"
 
 #include "base/source/fstreamer.h"
@@ -109,51 +111,7 @@ private:
   double pendingZoom_ {1.0};
 };
 
-constexpr uint32 kStateVersion = 8;
-constexpr uint32 kV7StateVersion = 7;
-constexpr uint32 kV6StateVersion = 6;
-constexpr uint32 kV5StateVersion = 5;
-constexpr uint32 kV4StateVersion = 4;
-constexpr uint32 kV3StateVersion = 3;
-constexpr int32 kV4LaneCount = 5;
-constexpr uint32 kPreviousStateVersion = 2;
-constexpr uint32 kLegacyStateVersion = 1;
-constexpr int32 kLegacyLaneCount = 4;
-constexpr int32 kPreviousGlobalParamCount = 6;
 constexpr int32 kUserPresetCount = 8;
-
-constexpr std::array<std::array<double, kLaneExtraParamCount>, kLaneCount> kLaneExtraDefaults {{
-  {{0.84, 0.30, 0.76, 0.36, 0.26, 0.24}},
-  {{0.46, 0.48, 0.62, 0.72, 0.58, 0.84}},
-  {{0.20, 0.22, 0.38, 0.90, 0.20, 0.72}},
-  {{0.42, 0.38, 0.48, 0.52, 0.42, 0.48}},
-  {{0.44, 0.36, 0.50, 0.54, 0.44, 0.50}},
-  {{0.52, 0.34, 0.54, 0.60, 0.40, 0.56}},
-  {{0.38, 0.45, 0.62, 0.72, 0.58, 0.65}},
-  {{0.48, 0.40, 0.58, 0.68, 0.52, 0.72}},
-}};
-
-constexpr std::array<std::array<double, kLaneMacroParamCount>, kLaneCount> kLaneMacroDefaults {{
-  {{0.28, 0.44, 0.34, 0.56}},
-  {{0.38, 0.56, 0.50, 0.72}},
-  {{0.20, 0.36, 0.66, 0.86}},
-  {{0.32, 0.48, 0.40, 0.54}},
-  {{0.34, 0.46, 0.42, 0.56}},
-  {{0.36, 0.50, 0.44, 0.58}},
-  {{0.28, 0.54, 0.55, 0.68}},
-  {{0.30, 0.52, 0.50, 0.62}},
-}};
-
-constexpr std::array<std::array<double, kLaneFilterParamCount>, kLaneCount> kLaneFilterDefaults {{
-  {{0.65, 0.08, 0.40, 0.70, 0.05, 0.35}},
-  {{0.68, 0.12, 0.30, 0.72, 0.08, 0.45}},
-  {{0.82, 0.06, 0.20, 0.85, 0.04, 0.30}},
-  {{0.72, 0.12, 0.38, 0.76, 0.08, 0.42}},
-  {{0.74, 0.11, 0.40, 0.78, 0.07, 0.44}},
-  {{0.70, 0.14, 0.36, 0.74, 0.09, 0.40}},
-  {{0.66, 0.18, 0.45, 0.70, 0.12, 0.52}},
-  {{0.68, 0.16, 0.42, 0.72, 0.10, 0.48}},
-}};
 
 UString128 toString128 (const char* ascii)
 {
@@ -166,20 +124,6 @@ Vst::RangeParameter* makeRangeParam (const char* title, Vst::ParamID id, const c
   auto title16 = toString128 (title);
   auto unit16 = toString128 (unit);
   return new Vst::RangeParameter (title16, id, unit16, minPlain, maxPlain, defaultPlain);
-}
-
-bool readV7StreamIntoDenseByParamId (IBStreamer& streamer, std::array<double, 709>& out)
-{
-  out.fill (0.0);
-  const auto idsV7 = allParameterIdsV7 ();
-  for (int32 i = 0; i < kV7TotalParameterCount; ++i)
-  {
-    double v = 0.0;
-    if (!streamer.readDouble (v))
-      return false;
-    out[static_cast<size_t> (idsV7[static_cast<size_t> (i)])] = v;
-  }
-  return true;
 }
 
 } // namespace
@@ -196,18 +140,17 @@ tresult PLUGIN_API WestCoastController::initialize (FUnknown* context)
     return result;
 
   parameters.addParameter (makeRangeParam ("Master", kParamMaster, "%", 0.0, 100.0, 80.0));
-  parameters.addParameter (
-    makeRangeParam ("Internal Tempo (Seq)", kParamInternalTempo, "BPM", 60.0, 180.0, 120.0));
-  parameters.addParameter (makeRangeParam ("Swing", kParamSwing, "%", 0.0, 100.0, 12.0));
+  // Reserved sequencer ParamIDs kept for project-state compatibility; hidden from host UI.
+  parameters.addParameter (makeRangeParam ("Reserved Tempo", kParamInternalTempo, "", 0.0, 1.0, 0.5));
+  parameters.addParameter (makeRangeParam ("Reserved Swing", kParamSwing, "", 0.0, 1.0, 0.12));
+  parameters.addParameter (makeRangeParam ("Reserved Run", kParamRun, "", 0.0, 1.0, 0.0));
+  parameters.addParameter (makeRangeParam ("Reserved Follow", kParamFollowTransport, "", 0.0, 1.0, 0.0));
   parameters.addParameter (
     makeRangeParam ("Osc Body Cutoff", kParamOscFilterCutoff, "Hz", 80.0, 16000.0, 16000.0));
   parameters.addParameter (
     makeRangeParam ("Osc Body Resonance", kParamOscFilterResonance, "%", 0.0, 100.0, 34.0));
   parameters.addParameter (
     makeRangeParam ("Osc Body Env", kParamOscFilterEnv, "%", 0.0, 200.0, 92.0));
-  parameters.addParameter (STR16 ("Run"), nullptr, 1, 0.0, Vst::ParameterInfo::kCanAutomate, kParamRun);
-  parameters.addParameter (STR16 ("Follow Host"), nullptr, 1, 0.0, Vst::ParameterInfo::kCanAutomate,
-                           kParamFollowTransport);
 
   auto* presetParam = new Vst::StringListParameter (STR16 ("Preset"), kParamPresetSelect);
   for (const auto& preset : getFactoryPresets ())
@@ -698,7 +641,7 @@ VSTGUI::CView* WestCoastController::verifyView (VSTGUI::CView* view, const VSTGU
 
 bool WestCoastController::isPrivateParameter (const Vst::ParamID paramID)
 {
-  return isLaneLedParamID (paramID);
+  return isLaneLedParamID (paramID) || isReservedSequencerParamID (paramID);
 }
 
 } // namespace Steinberg::WestCoastDrumSynth

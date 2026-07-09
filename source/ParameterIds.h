@@ -7,11 +7,11 @@
 namespace Steinberg::WestCoastDrumSynth {
 
 constexpr int32 kLaneCount = 8;
-constexpr int32 kPatternSteps = 16;
-using PatternGrid = std::array<std::array<bool, kPatternSteps>, kLaneCount>;
 
 enum ParameterId : Vst::ParamID {
   kParamMaster = 0,
+  // Reserved sequencer stubs (IDs kept for v8 project-state compatibility).
+  // Not used for audio while the internal sequencer is removed.
   kParamInternalTempo,
   kParamSwing,
   kParamRun,
@@ -24,6 +24,12 @@ enum ParameterId : Vst::ParamID {
   kParamRandomizeAmount,
   kParamGlobalCount
 };
+
+inline constexpr bool isReservedSequencerParamID (Vst::ParamID paramId)
+{
+  return paramId == kParamInternalTempo || paramId == kParamSwing || paramId == kParamRun ||
+         paramId == kParamFollowTransport;
+}
 
 enum LaneParamOffset : int32 {
   kLaneTune = 0,

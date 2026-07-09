@@ -24,7 +24,7 @@ const std::array<FactoryPreset, kFactoryPresetCount>& getFactoryPresets ()
   static const std::array<FactoryPreset, kFactoryPresetCount> presets {
     FactoryPreset {
       "Deep Punch",
-      0.82, 0.56, 0.09,
+      0.82,
       {{
         lane (0.38, 0.38, 0.42, 0.35, 0.30, 0.22, 0.92, 0.47, 0.75, 0.18, 0.60, 0.45, 0.24, 0.34, 0.34, 0.68, 0.20, 0.48,  0.68, 0.08, 0.38, 0.46, 0.10, 0.34),
 
@@ -49,27 +49,10 @@ const std::array<FactoryPreset, kFactoryPresetCount>& getFactoryPresets ()
 
         lane (0.42, 0.32, 0.52, 0.40, 0.48, 0.22, 0.76, 0.55, 0.45, 0.22, 0.45, 0.62, 0.38, 0.65, 0.42, 0.55, 0.42, 0.55,  0.66, 0.14, 0.38, 0.70, 0.10, 0.45),
       }},
-      {{
-        {{true, false, false, false, true, false, false, false, true, false, true, false, true, false, false, false}},
-
-        {{false, false, true, false, false, true, false, false, false, false, true, false, false, true, false, false}},
-
-        {{true, true, true, true, true, false, true, true, true, true, true, false, true, true, true, false}},
-
-        {{false, false, false, true, false, true, false, false, true, false, false, true, false, true, false, false}},
-
-        {{false, true, false, false, false, false, true, false, false, true, false, false, false, false, true, false}},
-
-        {{false, false, false, true, false, true, false, false, true, false, false, true, false, true, false, false}},
-
-        {{false, false, false, false, true, false, false, false, true, false, false, true, false, false, false, true}},
-
-        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
-      }},
     },
     FactoryPreset {
       "Electro Flux",
-      0.78, 0.64, 0.17,
+      0.78,
       {{
         lane (0.36, 0.42, 0.48, 0.40, 0.28, 0.25, 0.88, 0.46, 0.72, 0.22, 0.32, 0.42, 0.24, 0.28, 0.24, 0.48, 0.14, 0.48,  0.66, 0.08, 0.40, 0.68, 0.05, 0.35),
 
@@ -94,27 +77,10 @@ const std::array<FactoryPreset, kFactoryPresetCount>& getFactoryPresets ()
 
         lane (0.48, 0.40, 0.58, 0.45, 0.60, 0.30, 0.74, 0.58, 0.50, 0.42, 0.60, 0.70, 0.54, 0.74, 0.52, 0.64, 0.52, 0.64,  0.66, 0.18, 0.44, 0.72, 0.12, 0.50),
       }},
-      {{
-        {{true, false, false, false, false, false, true, false, true, false, false, false, false, false, true, false}},
-
-        {{false, false, true, false, false, true, false, true, false, false, true, false, false, true, false, true}},
-
-        {{true, false, true, false, true, true, true, false, true, false, true, false, true, true, true, false}},
-
-        {{false, false, false, true, true, false, false, false, false, true, false, true, true, false, false, false}},
-
-        {{false, true, false, false, false, false, true, false, false, false, true, false, false, true, false, false}},
-
-        {{false, false, false, true, true, false, false, false, false, true, false, true, true, false, false, false}},
-
-        {{false, false, false, false, true, false, false, false, true, false, false, true, false, false, false, true}},
-
-        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
-      }},
     },
     FactoryPreset {
       "Metallic Snap",
-      0.75, 0.47, 0.23,
+      0.75,
       {{
         lane (0.40, 0.38, 0.50, 0.28, 0.22, 0.22, 0.88, 0.45, 0.68, 0.20, 0.28, 0.35, 0.22, 0.22, 0.22, 0.45, 0.14, 0.40,  0.70, 0.05, 0.38, 0.66, 0.04, 0.28),
 
@@ -139,27 +105,10 @@ const std::array<FactoryPreset, kFactoryPresetCount>& getFactoryPresets ()
 
         lane (0.52, 0.42, 0.62, 0.48, 0.62, 0.32, 0.76, 0.60, 0.52, 0.44, 0.62, 0.72, 0.56, 0.76, 0.54, 0.66, 0.54, 0.66,  0.64, 0.20, 0.46, 0.70, 0.14, 0.52),
       }},
-      {{
-        {{true, false, false, false, true, false, false, false, true, false, false, false, true, false, true, false}},
-
-        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, false, true}},
-
-        {{true, true, true, false, true, false, true, true, true, false, true, false, true, true, true, false}},
-
-        {{false, true, false, true, false, false, false, false, false, true, false, false, false, true, false, true}},
-
-        {{false, false, true, false, false, true, false, false, true, false, false, true, false, false, true, false}},
-
-        {{false, true, false, true, false, false, false, false, false, true, false, false, false, true, false, true}},
-
-        {{false, false, false, false, true, false, false, false, true, false, false, true, false, false, false, true}},
-
-        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
-      }},
     },
     FactoryPreset {
       "Broken Clock",
-      0.80, 0.60, 0.31,
+      0.80,
       {{
         lane (0.38, 0.40, 0.52, 0.45, 0.28, 0.28, 0.88, 0.46, 0.78, 0.22, 0.35, 0.42, 0.26, 0.25, 0.26, 0.50, 0.12, 0.48,  0.64, 0.10, 0.44, 0.70, 0.06, 0.36),
 
@@ -184,27 +133,10 @@ const std::array<FactoryPreset, kFactoryPresetCount>& getFactoryPresets ()
 
         lane (0.58, 0.44, 0.65, 0.52, 0.64, 0.36, 0.78, 0.62, 0.54, 0.46, 0.64, 0.74, 0.58, 0.78, 0.56, 0.68, 0.56, 0.68,  0.62, 0.22, 0.48, 0.68, 0.16, 0.54),
       }},
-      {{
-        {{true, false, false, true, false, false, true, false, true, false, false, false, true, false, false, false}},
-
-        {{false, true, false, false, true, false, false, true, false, true, false, false, true, false, false, true}},
-
-        {{true, true, false, true, true, false, true, false, true, true, false, true, true, false, true, false}},
-
-        {{false, false, true, false, false, true, false, true, false, false, true, false, false, true, false, true}},
-
-        {{true, false, false, false, true, false, true, false, false, true, false, false, true, false, true, false}},
-
-        {{false, false, true, false, false, true, false, true, false, false, true, false, false, true, false, true}},
-
-        {{false, false, false, false, true, false, false, false, true, false, false, true, false, false, false, true}},
-
-        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
-      }},
     },
     FactoryPreset {
       "Dust Stepper",
-      0.77, 0.52, 0.14,
+      0.77,
       {{
         lane (0.40, 0.38, 0.42, 0.30, 0.25, 0.16, 0.86, 0.47, 0.72, 0.20, 0.32, 0.40, 0.24, 0.22, 0.24, 0.48, 0.10, 0.44,  0.68, 0.06, 0.36, 0.70, 0.04, 0.32),
 
@@ -229,27 +161,10 @@ const std::array<FactoryPreset, kFactoryPresetCount>& getFactoryPresets ()
 
         lane (0.50, 0.42, 0.58, 0.46, 0.60, 0.28, 0.74, 0.58, 0.52, 0.44, 0.60, 0.70, 0.54, 0.74, 0.52, 0.64, 0.52, 0.64,  0.68, 0.18, 0.44, 0.72, 0.12, 0.50),
       }},
-      {{
-        {{true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false}},
-
-        {{false, false, true, false, false, true, false, false, false, false, true, false, false, true, false, false}},
-
-        {{true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false}},
-
-        {{false, false, false, true, false, false, true, false, false, true, false, false, true, false, false, true}},
-
-        {{false, true, false, false, false, false, false, true, false, false, true, false, false, false, false, true}},
-
-        {{false, false, false, true, false, false, true, false, false, true, false, false, true, false, false, true}},
-
-        {{false, false, false, false, true, false, false, false, true, false, false, true, false, false, false, true}},
-
-        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
-      }},
     },
     FactoryPreset {
       "Warm Room",
-      0.72, 0.48, 0.08,
+      0.72,
       {{
         lane (0.38, 0.32, 0.22, 0.18, 0.12, 0.08, 0.78, 0.48, 0.68, 0.16, 0.28, 0.35, 0.18, 0.18, 0.20, 0.42, 0.10, 0.38,  0.72, 0.12, 0.48, 0.78, 0.08, 0.42),
 
@@ -274,27 +189,10 @@ const std::array<FactoryPreset, kFactoryPresetCount>& getFactoryPresets ()
 
         lane (0.38, 0.30, 0.32, 0.28, 0.35, 0.18, 0.70, 0.52, 0.42, 0.22, 0.40, 0.55, 0.32, 0.55, 0.35, 0.52, 0.35, 0.50,  0.70, 0.18, 0.45, 0.76, 0.14, 0.50),
       }},
-      {{
-        {{true, false, false, false, true, false, false, false, true, false, true, false, true, false, false, false}},
-
-        {{false, false, true, false, false, true, false, false, false, false, true, false, false, true, false, false}},
-
-        {{true, true, true, true, true, false, true, true, true, true, true, false, true, true, true, false}},
-
-        {{false, false, false, true, false, true, false, false, true, false, false, true, false, true, false, false}},
-
-        {{false, true, false, false, false, false, true, false, false, true, false, false, false, false, true, false}},
-
-        {{false, false, false, true, false, true, false, false, true, false, false, true, false, true, false, false}},
-
-        {{false, false, false, false, true, false, false, false, true, false, false, true, false, false, false, true}},
-
-        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
-      }},
     },
     FactoryPreset {
       "Tight Kit",
-      0.75, 0.55, 0.10,
+      0.75,
       {{
         lane (0.40, 0.35, 0.25, 0.20, 0.15, 0.10, 0.82, 0.50, 0.70, 0.18, 0.30, 0.38, 0.20, 0.20, 0.22, 0.45, 0.12, 0.40,  0.70, 0.10, 0.42, 0.74, 0.06, 0.38),
 
@@ -319,27 +217,10 @@ const std::array<FactoryPreset, kFactoryPresetCount>& getFactoryPresets ()
 
         lane (0.44, 0.35, 0.30, 0.30, 0.40, 0.20, 0.72, 0.55, 0.48, 0.28, 0.42, 0.55, 0.40, 0.62, 0.40, 0.55, 0.40, 0.52,  0.68, 0.16, 0.42, 0.74, 0.12, 0.48),
       }},
-      {{
-        {{true, false, false, false, true, false, false, false, true, false, true, false, true, false, false, false}},
-
-        {{false, false, true, false, false, true, false, false, false, false, true, false, false, true, false, false}},
-
-        {{true, true, true, true, true, false, true, true, true, true, true, false, true, true, true, false}},
-
-        {{false, false, false, true, false, true, false, false, true, false, false, true, false, true, false, false}},
-
-        {{false, true, false, false, false, false, true, false, false, true, false, false, false, false, true, false}},
-
-        {{false, false, false, true, false, true, false, false, true, false, false, true, false, true, false, false}},
-
-        {{false, false, false, false, true, false, false, false, true, false, false, true, false, false, false, true}},
-
-        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
-      }},
     },
     FactoryPreset {
       "Wooden Perc",
-      0.70, 0.42, 0.12,
+      0.70,
       {{
         lane (0.35, 0.38, 0.20, 0.15, 0.10, 0.06, 0.75, 0.45, 0.62, 0.20, 0.32, 0.32, 0.22, 0.15, 0.24, 0.40, 0.08, 0.36,  0.68, 0.14, 0.52, 0.72, 0.10, 0.45),
 
@@ -363,23 +244,6 @@ const std::array<FactoryPreset, kFactoryPresetCount>& getFactoryPresets ()
 
 
         lane (0.36, 0.38, 0.28, 0.25, 0.32, 0.16, 0.68, 0.52, 0.45, 0.28, 0.45, 0.50, 0.38, 0.52, 0.40, 0.50, 0.38, 0.48,  0.66, 0.18, 0.48, 0.72, 0.14, 0.52),
-      }},
-      {{
-        {{true, false, false, false, true, false, false, false, true, false, false, false, true, false, true, false}},
-
-        {{false, false, true, false, false, true, false, true, false, false, true, false, false, true, false, true}},
-
-        {{true, true, true, false, true, false, true, true, true, false, true, false, true, true, true, false}},
-
-        {{false, true, false, true, false, false, false, false, false, true, false, false, false, true, false, true}},
-
-        {{false, false, true, false, false, true, false, false, true, false, false, true, false, false, true, false}},
-
-        {{false, true, false, true, false, false, false, false, false, true, false, false, false, true, false, true}},
-
-        {{false, false, false, false, true, false, false, false, true, false, false, true, false, false, false, true}},
-
-        {{false, false, true, false, false, false, false, true, false, false, true, false, false, false, true, false}},
       }},
     },
   };

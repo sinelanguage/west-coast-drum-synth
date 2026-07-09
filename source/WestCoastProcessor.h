@@ -2,7 +2,6 @@
 
 #include "ParameterIds.h"
 #include "engine/DrumVoice.h"
-#include "engine/StepSequencer.h"
 
 #include "public.sdk/source/vst/vstaudioeffect.h"
 
@@ -49,7 +48,6 @@ private:
   std::array<double, kParameterStateSize> params_ {};
   std::array<LaneFrame, kLaneCount> laneFrames_ {};
   std::array<DrumVoice, kLaneCount> voices_ {};
-  StepSequencer sequencer_ {};
 
   std::array<double, kLaneCount> laneLedState_ {};
   std::array<int32, kLaneCount> laneLedFlashSamples_ {};

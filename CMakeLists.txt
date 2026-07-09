@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(WestCoastDrumSynth VERSION 0.1.0 LANGUAGES C CXX)
+project(WestCoastDrumSynth VERSION 1.1.0 LANGUAGES C CXX)
 
 # Default to Release so the real plugin GUI shows in DAWs. Debug builds enable VSTGUI
 # live-editing mode (black screen + tiny "e" button) instead of the actual interface.
@@ -34,7 +34,6 @@ endif()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-add_compile_definitions(DEVELOPMENT=1)
 
 # VSTGUI pulls Objective-C++ sources on Apple platforms. Use language probing
 # so the configure remains portable and still defines CMAKE_OBJCXX_* rules
@@ -60,9 +59,14 @@ set(VSTGUI_UISCRIPTING OFF CACHE BOOL "Disable VSTGUI scripting features" FORCE)
 
 include(FetchContent)
 
+# Prefer a local SDK checkout, then FetchContent pinned to the latest tagged release.
+# Do not track floating master — builds must be reproducible.
 if(DEFINED ENV{VST3_SDK_ROOT} AND EXISTS "$ENV{VST3_SDK_ROOT}/CMakeLists.txt")
   set(VST3_SDK_SOURCE_DIR "$ENV{VST3_SDK_ROOT}")
   add_subdirectory("$ENV{VST3_SDK_ROOT}" "${CMAKE_BINARY_DIR}/vst3sdk")
+elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/vst3sdk/CMakeLists.txt")
+  set(VST3_SDK_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vst3sdk")
+  add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/vst3sdk" "${CMAKE_BINARY_DIR}/vst3sdk")
 elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/vst3sdk/CMakeLists.txt")
   set(VST3_SDK_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/vst3sdk")
   add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/external/vst3sdk" "${CMAKE_BINARY_DIR}/vst3sdk")
@@ -70,7 +74,7 @@ else()
   FetchContent_Declare(
     vst3sdk
     GIT_REPOSITORY https://github.com/steinbergmedia/vst3sdk.git
-    GIT_TAG master
+    GIT_TAG v3.8.0_build_66
     GIT_SHALLOW TRUE
     GIT_SUBMODULES_RECURSE TRUE
   )
@@ -97,14 +101,14 @@ smtg_add_vst3plugin(WestCoastDrumSynth
   source/version.h
   source/westcoastdrumcids.h
   source/ParameterIds.h
+  source/LaneDefaults.h
+  source/StateMigration.h
   source/WestCoastProcessor.h
   source/WestCoastProcessor.cpp
   source/WestCoastController.h
   source/WestCoastController.cpp
   source/engine/DrumVoice.h
   source/engine/DrumVoice.cpp
-  source/engine/StepSequencer.h
-  source/engine/StepSequencer.cpp
   source/presets/FactoryPresets.h
   source/presets/FactoryPresets.cpp
   resource/WestCoastEditor.uidesc
